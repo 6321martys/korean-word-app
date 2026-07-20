@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>한국어 단어 학습기 - 로그인</title>
+  
+  <!-- SEO 메타 태그 정의 -->
+  <meta name="description" content="다국어 학생들을 위한 모던 한국어 단어 학습기 로그인 화면입니다.">
+  
+  <!-- 구글 폰트 로드: 영문 Inter 및 한글 Noto Sans KR 적용으로 가독성 향상 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- 외부 스타일시트 및 스크립트 연결 -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- 배경 애니메이션 효과를 위한 데코레이션 요소 -->
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <!-- 메인 애플리케이션 컨테이너 -->
+  <div class="app-container">
+    
+    <!-- [섹션 1] 로그인 입력 카드 (기본 활성화 상태) -->
+    <div id="login-section" class="card login-card active">
+      <div class="card-header">
+        <h1 class="app-title">한국어 단어 학습기</h1>
+        <p class="app-subtitle">공부를 시작하기 위해 학번 또는 식별번호를 입력해 주세요.</p>
+      </div>
+      
+      <!-- 로그인 폼 (기기 기본 유효성 검사 적용) -->
+      <form id="login-form" class="login-form">
+        <div class="input-group">
+          <label for="student-id" class="input-label">식별번호 (ID)</label>
+          <input 
+            type="text" 
+            id="student-id" 
+            name="studentId" 
+            placeholder="학번 입력 (테스트: 2026-test)" 
+            required 
+            autocomplete="off"
+            class="input-field"
+          >
+          <!-- 에러 발생 시 동적으로 노출될 메시지 영역 -->
+          <div id="error-message" class="error-message hidden">일치하는 정보가 없습니다. 다시 확인해 주세요.</div>
+        </div>
+        
+        <!-- 로그인 제출 버튼 (로딩 상태 스피너 내장) -->
+        <button type="submit" id="btn-login" class="btn btn-primary">
+          <span id="btn-text">학습 시작하기</span>
+          <div class="spinner hidden" id="login-spinner"></div>
+        </button>
+      </form>
+    </div>
+
+    <!-- [섹션 2] 로그인 성공 시 노출될 웰컴 카드 (기본 숨김 상태) -->
+    <div id="welcome-section" class="card welcome-card hidden">
+      <div class="welcome-icon">🎉</div>
+      <h2 class="welcome-title">로그인 완료!</h2>
+      <p class="welcome-message">
+        안녕하세요, <span id="user-display-id" class="highlight-id"></span>님!<br>
+        학습 준비가 완료되었습니다.
+      </p>
+      
+      <!-- 유저 권한 표시 배지 (선생님/학생 구분용) -->
+      <div class="user-type-badge" id="user-role-badge">학생</div>
+      
+      <!-- 로그아웃 및 상태 리셋을 위한 버튼 -->
+      <button id="btn-logout" class="btn btn-secondary">로그아웃</button>
+    </div>
+
+  </div>
+
+  <!-- 비즈니스 로직 자바스크립트 -->
+  <script src="app.js"></script>
+</body>
+</html>

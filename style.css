@@ -1,0 +1,369 @@
+/* ==========================================================================
+   DESIGN SYSTEM & VARIABLES
+   이 프로젝트의 핵심 색상 체계와 서체, 애니메이션 변수들을 설정합니다.
+   ========================================================================== */
+:root {
+  /* 폰트 패밀리 지정 (영문 Inter, 국문 Noto Sans KR 혼용) */
+  --font-main: 'Inter', 'Noto Sans KR', sans-serif;
+
+  /* HSL을 기반으로 한 조화롭고 세련된 다크 테마 컬러 팔레트 */
+  --color-bg: hsl(222, 47%, 11%);       /* 메인 배경색 (짙은 남색) */
+  --color-card-bg: hsla(223, 47%, 16%, 0.7); /* 글래스모피즘 카드 배경 (반투명) */
+  --color-border: hsla(217, 30%, 30%, 0.4);  /* 은은한 보더 테두리 선 */
+  --color-text-primary: hsl(0, 0%, 100%);     /* 주 텍스트 (완전 흰색) */
+  --color-text-secondary: hsl(215, 20%, 65%);  /* 보조 텍스트 (차분한 회청색) */
+
+  /* 포인트 컬러 (퍼플 & 인디고) */
+  --color-primary: hsl(250, 85%, 65%);        /* 메인 브랜드 컬러 */
+  --color-primary-hover: hsl(250, 85%, 72%);  /* 호버 시 밝아지는 브랜드 컬러 */
+  --color-primary-glow: hsla(250, 85%, 65%, 0.35); /* 버튼 네온 효과용 반투명 컬러 */
+  
+  /* 상태 컬러 (에러 및 웰컴 배지용) */
+  --color-error: hsl(354, 85%, 60%);          /* 경고/오류 유도 빨간색 */
+  --color-success: hsl(142, 70%, 45%);        /* 성공/선생님 배지 초록색 */
+  
+  /* 전환 및 마이크로 애니메이션 타이밍 속도 */
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==========================================================================
+   RESET & BASE STYLES
+   초기 브라우저 기본 레이아웃 편차를 초기화합니다.
+   ========================================================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* 배경 발광 레이어의 넘침을 방지 */
+  position: relative;
+}
+
+/* ==========================================================================
+   BACKGROUND ANIMATION EFFECTS
+   화면에 역동성과 깊이감을 주는 서서히 회전/이동하는 배경 그라디언트 광원
+   ========================================================================== */
+.bg-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  z-index: -1;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.bg-glow-1 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, var(--color-primary) 0%, transparent 70%);
+  top: -10%;
+  left: 10%;
+  animation: floatGlow1 20s infinite alternate ease-in-out;
+}
+
+.bg-glow-2 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, hsl(190, 80%, 50%) 0%, transparent 70%);
+  bottom: -15%;
+  right: 5%;
+  animation: floatGlow2 25s infinite alternate ease-in-out;
+}
+
+@keyframes floatGlow1 {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(100px, 80px) scale(1.2); }
+}
+
+@keyframes floatGlow2 {
+  0% { transform: translate(0, 0) scale(1.1); }
+  100% { transform: translate(-120px, -50px) scale(0.9); }
+}
+
+/* ==========================================================================
+   APP CONTAINER & GLASSMORPHISM CARD
+   중앙 정렬 레이아웃 및 웰컴/로그인 카드의 비주얼 디자인을 처리합니다.
+   ========================================================================== */
+.app-container {
+  width: 100%;
+  max-width: 440px;
+  padding: 20px;
+  position: relative;
+  z-index: 10;
+}
+
+/* 글래스모피즘 효과가 적용된 공통 카드 스타일 */
+.card {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 24px;
+  padding: 40px 32px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3),
+              inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: opacity var(--transition-normal), transform var(--transition-normal);
+  display: none; /* JS 제어 전 기본 숨김 처리 */
+}
+
+/* 활성화 상태 토글을 위한 CSS 클래스 */
+.card.active {
+  display: block;
+  animation: cardFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.card.hidden {
+  display: none;
+}
+
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 헤더 요소 스타일링 */
+.card-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.app-title {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #fff 0%, var(--color-text-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.app-subtitle {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+/* ==========================================================================
+   FORM CONTROLS (INPUTS, BUTTONS)
+   사용자 입력창 및 버튼 인터랙션 디자인
+   ========================================================================== */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.input-field {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid var(--color-border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 16px;
+  color: var(--color-text-primary);
+  outline: none;
+  transition: border-color var(--transition-fast), 
+              box-shadow var(--transition-fast), 
+              background-color var(--transition-fast);
+}
+
+/* 입력창 포커스 시 세련된 광원 효과 및 보더 컬러 변경 */
+.input-field:focus {
+  border-color: var(--color-primary);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 4px var(--color-primary-glow);
+}
+
+.input-field::placeholder {
+  color: hsl(215, 15%, 45%);
+}
+
+/* 폼 제출 실패 및 유효하지 않은 학번 입력 시 텍스트 스타일 */
+.error-message {
+  font-size: 13px;
+  color: var(--color-error);
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  animation: shake 0.3s ease-in-out;
+}
+
+.error-message.hidden {
+  display: none;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* 버튼 공통 레이아웃 */
+.btn {
+  font-family: var(--font-main);
+  width: 100%;
+  border-radius: 12px;
+  padding: 14px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--transition-fast), 
+              box-shadow var(--transition-fast), 
+              background var(--transition-fast);
+}
+
+/* 주 버튼: 보라색 그라데이션 및 부드러운 눌림 애니메이션 */
+.btn-primary {
+  background: linear-gradient(135deg, var(--color-primary) 0%, hsl(265, 85%, 60%) 100%);
+  color: var(--color-text-primary);
+  box-shadow: 0 4px 15px rgba(100, 80, 240, 0.3);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--color-primary-hover) 0%, hsl(265, 85%, 65%) 100%);
+  box-shadow: 0 6px 20px rgba(100, 80, 240, 0.45);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 10px rgba(100, 80, 240, 0.2);
+}
+
+/* 보조 버튼: 로그아웃 및 기본 캔슬용 */
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  margin-top: 16px;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--color-text-primary);
+}
+
+/* ==========================================================================
+   LOADING SPINNER
+   로그인 검증 대기 상태를 나타내는 로딩 인디케이터
+   ========================================================================== */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: var(--color-text-primary);
+  animation: spin 0.8s linear infinite;
+}
+
+.spinner.hidden {
+  display: none;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   WELCOME SCREEN SPECIFIC
+   로그인 완료 성공 카드의 디테일한 비주얼 요소
+   ========================================================================== */
+.welcome-card {
+  text-align: center;
+}
+
+.welcome-icon {
+  font-size: 48px;
+  margin-bottom: 20px;
+  animation: bounce 1.5s infinite alternate ease-in-out;
+}
+
+@keyframes bounce {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-8px); }
+}
+
+.welcome-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.welcome-message {
+  font-size: 15px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.highlight-id {
+  color: var(--color-primary-hover);
+  font-weight: 700;
+  background: rgba(100, 80, 240, 0.15);
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+/* 유저 역할 표시 배지 (선생님/학생 식별용) */
+.user-type-badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+/* 학생용 배지 테마 */
+.user-type-badge.student {
+  background: rgba(100, 80, 240, 0.15);
+  color: hsl(250, 85%, 72%);
+  border: 1px solid rgba(100, 80, 240, 0.3);
+}
+
+/* 선생님용 배지 테마 (초록빛 성공 컬러 적용) */
+.user-type-badge.teacher {
+  background: hsla(142, 70%, 45%, 0.15);
+  color: hsl(142, 70%, 55%);
+  border: 1px solid hsla(142, 70%, 45%, 0.3);
+}
