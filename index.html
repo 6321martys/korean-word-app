@@ -33,6 +33,16 @@
       
       <!-- 로그인 폼 (기기 기본 유효성 검사 적용) -->
       <form id="login-form" class="login-form">
+        <!-- [신규] 학습자의 모국어 선택 드롭다운 (향후 다국어 번역 제공에 활용) -->
+        <div class="input-group">
+          <label for="language-select" class="input-label">학습 모국어 (Language)</label>
+          <select id="language-select" name="language" class="select-field">
+            <option value="ko" selected>한국어 (Korean)</option>
+            <option value="zh">중국어 (Chinese / 简体中文)</option>
+            <option value="vi">베트남어 (Vietnamese / Tiếng Việt)</option>
+          </select>
+        </div>
+
         <div class="input-group">
           <label for="student-id" class="input-label">식별번호 (ID)</label>
           <input 
@@ -62,7 +72,7 @@
       <h2 class="welcome-title">로그인 완료!</h2>
       <p class="welcome-message">
         안녕하세요, <span id="user-display-id" class="highlight-id"></span>님!<br>
-        학습 준비가 완료되었습니다.
+        선택하신 모국어(<span id="user-display-lang" class="highlight-lang"></span>)로 학습 준비가 완료되었습니다.
       </p>
       
       <!-- 유저 권한 표시 배지 (선생님/학생 구분용) -->

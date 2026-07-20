@@ -32,6 +32,9 @@ const userDisplayId = document.getElementById("user-display-id");
 const userRoleBadge = document.getElementById("user-role-badge");
 const btnLogout = document.getElementById("btn-logout");
 
+// [신규] 모국어 선택 드롭다운 요소 캐싱
+const languageSelect = document.getElementById("language-select");
+
 /**
  * 페이지 초기화 시 자동 로그인 세션 복구 처리
  */
@@ -50,6 +53,9 @@ loginForm.addEventListener("submit", async (e) => {
 
   const studentId = studentIdInput.value.trim();
   if (!studentId) return;
+
+  // 현재 사용자가 선택한 모국어 코드값 (ko, zh, vi)
+  const selectedLang = languageSelect.value;
 
   // 로그인 시도 중 버튼 로딩 애니메이션 활성화
   setLoadingState(true);
@@ -76,7 +82,8 @@ loginForm.addEventListener("submit", async (e) => {
       const sessionData = {
         id: studentId,
         name: userData.name,
-        role: userData.role
+        role: userData.role,
+        lang: selectedLang // 세션에 선택한 모국어 정보 저장
       };
       localStorage.setItem("active_user", JSON.stringify(sessionData));
       showWelcomeScreen(sessionData);
@@ -137,6 +144,12 @@ async function verifyUserWithGoogleSheet(studentId) {
 function showWelcomeScreen(user) {
   userDisplayId.textContent = user.name;
 
+  // 선택한 모국어를 한글 이름으로 렌더링
+  const userDisplayLang = document.getElementById("user-display-lang");
+  if (userDisplayLang) {
+    userDisplayLang.textContent = getLanguageName(user.lang);
+  }
+
   // 유저 권한에 따라 웰컴 배지 스타일링 분기 처리
   userRoleBadge.className = "user-type-badge"; // 클래스 리셋
   if (user.role === "teacher") {
@@ -192,4 +205,18 @@ function showError(msg) {
  */
 function hideError() {
   errorMessage.classList.add("hidden");
+}
+
+/**
+ * [신규] 언어 코드값을 한글 이름으로 매핑해주는 헬퍼 함수
+ * @param {string} langCode 
+ * @returns {string}
+ */
+function getLanguageName(langCode) {
+  const langs = {
+    "ko": "한국어",
+    "zh": "중국어",
+    "vi": "베트남어"
+  };
+  return langs[langCode] || "한국어";
 }

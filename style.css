@@ -208,6 +208,45 @@ body {
   color: hsl(215, 15%, 45%);
 }
 
+/* ==========================================================================
+   SELECT FIELD CUSTOM STYLES (Glassmorphism dropdown)
+   ========================================================================== */
+.select-field {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid var(--color-border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 16px;
+  color: var(--color-text-primary);
+  outline: none;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), 
+              box-shadow var(--transition-fast), 
+              background-color var(--transition-fast);
+  
+  /* 브라우저 기본 화살표 스타일링 해제 및 커스텀 화살표 설정 */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+}
+
+.select-field:focus {
+  border-color: var(--color-primary);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 4px var(--color-primary-glow);
+}
+
+/* 드롭다운 옵션 내부 다크 테마 디자인 */
+.select-field option {
+  background-color: hsl(222, 47%, 11%);
+  color: var(--color-text-primary);
+  padding: 12px;
+}
+
 /* 폼 제출 실패 및 유효하지 않은 학번 입력 시 텍스트 스타일 */
 .error-message {
   font-size: 13px;
@@ -338,6 +377,14 @@ body {
   color: var(--color-primary-hover);
   font-weight: 700;
   background: rgba(100, 80, 240, 0.15);
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+.highlight-lang {
+  color: hsl(190, 80%, 65%);
+  font-weight: 700;
+  background: rgba(0, 180, 216, 0.15);
   padding: 2px 6px;
   border-radius: 6px;
 }
