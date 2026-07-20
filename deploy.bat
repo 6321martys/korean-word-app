@@ -14,8 +14,7 @@ echo.
 echo ========================================================== 
 echo  [2/3] Creating commit... (git commit) 
 echo ========================================================== 
-set commit_message=Update: %2026-07-20% %17:57:17.56% 
-git commit -m " "%%commit_message%% 
+git commit -m "Auto-Deploy" 
 echo. 
 echo ========================================================== 
 echo  [3/3] Uploading to GitHub... (git push) 
