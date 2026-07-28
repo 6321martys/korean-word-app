@@ -414,3 +414,644 @@ body {
   color: hsl(142, 70%, 55%);
   border: 1px solid hsla(142, 70%, 45%, 0.3);
 }
+
+/* ==========================================================================
+   [신규] WELCOME ACTION GROUP (메인 메뉴 버튼 레이아웃)
+   ========================================================================== */
+.welcome-action-group {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.welcome-action-group .btn-secondary {
+  margin-top: 0; /* 기존 margin-top 제거하여 flex gap으로만 간격 조정 */
+}
+
+/* ==========================================================================
+   [신규] STUDY SECTION STYLES (단어 학습 카드)
+   ========================================================================== */
+.study-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.study-progress-title {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.study-progress-counter {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary) 0%, hsl(190, 80%, 50%) 100%);
+  border-radius: 3px;
+  transition: width var(--transition-normal);
+}
+
+.word-card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 10px 40px 10px;
+  min-height: 240px;
+  text-align: center;
+}
+
+.word-ko {
+  font-size: 38px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #html-color-white 0%, #fff 40%, hsl(220, 20%, 90%) 100%);
+  color: var(--color-text-primary);
+  /* 그라데이션 텍스트가 미지원되는 브라우저 대응 포함 */
+  background: linear-gradient(135deg, #fff 0%, hsl(220, 20%, 90%) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.word-hint {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin-bottom: 24px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 4px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  display: inline-block;
+}
+
+.translation-container {
+  width: 100%;
+  padding-top: 20px;
+  border-top: 1px dashed var(--color-border);
+}
+
+.word-translation {
+  font-size: 20px;
+  font-weight: 600;
+  color: hsl(190, 80%, 70%); /* 세련된 인디고/시안 컬러 적용 */
+  line-height: 1.5;
+}
+
+.navigation-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  width: 100%;
+}
+
+.btn-nav {
+  flex: 1;
+}
+
+.btn-nav.btn-secondary {
+  margin-top: 0; /* 네비게이션 내부 마진 초기화 */
+}
+
+/* ==========================================================================
+   [신규] COMPLETION SECTION STYLES (학습 완료 카드)
+   ========================================================================== */
+.completion-card {
+  text-align: center;
+}
+
+.completion-icon {
+  font-size: 56px;
+  margin-bottom: 20px;
+  animation: scaleBounce 1.5s infinite alternate ease-in-out;
+}
+
+@keyframes scaleBounce {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.15); }
+}
+
+.completion-title {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, hsl(45, 100%, 70%) 0%, hsl(35, 100%, 50%) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.completion-message {
+  font-size: 15px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+/* ==========================================================================
+   [신규] PLANNER CALENDAR SYSTEM STYLES (달력 플래너 UI)
+   ========================================================================== */
+
+/* 미래 날짜 잠금 스타일 (학습 불가 비활성화) */
+.calendar-day.future-day {
+  opacity: 0.35;
+  cursor: not-allowed !important;
+  pointer-events: none; /* 마우스 인터랙션 차단 */
+}
+
+.planner-container {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: 20px 16px;
+  width: 100%;
+}
+
+.planner-calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.calendar-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: -0.2px;
+}
+
+.btn-cal-nav {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background var(--transition-fast);
+}
+
+.btn-cal-nav:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 8px;
+}
+
+.weekday {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.weekday.sun {
+  color: hsl(354, 85%, 65%);
+}
+
+.weekday.sat {
+  color: hsl(200, 85%, 65%);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+/* 개별 날짜 셀 */
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  position: relative;
+  transition: all var(--transition-fast);
+}
+
+.calendar-day.empty {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* 주말 날짜 (Dimmed) */
+.calendar-day.dimmed {
+  color: hsl(215, 10%, 35%);
+  background: rgba(255, 255, 255, 0.01);
+}
+
+/* 학습 단위기간 5일 활성 영역 */
+.calendar-day.active-period {
+  cursor: pointer;
+}
+
+/* 1. 시작 전 (Not Started) */
+.calendar-day.not-started-day {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--color-text-secondary);
+}
+
+.calendar-day.not-started-day:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* 2. 학습 전 (Study Ready / Active Period) */
+.calendar-day.study-ready-day {
+  background: rgba(100, 80, 240, 0.08);
+  border: 1px solid rgba(100, 80, 240, 0.25);
+  color: hsl(250, 85%, 85%);
+}
+
+.calendar-day.study-ready-day:hover {
+  background: rgba(100, 80, 240, 0.16);
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+/* 오늘 날짜 표시 */
+.calendar-day.today {
+  box-shadow: inset 0 0 0 1.5px hsl(190, 80%, 50%);
+}
+
+/* 3. 학습 완료 (Completed) */
+.calendar-day.completed-day {
+  background: rgba(16, 185, 129, 0.12) !important;
+  border: 1px solid rgba(16, 185, 129, 0.4) !important;
+  color: hsl(142, 70%, 75%);
+}
+
+.calendar-day.completed-day:hover {
+  background: rgba(16, 185, 129, 0.2) !important;
+  transform: translateY(-1px);
+}
+
+/* 4. 지각 상태 (Late) */
+.calendar-day.late-day {
+  background: rgba(239, 68, 68, 0.12) !important;
+  border: 1px solid rgba(239, 68, 68, 0.4) !important;
+  color: hsl(354, 85%, 75%);
+}
+
+.calendar-day.late-day:hover {
+  background: rgba(239, 68, 68, 0.2) !important;
+  transform: translateY(-1px);
+}
+
+.day-number {
+  z-index: 2;
+}
+
+/* 진척도 점(Dot) 인디케이터 */
+.day-status-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 5px;
+}
+
+.completed-day .day-status-dot {
+  background-color: hsl(142, 70%, 50%);
+}
+
+.late-day .day-status-dot {
+  background-color: hsl(354, 85%, 60%);
+}
+
+.study-ready-day .day-status-dot {
+  background-color: var(--color-primary);
+}
+
+.not-started-day .day-status-dot {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ==========================================================================
+   [신규] 구글 스프레드시트 연동 상태 뱃지 스타일
+   ========================================================================== */
+.connection-status-badge {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+/* 연동 성공 (Green) */
+.connection-status-badge.connected {
+  background-color: hsla(142, 70%, 45%, 0.2);
+  border: 1px solid hsla(142, 70%, 45%, 0.5);
+  color: hsl(142, 70%, 55%);
+}
+
+.connection-status-badge.connected:hover {
+  background-color: hsla(142, 70%, 45%, 0.35);
+  transform: scale(1.08);
+}
+
+/* 연동 실패/로컬 폴백 (Amber/Orange) */
+.connection-status-badge.disconnected {
+  background-color: hsla(35, 100%, 50%, 0.2);
+  border: 1px solid hsla(35, 100%, 50%, 0.5);
+  color: hsl(35, 100%, 55%);
+  animation: pulse-warn 1.8s infinite;
+}
+
+.connection-status-badge.disconnected:hover {
+  background-color: hsla(35, 100%, 50%, 0.35);
+  transform: scale(1.08);
+}
+
+@keyframes pulse-warn {
+  0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+  70% { box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+}
+
+/* 상태 툴팁 */
+.status-tooltip {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background: hsl(222, 47%, 8%);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+  width: 220px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: all var(--transition-fast);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+  z-index: 1001;
+}
+
+.connection-status-badge:hover .status-tooltip {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* ==========================================================================
+   [신규] 모달 팝업 레이어 (오버레이 및 스크롤)
+   ========================================================================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(10, 15, 30, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-normal);
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-overlay.hidden {
+  display: none !important;
+}
+
+.modal-content {
+  transform: scale(0.95) translateY(10px);
+  transition: transform var(--transition-normal);
+}
+
+.modal-overlay.active .modal-content {
+  transform: scale(1) translateY(0);
+  animation: cardFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* 모달 내 미니 일차 진도 뱃지 */
+.modal-day-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 6px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.modal-day-badge.completed {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.35);
+  color: hsl(142, 70%, 75%);
+}
+
+.modal-day-badge.late {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: hsl(354, 85%, 75%);
+}
+
+.modal-day-badge .badge-label {
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.modal-day-badge .badge-status {
+  font-size: 10px;
+  opacity: 0.85;
+}
+
+/* 단어 로그 상세 리스트 스크롤 */
+.word-log-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.word-log-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.word-log-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+.word-log-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 13px;
+}
+
+.word-log-item:last-child {
+  border-bottom: none;
+}
+
+.word-log-word {
+  font-weight: 600;
+  color: hsl(190, 80%, 70%);
+}
+
+.word-log-date {
+  font-size: 11.5px;
+  color: var(--color-text-secondary);
+}
+
+/* 테이블의 클릭 가능한 행 이름 */
+.clickable-name {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 600;
+  transition: color var(--transition-fast);
+}
+
+.clickable-name:hover {
+  color: hsl(250, 85%, 80%);
+}
+
+/* ==========================================================================
+   ADMIN STUDENT EDITOR MODAL & DATEPICKER SPECIFIC
+   ========================================================================== */
+.select-field {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  color: var(--color-text-primary);
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color var(--transition-fast);
+  cursor: pointer;
+}
+
+.select-field:focus {
+  border-color: var(--color-primary);
+}
+
+.select-field option {
+  background: hsl(250, 20%, 12%);
+  color: var(--color-text-primary);
+}
+
+/* 미니 달력 일자 디자인 */
+.picker-day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.picker-day:hover:not(.weekend-disabled) {
+  background: var(--color-primary-hover);
+  color: #ffffff;
+}
+
+.picker-day.weekend-disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+  color: var(--color-text-secondary);
+}
+
+.picker-day.selected {
+  background: var(--color-primary);
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 0 10px rgba(100, 80, 240, 0.5);
+}
+
+.picker-day.other-month {
+  color: var(--color-text-secondary);
+  opacity: 0.35;
+}
+
+/* 동적 추가 헤더 필드 배지 */
+.dynamic-badge {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--color-border);
+  padding: 6px 10px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dynamic-badge-key {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.dynamic-badge-value {
+  font-size: 0.85rem;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+
