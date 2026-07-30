@@ -7,21 +7,31 @@
   --font-main: 'Inter', 'Noto Sans KR', sans-serif;
 
   /* HSL을 기반으로 한 조화롭고 세련된 다크 테마 컬러 팔레트 */
-  --color-bg: hsl(222, 47%, 11%);       /* 메인 배경색 (짙은 남색) */
-  --color-card-bg: hsla(223, 47%, 16%, 0.7); /* 글래스모피즘 카드 배경 (반투명) */
-  --color-border: hsla(217, 30%, 30%, 0.4);  /* 은은한 보더 테두리 선 */
-  --color-text-primary: hsl(0, 0%, 100%);     /* 주 텍스트 (완전 흰색) */
-  --color-text-secondary: hsl(215, 20%, 65%);  /* 보조 텍스트 (차분한 회청색) */
+  --color-bg: hsl(222, 47%, 11%);
+  /* 메인 배경색 (짙은 남색) */
+  --color-card-bg: hsla(223, 47%, 16%, 0.7);
+  /* 글래스모피즘 카드 배경 (반투명) */
+  --color-border: hsla(217, 30%, 30%, 0.4);
+  /* 은은한 보더 테두리 선 */
+  --color-text-primary: hsl(0, 0%, 100%);
+  /* 주 텍스트 (완전 흰색) */
+  --color-text-secondary: hsl(215, 20%, 65%);
+  /* 보조 텍스트 (차분한 회청색) */
 
   /* 포인트 컬러 (퍼플 & 인디고) */
-  --color-primary: hsl(250, 85%, 65%);        /* 메인 브랜드 컬러 */
-  --color-primary-hover: hsl(250, 85%, 72%);  /* 호버 시 밝아지는 브랜드 컬러 */
-  --color-primary-glow: hsla(250, 85%, 65%, 0.35); /* 버튼 네온 효과용 반투명 컬러 */
-  
+  --color-primary: hsl(250, 85%, 65%);
+  /* 메인 브랜드 컬러 */
+  --color-primary-hover: hsl(250, 85%, 72%);
+  /* 호버 시 밝아지는 브랜드 컬러 */
+  --color-primary-glow: hsla(250, 85%, 65%, 0.35);
+  /* 버튼 네온 효과용 반투명 컬러 */
+
   /* 상태 컬러 (에러 및 웰컴 배지용) */
-  --color-error: hsl(354, 85%, 60%);          /* 경고/오류 유도 빨간색 */
-  --color-success: hsl(142, 70%, 45%);        /* 성공/선생님 배지 초록색 */
-  
+  --color-error: hsl(354, 85%, 60%);
+  /* 경고/오류 유도 빨간색 */
+  --color-success: hsl(142, 70%, 45%);
+  /* 성공/선생님 배지 초록색 */
+
   /* 전환 및 마이크로 애니메이션 타이밍 속도 */
   --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-normal: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
@@ -45,7 +55,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden; /* 배경 발광 레이어의 넘침을 방지 */
+  overflow: hidden;
+  /* 배경 발광 레이어의 넘침을 방지 */
   position: relative;
 }
 
@@ -81,13 +92,23 @@ body {
 }
 
 @keyframes floatGlow1 {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(100px, 80px) scale(1.2); }
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  100% {
+    transform: translate(100px, 80px) scale(1.2);
+  }
 }
 
 @keyframes floatGlow2 {
-  0% { transform: translate(0, 0) scale(1.1); }
-  100% { transform: translate(-120px, -50px) scale(0.9); }
+  0% {
+    transform: translate(0, 0) scale(1.1);
+  }
+
+  100% {
+    transform: translate(-120px, -50px) scale(0.9);
+  }
 }
 
 /* ==========================================================================
@@ -109,11 +130,12 @@ body {
   border-radius: 24px;
   padding: 40px 32px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3),
-              inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   transition: opacity var(--transition-normal), transform var(--transition-normal);
-  display: none; /* JS 제어 전 기본 숨김 처리 */
+  display: none;
+  /* JS 제어 전 기본 숨김 처리 */
 }
 
 /* 활성화 상태 토글을 위한 CSS 클래스 */
@@ -131,6 +153,7 @@ body {
     opacity: 0;
     transform: translateY(20px) scale(0.98);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -192,9 +215,9 @@ body {
   font-size: 16px;
   color: var(--color-text-primary);
   outline: none;
-  transition: border-color var(--transition-fast), 
-              box-shadow var(--transition-fast), 
-              background-color var(--transition-fast);
+  transition: border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background-color var(--transition-fast);
 }
 
 /* 입력창 포커스 시 세련된 광원 효과 및 보더 컬러 변경 */
@@ -221,10 +244,10 @@ body {
   color: var(--color-text-primary);
   outline: none;
   cursor: pointer;
-  transition: border-color var(--transition-fast), 
-              box-shadow var(--transition-fast), 
-              background-color var(--transition-fast);
-  
+  transition: border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background-color var(--transition-fast);
+
   /* 브라우저 기본 화살표 스타일링 해제 및 커스텀 화살표 설정 */
   appearance: none;
   -webkit-appearance: none;
@@ -248,13 +271,14 @@ body {
 }
 
 /* 폼 제출 실패 및 유효하지 않은 학번 입력 시 텍스트 스타일 */
+/* [Comment Policy: 긴 에러 메시지 대응을 위한 스타일 개선]
+   메시지가 2줄 이상이 될 때 자연스럽게 줄바꿈(word-break)이 일어나고 줄간격(line-height)이 확보되도록 속성을 추가합니다. */
 .error-message {
   font-size: 13px;
   color: var(--color-error);
-  margin-top: 4px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
+  margin-top: 8px;
+  line-height: 1.5;
+  word-break: keep-all;
   animation: shake 0.3s ease-in-out;
 }
 
@@ -263,9 +287,19 @@ body {
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-4px); }
-  75% { transform: translateX(4px); }
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-4px);
+  }
+
+  75% {
+    transform: translateX(4px);
+  }
 }
 
 /* 버튼 공통 레이아웃 */
@@ -284,9 +318,9 @@ body {
   gap: 10px;
   position: relative;
   overflow: hidden;
-  transition: transform var(--transition-fast), 
-              box-shadow var(--transition-fast), 
-              background var(--transition-fast);
+  transition: transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background var(--transition-fast);
 }
 
 /* 주 버튼: 보라색 그라데이션 및 부드러운 눌림 애니메이션 */
@@ -338,7 +372,9 @@ body {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ==========================================================================
@@ -356,8 +392,13 @@ body {
 }
 
 @keyframes bounce {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-8px); }
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-8px);
+  }
 }
 
 .welcome-title {
@@ -427,7 +468,8 @@ body {
 }
 
 .welcome-action-group .btn-secondary {
-  margin-top: 0; /* 기존 margin-top 제거하여 flex gap으로만 간격 조정 */
+  margin-top: 0;
+  /* 기존 margin-top 제거하여 flex gap으로만 간격 조정 */
 }
 
 /* ==========================================================================
@@ -510,7 +552,8 @@ body {
 .word-translation {
   font-size: 20px;
   font-weight: 600;
-  color: hsl(190, 80%, 70%); /* 세련된 인디고/시안 컬러 적용 */
+  color: hsl(190, 80%, 70%);
+  /* 세련된 인디고/시안 컬러 적용 */
   line-height: 1.5;
 }
 
@@ -526,7 +569,8 @@ body {
 }
 
 .btn-nav.btn-secondary {
-  margin-top: 0; /* 네비게이션 내부 마진 초기화 */
+  margin-top: 0;
+  /* 네비게이션 내부 마진 초기화 */
 }
 
 /* ==========================================================================
@@ -543,8 +587,13 @@ body {
 }
 
 @keyframes scaleBounce {
-  0% { transform: scale(1); }
-  100% { transform: scale(1.15); }
+  0% {
+    transform: scale(1);
+  }
+
+  100% {
+    transform: scale(1.15);
+  }
 }
 
 .completion-title {
@@ -570,7 +619,8 @@ body {
 .calendar-day.future-day {
   opacity: 0.35;
   cursor: not-allowed !important;
-  pointer-events: none; /* 마우스 인터랙션 차단 */
+  pointer-events: none;
+  /* 마우스 인터랙션 차단 */
 }
 
 .planner-container {
@@ -805,9 +855,17 @@ body {
 }
 
 @keyframes pulse-warn {
-  0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
-  70% { box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 8px rgba(245, 158, 11, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+  }
 }
 
 /* 상태 툴팁 */
@@ -827,7 +885,7 @@ body {
   opacity: 0;
   transform: translateY(-8px);
   transition: all var(--transition-fast);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
   z-index: 1001;
 }
 
@@ -1053,5 +1111,148 @@ body {
   text-overflow: ellipsis;
 }
 
+/* [Comment Policy: 다시 듣기 스피커 버튼 인터랙션 스타일]
+   단어 옆에 배치된 발음 재생용 스피커 버튼이 마우스 호버 시 살짝 부풀어 오르는 마이크로 애니메이션을 제공합니다. */
+.btn-speak {
+  transition: transform var(--transition-fast);
+}
 
+.btn-speak:hover {
+  transform: scale(1.18);
+}
 
+.btn-speak:active {
+  transform: scale(0.95);
+}
+
+/* [Comment Policy: 내장 음성 폴백 감지 시 붉은색 점멸 경고 스타일]
+   구글 서버 로드 유실로 2순위 기기 TTS가 기동되면 스피커 색상을 경고용 빨간색으로 깜빡여 시각적 피드백을 전달합니다. */
+.btn-speak.fallback-active {
+  color: var(--color-error) !important;
+  animation: pulse-red 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-red {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scale(1.2);
+    opacity: 1;
+    filter: drop-shadow(0 0 4px var(--color-error));
+  }
+}
+
+/* [Comment Policy: 3D 플립 번역 카드 CSS3 스타일]
+   학생이 단어 카드를 클릭하면 3D y축 회전을 통해 모국어 뜻 카드가 부드럽게 노출되는 애니메이션입니다. */
+.flip-card {
+  background-color: transparent;
+  width: 100%;
+  height: 120px;
+  perspective: 1000px;
+  /* 3D 공간 왜곡 깊이 */
+  margin: 20px auto 10px auto;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+  cursor: pointer;
+}
+
+/* flipped 클래스 추가 시 180도 회전 */
+.flip-card.flipped .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  /* 뒷면 투명화 방지 */
+  backface-visibility: hidden;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  box-sizing: border-box;
+}
+
+/* 카드 뒷면 (가려진 초기 화면): premium 유리질 질감 */
+.flip-card-front {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+  border: 1.5px dashed var(--color-border);
+  color: var(--color-text-secondary);
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.flip-card-front:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+  border-color: var(--color-primary-hover);
+}
+
+.card-cover-pattern {
+  font-size: 1.8rem;
+  margin-bottom: 6px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+  animation: float-q 2s ease-in-out infinite alternate;
+}
+
+@keyframes float-q {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-4px);
+  }
+}
+
+.click-to-reveal {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--color-text-secondary);
+}
+
+/* 카드 앞면 (번역 뜻 노출 면): 180도 회전된 평면 */
+.flip-card-back {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transform: rotateY(180deg);
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.02);
+}
+
+.translation-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* [Comment Policy: 구글 통신 중 상태 표시기 뱃지용 인라인 스피너 스타일]
+   뱃지 전체 영역을 덮도록 설정하고, 뱃지 테두리에 맞추어 정교하게 회전하도록 테두리 굵기와 색상을 맞춤 제어합니다. */
+#status-spinner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  box-sizing: border-box;
+  border-width: 3px;
+  border-color: rgba(255, 255, 255, 0.15);
+  border-top-color: var(--color-primary);
+  pointer-events: none;
+}
