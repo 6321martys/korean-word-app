@@ -98,6 +98,13 @@ async function showWelcomeScreen(user) {
   if (userDisplayId1) userDisplayId1.textContent = user.name;
   if (userDisplayId2) userDisplayId2.textContent = user.name;
 
+  // [Comment Policy: 로그인 시 준비물 체크박스 초기화 처리]
+  // 사용자의 명시적인 요구사항(로그인할 때마다 체크 초기화)에 맞추어 체크박스 상태를 리셋합니다.
+  const chkNotebook = document.getElementById("chk-notebook");
+  const chkPen = document.getElementById("chk-pen");
+  if (chkNotebook) chkNotebook.checked = false;
+  if (chkPen) chkPen.checked = false;
+
   // 유저 권한에 따라 웰컴 배지 스타일링 분기 처리
   userRoleBadge.className = "user-type-badge"; // 클래스 리셋
   userRoleBadge.textContent = "학생";

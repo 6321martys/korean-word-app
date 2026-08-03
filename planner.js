@@ -242,6 +242,10 @@ function updatePlannerUI() {
 
   // 2. 달력 그리드 생성
   renderCalendarGrid();
+
+  // [Comment Policy: 3. 누적 학습 단어수 숫자 박스 동적 렌더링 호출]
+  // 기획서 개편 레이아웃에 포함된 동적 단어 수 렌더링 함수를 달력 UI 갱신 시점에 함께 구동합니다.
+  updateLearningStatus();
 }
 
 /**
@@ -342,5 +346,26 @@ function renderCalendarGrid() {
     }
 
     calendarGrid.appendChild(dayCell);
+  }
+}
+
+/**
+ * [Comment Policy: 학생의 총 학습 완료 단어 개수를 동적으로 계산하고 화면에 렌더링]
+ * 완료(또는 지각 상태인 완료된) 회차 수를 세어 10을 곱하여 총 학습 단어 개수를 구한 뒤,
+ * #word-count-text 엘리먼트의 텍스트로 주입합니다.
+ */
+function updateLearningStatus() {
+  if (!plannerState || !plannerState.words) return;
+
+  // 학습 완료되었거나 출석 기록(attendanceDate)이 존재하는 세션의 총 개수를 필터링합니다.
+  const completedSessions = plannerState.words.filter(
+    w => w.status === "학습 완료" || (w.attendanceDate && w.attendanceDate.trim() !== "")
+  ).length;
+
+  const totalLearnedWords = completedSessions * 10;
+  const wordCountText = document.getElementById("word-count-text");
+  
+  if (wordCountText) {
+    wordCountText.textContent = totalLearnedWords;
   }
 }
