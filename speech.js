@@ -63,10 +63,21 @@ function speakWord(wordText) {
   resetSpeechSynthesis(); // 진행 중인 소리 리셋
   if (!wordText) return;
 
-  const googleUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=ko&client=tw-ob&q=${encodeURIComponent(wordText)}`;
+  // [Comment Policy: 구글 TTS 클라이언트 속성 변경 및 중복 폴백 방지 기법]
+  // client를 tw-ob 대신 더 범용적이고 호환성이 높은 gtx로 변경하여 외부 사이트 스트리밍 시 CORS 유실을 완화합니다.
+  const googleUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=ko&client=gtx&q=${encodeURIComponent(wordText)}`;
   activeAudio = new Audio(googleUrl);
 
   setSpeakButtonActive(false); // 연타 방지 락 기동
+
+  let fallbackTriggered = false;
+  const triggerFallback = () => {
+    if (!fallbackTriggered) {
+      fallbackTriggered = true;
+      console.warn("[TTS] 구글 오디오 스트리밍 실패. 로컬 내장 SpeechSynthesis로 폴백 재생합니다.");
+      speakNativeFallback(wordText);
+    }
+  };
 
   // 정상 재생 종료 시 락 해제
   activeAudio.onended = () => {
@@ -74,13 +85,12 @@ function speakWord(wordText) {
   };
 
   activeAudio.onerror = () => {
-    console.warn("[TTS] 구글 오디오 스트리밍 실패. 로컬 내장 SpeechSynthesis로 폴백 재생합니다.");
-    speakNativeFallback(wordText);
+    triggerFallback();
   };
 
   activeAudio.play().catch(err => {
     console.warn("[TTS] 구글 오디오 자동 재생이 차단되었거나 실패했습니다. 로컬 TTS로 우회합니다.", err);
-    speakNativeFallback(wordText);
+    triggerFallback();
   });
 }
 

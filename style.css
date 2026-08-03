@@ -1186,6 +1186,20 @@ body {
   justify-content: center;
   padding: 15px;
   box-sizing: border-box;
+  /* [Comment Policy: 파이어폭스 등 특정 브라우저 backface-visibility 버그 대응을 위한 opacity 전환 지원] */
+  transition: opacity 0.3s ease, background var(--transition-fast), border-color var(--transition-fast);
+}
+
+/* [Comment Policy: 뒤집히지 않은 일반 상태에서 뒷면 완전히 가림] */
+.flip-card:not(.flipped) .flip-card-back {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* [Comment Policy: 뒤집힌 상태에서 앞면 완전히 가림] */
+.flip-card.flipped .flip-card-front {
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* 카드 뒷면 (가려진 초기 화면): premium 유리질 질감 */
@@ -1193,7 +1207,6 @@ body {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
   border: 1.5px dashed var(--color-border);
   color: var(--color-text-secondary);
-  transition: background var(--transition-fast), border-color var(--transition-fast);
 }
 
 .flip-card-front:hover {
@@ -1231,6 +1244,8 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.08);
   transform: rotateY(180deg);
   box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.02);
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .translation-container {
