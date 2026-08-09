@@ -148,6 +148,11 @@ body {
   display: none;
 }
 
+/* [신규] 공통 요소 숨김 유틸리티 클래스 */
+.hidden {
+  display: none !important;
+}
+
 @keyframes cardFadeIn {
   from {
     opacity: 0;
@@ -609,6 +614,43 @@ body {
   font-size: 15px;
   color: var(--color-text-secondary);
   line-height: 1.6;
+}
+
+/* 정답률 배지 스타일 */
+.accuracy-badge-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.accuracy-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1.5px solid var(--color-border);
+  padding: 6px 18px;
+  border-radius: 20px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.accuracy-badge span {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #22c55e;
+}
+
+/* 70% 미만 경고 점수 테마 */
+.completion-card.warning-score .accuracy-badge span {
+  color: #ef4444;
+}
+
+.completion-card.warning-score .accuracy-badge {
+  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.1);
 }
 
 /* ==========================================================================
@@ -1309,4 +1351,450 @@ body {
   border-color: var(--color-primary);
   background-color: rgba(255, 255, 255, 0.08);
   transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   [신규] 1번 미니게임 (3x3 단어 매칭) 전용 스타일 규칙
+   ========================================================================== */
+
+.minigame-card {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/* 상단 도전 배지 헤더 */
+.minigame-header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.minigame-badge {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 1rem;
+  padding: 6px 14px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(245, 158, 11, 0.35);
+  letter-spacing: -0.5px;
+}
+
+/* 3x3 그리드 레이아웃 */
+.minigame-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* 개별 그리드 셀 */
+.minigame-cell {
+  background: rgba(255, 255, 255, 0.04);
+  border: 2px solid var(--color-border);
+  border-radius: 12px;
+  min-height: 76px;
+  padding: 8px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.minigame-grid-korean .minigame-cell {
+  cursor: default; /* 위쪽 한국어는 직접 클릭 매칭이 아닌 순차 하이라이트 */
+}
+
+.minigame-grid-native .minigame-cell:hover:not(.cell-correct):not(.cell-wrong-flash) {
+  border-color: var(--color-primary);
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+.minigame-cell:active:not(.cell-correct) {
+  transform: scale(0.97);
+}
+
+/* 셀 내부 텍스트 */
+.cell-main-text {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+.cell-sub-text {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #22c55e;
+  line-height: 1.2;
+  margin-top: 4px;
+  word-break: break-word;
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+/* 한국어 현재 도전 순서 하이라이트 (굵은 노란/골드 테두리 + 글로우) */
+.minigame-cell.cell-highlight {
+  border: 3px solid #f59e0b !important;
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.5), inset 0 0 8px rgba(245, 158, 11, 0.2);
+  background: rgba(245, 158, 11, 0.08);
+  transform: scale(1.02);
+  z-index: 2;
+}
+
+/* 정답 완료 상태 (연두색 텍스트 및 테두리, 하단 단어 노출) */
+.minigame-cell.cell-correct {
+  border-color: #22c55e !important;
+  background: rgba(34, 197, 94, 0.12) !important;
+  cursor: default !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.minigame-cell.cell-correct .cell-main-text {
+  color: #22c55e !important;
+}
+
+.minigame-cell.cell-correct .cell-sub-text {
+  opacity: 1;
+  max-height: 40px;
+}
+
+/* 오답 붉은색 점멸 + 흔들림 애니메이션 */
+@keyframes red-flash-shake {
+  0% {
+    border-color: #ef4444;
+    background-color: rgba(239, 68, 68, 0.25);
+    color: #ef4444;
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-5px);
+  }
+  40% {
+    border-color: #ef4444;
+    background-color: rgba(239, 68, 68, 0.35);
+    transform: translateX(5px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    border-color: #ef4444;
+    background-color: rgba(239, 68, 68, 0.25);
+    transform: translateX(4px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.minigame-cell.cell-wrong-flash,
+.quiz-option.cell-wrong-flash,
+.cell-wrong-flash {
+  animation: red-flash-shake 0.45s ease-in-out;
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.6) !important;
+}
+
+.minigame-cell.cell-wrong-flash .cell-main-text,
+.quiz-option.cell-wrong-flash .quiz-option-num,
+.quiz-option.cell-wrong-flash .quiz-option-text {
+  color: #ef4444 !important;
+}
+
+/* 중앙 안내 문구 */
+.minigame-instruction {
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 16px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.minigame-instruction .instruction-icon {
+  font-size: 1.1rem;
+}
+
+/* 하단 네비게이션 버튼 disabled 공통 스타일 */
+.btn-nav:disabled,
+.btn:disabled {
+  opacity: 0.4 !important;
+  cursor: not-allowed !important;
+  filter: grayscale(0.8);
+  pointer-events: none !important;
+}
+
+/* ==========================================================================
+   [신규] 2번 미니게임 (사지선다 객관식 퀴즈) 전용 스타일 규칙
+   ========================================================================== */
+
+.quiz-question-container {
+  margin: 16px 0 8px 0;
+  padding: 0 4px;
+}
+
+.quiz-question-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  line-height: 1.3;
+  margin: 0;
+  word-break: break-word;
+}
+
+/* 4지선다 보기 목록 */
+.quiz-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 20px 0 12px 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* 개별 보기 카드 */
+.quiz-option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 2px solid var(--color-border);
+  border-radius: 12px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.quiz-option:hover:not(.quiz-option-correct):not(.cell-wrong-flash) {
+  border-color: var(--color-primary);
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+.quiz-option:active:not(.quiz-option-correct) {
+  transform: scale(0.98);
+}
+
+/* 보기 번호 (①, ②, ③, ④) */
+.quiz-option-num {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+/* 보기 텍스트 (모국어 단어) */
+.quiz-option-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: 1.3;
+  word-break: break-word;
+  flex: 1;
+}
+
+/* 정답 선택 시 연두색 활성화 */
+.quiz-option.quiz-option-correct {
+  border-color: #22c55e !important;
+  background: rgba(34, 197, 94, 0.15) !important;
+  cursor: default !important;
+  transform: none !important;
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.3);
+}
+
+.quiz-option.quiz-option-correct .quiz-option-num,
+.quiz-option.quiz-option-correct .quiz-option-text {
+  color: #22c55e !important;
+}
+
+/* 정답 피드백 메시지 */
+.quiz-feedback {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #22c55e;
+  text-align: center;
+  margin: 6px 0 14px 0;
+  padding: 8px 12px;
+  background: rgba(34, 197, 94, 0.1);
+  border-radius: 8px;
+  animation: quiz-pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes quiz-pop-in {
+  0% {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ==========================================================================
+   [신규] 3번 미니게임 (한 글자 빈칸 타이핑 퀴즈) 전용 스타일 규칙
+   ========================================================================== */
+
+.blank-quiz-container {
+  margin: 32px 0 20px 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* 문제 번호 및 글자 + 인라인 빈칸 인풋 행 */
+.blank-quiz-word-row {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  line-height: 1.2;
+}
+
+/* 한 글자 입력용 인라인 빈칸 인풋 */
+.blank-input {
+  width: 52px;
+  height: 56px;
+  text-align: center;
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid var(--color-primary);
+  border-radius: 12px;
+  outline: none;
+  transition: all var(--transition-fast);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3), 0 0 10px rgba(100, 108, 255, 0.2);
+  caret-color: #f59e0b;
+  box-sizing: border-box;
+  padding: 0;
+}
+
+.blank-input:focus {
+  border-color: #f59e0b;
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.5);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* 정답 완료 시 연두색 */
+.blank-input.blank-input-correct {
+  border-color: #22c55e !important;
+  background: rgba(34, 197, 94, 0.2) !important;
+  color: #22c55e !important;
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.35) !important;
+  pointer-events: none;
+}
+
+/* 모국어 힌트 텍스트 */
+.blank-hint-native {
+  margin-top: 18px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: hsl(190, 80%, 70%);
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+/* 중앙 정답 확인 버튼 컨테이너 */
+.blank-check-container {
+  display: flex;
+  justify-content: center;
+  margin: 24px 0 14px 0;
+  width: 100%;
+}
+
+.btn-check-answer {
+  min-width: 140px;
+  padding: 12px 28px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(100, 108, 255, 0.3);
+}
+
+/* ==========================================================================
+   [신규] 4번 미니게임 (음성 청취 사지선다 퀴즈) 전용 스타일 규칙
+   ========================================================================== */
+
+.quiz-audio-question-container {
+  margin: 16px 0 8px 0;
+  padding: 0 4px;
+}
+
+.quiz-audio-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.quiz-audio-num {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  line-height: 1;
+}
+
+/* 스피커 음성 재생 버튼 */
+.quiz-audio-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.45);
+  transition: all 0.2s ease;
+  user-select: none;
+  outline: none;
+}
+
+.quiz-audio-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.65);
+  background: linear-gradient(135deg, #34d399 0%, #059669 100%);
+}
+
+.quiz-audio-btn:active {
+  transform: scale(0.94);
+}
+
+.quiz-speaker-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
 }
