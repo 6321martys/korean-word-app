@@ -651,6 +651,8 @@ let miniGame2Questions = [];           // 10개 단어를 무작위로 섞은 �
 let currentMiniGame2QuizIndex = 0;     // 현재 풀고 있는 문제 인덱스 (0 ~ 9)
 let isMiniGame2Animating = false;       // 오답 점멸 중 연타 방지 플래그
 let isMiniGame2CurrentAnswered = false; // 현재 문제 정답 선택 완료 여부
+// [Comment Policy: 2번 미니게임 문항별 정답 기록 캐시]
+let miniGame2AnswersStatus = [];       // 돌아가기 시 정답 상태 복원을 위한 캐시 배열
 
 /**
  * [Comment Policy: 2번 미니게임(사지선다 퀴즈 10문제) 초기화]
@@ -670,6 +672,8 @@ function initMiniGame2() {
   }
 
   currentMiniGame2QuizIndex = 0;
+  // [Comment Policy: 미니게임 시작 시 정답 여부 기록소 초기화]
+  miniGame2AnswersStatus = new Array(miniGame2Questions.length).fill(false);
 
   // 화면 전환: 미니게임 1 숨김 및 미니게임 2 활성화
   if (minigame1Section) {
@@ -701,53 +705,86 @@ function renderMiniGame2Question() {
   const currentTargetWord = miniGame2Questions[currentMiniGame2QuizIndex];
   if (!currentTargetWord) return;
 
+  // [Comment Policy: 돌아가기 대응을 위한 문항 정답 내역 로드]
+  const isAlreadySolved = miniGame2AnswersStatus[currentMiniGame2QuizIndex] === true;
   isMiniGame2Animating = false;
-  isMiniGame2CurrentAnswered = false;
+  isMiniGame2CurrentAnswered = isAlreadySolved;
   accuracyTracker.currentQuestionFailed = false; // 현재 문제 오답 여부 초기화
 
-  // 1. 피드백 메시지 숨김 및 '다음' 버튼 비활성화
+  // 1. 피드백 메시지 설정 및 '다음' 버튼 활성화 상태 복원
   if (minigame2Feedback) {
-    minigame2Feedback.classList.add("hidden");
+    if (isAlreadySolved) {
+      minigame2Feedback.textContent = "🎉 정답입니다!";
+      minigame2Feedback.classList.remove("hidden");
+    } else {
+      minigame2Feedback.classList.add("hidden");
+    }
   }
   if (btnMinigame2Next) {
-    btnMinigame2Next.disabled = true;
+    btnMinigame2Next.disabled = !isAlreadySolved;
   }
 
-  // 2. 문제 번호 및 한국어 단어 표시 (예: 1. 단어명)
+  const questionNumber = currentMiniGame2QuizIndex + 1;
+  const isInverted = currentMiniGame2QuizIndex >= 5; // 6번~10번 문제는 모국어와 한국어 반전
+
+  // 2. 문제 번호 및 질문 텍스트 표시
   if (minigame2QuestionTitle) {
-    const questionNumber = currentMiniGame2QuizIndex + 1;
-    minigame2QuestionTitle.textContent = `${questionNumber}. ${cleanWord(currentTargetWord.word)}`;
-  }
-
-  // 3. 정답 모국어 단어
-  const correctTranslation = getWordTranslation(currentTargetWord, userLang);
-
-  // 4. 오답 모국어 3개 후보 추출 (중복 제거 및 정답 단어 제외)
-  const candidateWords = (wordDatabase && wordDatabase.length >= 4) ? wordDatabase : currentStudyWords;
-  const wrongOptions = [];
-  const usedTranslations = new Set([correctTranslation]);
-
-  // 후보 단어 셔플
-  const shuffledCandidates = [...candidateWords].sort(() => Math.random() - 0.5);
-
-  for (const w of shuffledCandidates) {
-    const trans = getWordTranslation(w, userLang);
-    if (trans && trans !== "Translation not available" && !usedTranslations.has(trans)) {
-      usedTranslations.add(trans);
-      wrongOptions.push(trans);
-      if (wrongOptions.length === 3) break;
+    if (isInverted) {
+      // [Comment Policy: 6번부터는 문제를 모국어로 표시]
+      minigame2QuestionTitle.textContent = `${questionNumber}. ${getWordTranslation(currentTargetWord, userLang)}`;
+    } else {
+      // [Comment Policy: 1~5번은 문제를 한국어로 표시]
+      minigame2QuestionTitle.textContent = `${questionNumber}. ${cleanWord(currentTargetWord.word)}`;
     }
   }
 
-  // 만약 전체 DB 부족 시 기본 더미 보강 (비정상 방지)
-  while (wrongOptions.length < 3) {
-    const dummy = `오답 단어 ${wrongOptions.length + 1}`;
-    wrongOptions.push(dummy);
+  // 3. 정답 텍스트 및 보기 후보 추출
+  let correctText;
+  const wrongOptions = [];
+  const candidateWords = (wordDatabase && wordDatabase.length >= 4) ? wordDatabase : currentStudyWords;
+  const shuffledCandidates = [...candidateWords].sort(() => Math.random() - 0.5);
+
+  if (isInverted) {
+    // [Comment Policy: 6~10번 - 정답 및 오답 보기를 한국어 단어로 구성]
+    correctText = cleanWord(currentTargetWord.word);
+    const usedKoreans = new Set([correctText]);
+
+    for (const w of shuffledCandidates) {
+      const trans = cleanWord(w.word);
+      if (trans && trans !== correctText && !usedKoreans.has(trans)) {
+        usedKoreans.add(trans);
+        wrongOptions.push(trans);
+        if (wrongOptions.length === 3) break;
+      }
+    }
+    // 오답 보강
+    while (wrongOptions.length < 3) {
+      const dummy = `오답 단어 ${wrongOptions.length + 1}`;
+      wrongOptions.push(dummy);
+    }
+  } else {
+    // [Comment Policy: 1~5번 - 정답 및 오답 보기를 모국어 번역으로 구성]
+    correctText = getWordTranslation(currentTargetWord, userLang);
+    const usedTranslations = new Set([correctText]);
+
+    for (const w of shuffledCandidates) {
+      const trans = getWordTranslation(w, userLang);
+      if (trans && trans !== "Translation not available" && !usedTranslations.has(trans)) {
+        usedTranslations.add(trans);
+        wrongOptions.push(trans);
+        if (wrongOptions.length === 3) break;
+      }
+    }
+    // 오답 보강
+    while (wrongOptions.length < 3) {
+      const dummy = `오답 단어 ${wrongOptions.length + 1}`;
+      wrongOptions.push(dummy);
+    }
   }
 
   // 5. 보기 4개 구성 (정답 1개 + 오답 3개) 및 무작위 셔플
   const options = [
-    { isCorrect: true, text: correctTranslation },
+    { isCorrect: true, text: correctText },
     { isCorrect: false, text: wrongOptions[0] },
     { isCorrect: false, text: wrongOptions[1] },
     { isCorrect: false, text: wrongOptions[2] }
@@ -778,6 +815,11 @@ function renderMiniGame2Question() {
       optionEl.appendChild(numEl);
       optionEl.appendChild(textEl);
 
+      // [Comment Policy: 정답 상태 복원 시 녹색 하이라이트 주입]
+      if (isAlreadySolved && opt.isCorrect) {
+        optionEl.classList.add("quiz-option-correct");
+      }
+
       // 보기 클릭 이벤트 바인딩
       optionEl.onclick = () => handleMiniGame2OptionClick(optionEl, opt.isCorrect, currentTargetWord);
 
@@ -800,6 +842,8 @@ function handleMiniGame2OptionClick(optionEl, isCorrect, targetWord) {
   if (isCorrect) {
     // [정답 처리]
     isMiniGame2CurrentAnswered = true;
+    // [Comment Policy: 돌아가기 복원을 위해 문제 정답 처리 저장]
+    miniGame2AnswersStatus[currentMiniGame2QuizIndex] = true;
 
     // 1차 시도에 바로 맞춘 경우 정답수 누적
     if (!accuracyTracker.currentQuestionFailed) {
@@ -845,6 +889,8 @@ let miniGame3BlankInfo = { targetChar: "", blankIndex: 0, word: "", wordObj: nul
 let isMiniGame3Answered = false;       // 현재 문제 정답 확인 완료 여부
 let isMiniGame3WrongOccurred = false;  // 오답 발생 후 인풋 포커스 시 자동 클리어용 플래그
 let isMiniGame3CheckAnimating = false; // 오답 점멸 중 중복 클릭 방지 플래그
+// [Comment Policy: 3번 미니게임 문항별 정답 기록 캐시]
+let miniGame3AnswersStatus = [];       // 돌아가기 시 정답 상태 복원을 위한 캐시 배열
 
 /**
  * [Comment Policy: 3번 미니게임(한 글자 빈칸 타이핑 퀴즈) 초기화]
@@ -864,6 +910,8 @@ function initMiniGame3() {
   }
 
   currentMiniGame3QuizIndex = 0;
+  // [Comment Policy: 미니게임 시작 시 정답 여부 기록소 초기화]
+  miniGame3AnswersStatus = new Array(miniGame3Questions.length).fill(false);
 
   // 화면 전환: 미니게임 2 숨김 및 미니게임 3 활성화
   if (minigame1Section) {
@@ -899,25 +947,32 @@ function renderMiniGame3Question() {
   const currentTargetWord = miniGame3Questions[currentMiniGame3QuizIndex];
   if (!currentTargetWord) return;
 
-  isMiniGame3Answered = false;
+  // [Comment Policy: 돌아가기 대응을 위한 문항 정답 내역 로드]
+  const isAlreadySolved = miniGame3AnswersStatus[currentMiniGame3QuizIndex] === true;
+  isMiniGame3Answered = isAlreadySolved;
   isMiniGame3WrongOccurred = false;
   isMiniGame3CheckAnimating = false;
   accuracyTracker.currentQuestionFailed = false; // 현재 문제 오답 여부 초기화
 
-  // 1. 피드백 메시지 숨김 및 '다음' 버튼 비활성화
+  // 1. 피드백 메시지 설정 및 '다음' 버튼 활성화 상태 복원
   if (minigame3Feedback) {
-    minigame3Feedback.classList.add("hidden");
+    if (isAlreadySolved) {
+      minigame3Feedback.textContent = "🎉 정답입니다!";
+      minigame3Feedback.classList.remove("hidden");
+    } else {
+      minigame3Feedback.classList.add("hidden");
+    }
   }
   if (btnMinigame3Next) {
-    btnMinigame3Next.disabled = true;
+    btnMinigame3Next.disabled = !isAlreadySolved;
   }
   if (btnMinigame3Check) {
-    btnMinigame3Check.disabled = false;
+    btnMinigame3Check.disabled = isAlreadySolved;
   }
 
   // 2. 단어 텍스트 정제 및 빈칸 글자 선정 (특수문자 및 맨 끝 '다' 제외)
   const cleanKo = cleanWord(currentTargetWord.word);
-  
+
   // 1) 순수 한글 완성형 글자([가-힣]) 인덱스만 1차 수집 (특수문자, 괄호, 공백 등 자동 제외)
   const hangulCharIndices = [];
   for (let i = 0; i < cleanKo.length; i++) {
@@ -979,6 +1034,13 @@ function renderMiniGame3Question() {
     inputEl.autocapitalize = "off";
     inputEl.spellcheck = false;
 
+    // [Comment Policy: 정답 상태 복원 시 인풋 채우고 읽기 전용화]
+    if (isAlreadySolved) {
+      inputEl.value = targetChar;
+      inputEl.classList.add("blank-input-correct");
+      inputEl.readOnly = true;
+    }
+
     // [편의성 패치: 오답 확인 후 인풋 클릭 시 기존 입력 자동 삭제]
     inputEl.onfocus = () => {
       if (isMiniGame3WrongOccurred && !isMiniGame3Answered) {
@@ -1032,6 +1094,8 @@ function checkMiniGame3Answer() {
   // [정답 판정]
   if (userChar === miniGame3BlankInfo.targetChar) {
     isMiniGame3Answered = true;
+    // [Comment Policy: 돌아가기 복원을 위해 문제 정답 처리 저장]
+    miniGame3AnswersStatus[currentMiniGame3QuizIndex] = true;
 
     // 1차 시도에 바로 맞춘 경우 정답수 누적
     if (!accuracyTracker.currentQuestionFailed) {
@@ -1082,6 +1146,8 @@ let miniGame4Questions = [];           // 10개 단어를 무작위로 섞은 �
 let currentMiniGame4QuizIndex = 0;     // 현재 풀고 있는 문제 인덱스 (0 ~ 9)
 let isMiniGame4Animating = false;       // 오답 점멸 중 중복 클릭 방지 플래그
 let isMiniGame4CurrentAnswered = false; // 현재 문제 정답 선택 완료 여부
+// [Comment Policy: 4번 미니게임 문항별 정답 기록 캐시]
+let miniGame4AnswersStatus = [];       // 돌아가기 시 정답 상태 복원을 위한 캐시 배열
 
 /**
  * [Comment Policy: 4번 미니게임(음성 청취 사지선다 퀴즈) 초기화]
@@ -1101,6 +1167,8 @@ function initMiniGame4() {
   }
 
   currentMiniGame4QuizIndex = 0;
+  // [Comment Policy: 미니게임 시작 시 정답 여부 기록소 초기화]
+  miniGame4AnswersStatus = new Array(miniGame4Questions.length).fill(false);
 
   // 화면 전환: 미니게임 3 숨김 및 미니게임 4 활성화
   if (minigame1Section) {
@@ -1140,16 +1208,23 @@ function renderMiniGame4Question() {
   const currentTargetWord = miniGame4Questions[currentMiniGame4QuizIndex];
   if (!currentTargetWord) return;
 
+  // [Comment Policy: 돌아가기 대응을 위한 문항 정답 내역 로드]
+  const isAlreadySolved = miniGame4AnswersStatus[currentMiniGame4QuizIndex] === true;
   isMiniGame4Animating = false;
-  isMiniGame4CurrentAnswered = false;
+  isMiniGame4CurrentAnswered = isAlreadySolved;
   accuracyTracker.currentQuestionFailed = false; // 현재 문제 오답 여부 초기화
 
-  // 1. 피드백 메시지 숨김 및 '다음' 버튼 비활성화
+  // 1. 피드백 메시지 설정 및 '다음' 버튼 활성화 상태 복원
   if (minigame4Feedback) {
-    minigame4Feedback.classList.add("hidden");
+    if (isAlreadySolved) {
+      minigame4Feedback.textContent = "🎉 정답입니다!";
+      minigame4Feedback.classList.remove("hidden");
+    } else {
+      minigame4Feedback.classList.add("hidden");
+    }
   }
   if (btnMinigame4Next) {
-    btnMinigame4Next.disabled = true;
+    btnMinigame4Next.disabled = !isAlreadySolved;
   }
 
   // 2. 문제 번호 표시 (예: 1.)
@@ -1227,6 +1302,11 @@ function renderMiniGame4Question() {
       optionEl.appendChild(numEl);
       optionEl.appendChild(textEl);
 
+      // [Comment Policy: 정답 상태 복원 시 녹색 하이라이트 주입]
+      if (isAlreadySolved && opt.isCorrect) {
+        optionEl.classList.add("quiz-option-correct");
+      }
+
       // 보기 클릭 이벤트 바인딩
       optionEl.onclick = () => handleMiniGame4OptionClick(optionEl, opt.isCorrect, currentTargetWord);
 
@@ -1249,6 +1329,8 @@ function handleMiniGame4OptionClick(optionEl, isCorrect, targetWord) {
   if (isCorrect) {
     // [정답 처리]
     isMiniGame4CurrentAnswered = true;
+    // [Comment Policy: 돌아가기 복원을 위해 문제 정답 처리 저장]
+    miniGame4AnswersStatus[currentMiniGame4QuizIndex] = true;
 
     // 1차 시도에 바로 맞춘 경우 정답수 누적
     if (!accuracyTracker.currentQuestionFailed) {
@@ -1315,23 +1397,23 @@ function renderCompletionScreen() {
     if (completionIcon) completionIcon.textContent = "🏆";
     if (completionTitle) completionTitle.textContent = "오늘 단어 학습 성공!!";
     if (completionMsg) {
-      completionMsg.innerHTML = "축하합니다! 훌륭한 성적으로 오늘의 10개 단어를 완벽하게 마스터했습니다.<br>매일 꾸준히 학습하면 한국어 실력이 더욱 향상됩니다.";
+      completionMsg.innerHTML = "축하합니다! 훌륭한 성적으로 오늘의 10개 단어를 완벽하게 마스터했습니다.";
     }
     if (btnGoMenu) btnGoMenu.disabled = false;
   } else if (accuracyPercent >= 80) {
     // 80 ~ 89%
     if (completionIcon) completionIcon.textContent = "✨";
-    if (completionTitle) completionTitle.textContent = "안타깝습니다. 다시 할까요? 그만 할까요?";
+    if (completionTitle) completionTitle.textContent = "안타깝습니다.<br>다시 할까요? 그만 할까요?";
     if (completionMsg) {
-      completionMsg.innerHTML = "아쉽게 몇 문제를 놓쳤습니다.<br>복습을 원하시면 '학습 다시하기'를, 완료하려면 '메인 메뉴로'를 누르세요.";
+      completionMsg.innerHTML = "복습을 원하시면 '학습 다시하기'를,<br>완료하려면 '메인 메뉴로'를 누르세요.";
     }
     if (btnGoMenu) btnGoMenu.disabled = false;
   } else if (accuracyPercent >= 70) {
     // 70 ~ 79%
     if (completionIcon) completionIcon.textContent = "💪";
-    if (completionTitle) completionTitle.textContent = "안타깝습니다. 다시 해야 합니다.";
+    if (completionTitle) completionTitle.textContent = "안타깝습니다.<br>다시 해야 합니다.";
     if (completionMsg) {
-      completionMsg.innerHTML = "목표 정답률(80% 이상)에 도달하지 못했습니다.<br>더 나은 실력을 위해 다시 한번 학습해보는 것을 강력히 권장합니다.";
+      completionMsg.innerHTML = "목표 정답률(80% 이상)에 도달하지 못했습니다.";
     }
     if (btnGoMenu) btnGoMenu.disabled = false;
   } else {
@@ -1340,7 +1422,7 @@ function renderCompletionScreen() {
     if (completionIcon) completionIcon.textContent = "⚠️";
     if (completionTitle) completionTitle.textContent = "처음부터 다시 해야 합니다.";
     if (completionMsg) {
-      completionMsg.innerHTML = "정답률이 70% 미만입니다.<br>단어를 더 확실히 암기하기 위해 처음부터 다시 학습을 완료해야 합니다.";
+      completionMsg.innerHTML = "정답률이 70% 미만입니다.";
     }
     // '메인 메뉴로' 버튼 비활성화 (다시하기만 강제)
     if (btnGoMenu) {
@@ -1645,7 +1727,7 @@ document.addEventListener("DOMContentLoaded", () => {
         studySection.classList.remove("active");
         welcomeSection.classList.remove("hidden");
         welcomeSection.classList.add("active");
-        
+
         // 플래너 달력 상태 리로드
         // [Comment Policy: active_user 보관소를 sessionStorage로 변경]
         const activeUser = JSON.parse(sessionStorage.getItem("active_user"));
@@ -1703,19 +1785,26 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
-  // [신규] 2번 미니게임 '돌아가기' 버튼 바인딩 (1번 미니게임으로 복귀)
+  // [신규] 2번 미니게임 '돌아가기' 버튼 바인딩 (문제 번호 -1 또는 1번 미니게임으로 복귀)
   if (btnMinigame2Back) {
     btnMinigame2Back.onclick = (e) => {
       e.preventDefault();
       resetSpeechSynthesis();
 
-      if (minigame2Section) {
-        minigame2Section.classList.add("hidden");
-        minigame2Section.classList.remove("active");
-      }
-      if (minigame1Section) {
-        minigame1Section.classList.remove("hidden");
-        minigame1Section.classList.add("active");
+      if (currentMiniGame2QuizIndex > 0) {
+        // 문제 번호 수만 -1하고 문항 복원 출력
+        currentMiniGame2QuizIndex--;
+        renderMiniGame2Question();
+      } else {
+        // 1번 문제인 경우 이전 1번 미니게임으로 돌아감
+        if (minigame2Section) {
+          minigame2Section.classList.add("hidden");
+          minigame2Section.classList.remove("active");
+        }
+        if (minigame1Section) {
+          minigame1Section.classList.remove("hidden");
+          minigame1Section.classList.add("active");
+        }
       }
     };
   }
@@ -1746,19 +1835,28 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
-  // [신규] 3번 미니게임 '돌아가기' 버튼 바인딩 (2번 미니게임으로 복귀)
+  // [신규] 3번 미니게임 '돌아가기' 버튼 바인딩 (문제 번호 -1 또는 2번 미니게임으로 복귀)
   if (btnMinigame3Back) {
     btnMinigame3Back.onclick = (e) => {
       e.preventDefault();
       resetSpeechSynthesis();
 
-      if (minigame3Section) {
-        minigame3Section.classList.add("hidden");
-        minigame3Section.classList.remove("active");
-      }
-      if (minigame2Section) {
-        minigame2Section.classList.remove("hidden");
-        minigame2Section.classList.add("active");
+      if (currentMiniGame3QuizIndex > 0) {
+        // 문제 번호 수만 -1하고 문항 복원 출력
+        currentMiniGame3QuizIndex--;
+        renderMiniGame3Question();
+      } else {
+        // 3번 미니게임의 1번 문항에서 돌아가면 2번 미니게임의 마지막 문항(index 9)으로 이동
+        currentMiniGame2QuizIndex = miniGame2Questions.length - 1;
+        if (minigame3Section) {
+          minigame3Section.classList.add("hidden");
+          minigame3Section.classList.remove("active");
+        }
+        if (minigame2Section) {
+          minigame2Section.classList.remove("hidden");
+          minigame2Section.classList.add("active");
+        }
+        renderMiniGame2Question();
       }
     };
   }
@@ -1781,19 +1879,28 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
-  // [신규] 4번 미니게임 '돌아가기' 버튼 바인딩 (3번 미니게임으로 복귀)
+  // [신규] 4번 미니게임 '돌아가기' 버튼 바인딩 (문제 번호 -1 또는 3번 미니게임으로 복귀)
   if (btnMinigame4Back) {
     btnMinigame4Back.onclick = (e) => {
       e.preventDefault();
       resetSpeechSynthesis();
 
-      if (minigame4Section) {
-        minigame4Section.classList.add("hidden");
-        minigame4Section.classList.remove("active");
-      }
-      if (minigame3Section) {
-        minigame3Section.classList.remove("hidden");
-        minigame3Section.classList.add("active");
+      if (currentMiniGame4QuizIndex > 0) {
+        // 문제 번호 수만 -1하고 문항 복원 출력
+        currentMiniGame4QuizIndex--;
+        renderMiniGame4Question();
+      } else {
+        // 4번 미니게임의 1번 문항에서 돌아가면 3번 미니게임의 마지막 문항(index 9)으로 이동
+        currentMiniGame3QuizIndex = miniGame3Questions.length - 1;
+        if (minigame4Section) {
+          minigame4Section.classList.add("hidden");
+          minigame4Section.classList.remove("active");
+        }
+        if (minigame3Section) {
+          minigame3Section.classList.remove("hidden");
+          minigame3Section.classList.add("active");
+        }
+        renderMiniGame3Question();
       }
     };
   }
@@ -1875,6 +1982,48 @@ document.addEventListener("DOMContentLoaded", () => {
       renderCurrentWord();
     };
   }
+
+  // [Comment Policy: 미니게임 건너뛰기 디버그 단축키 연동]
+  // Ctrl 키를 누른 채 .minigame-badge 요소를 클릭하면 해당 단계를 즉시 패스하며 다음 버튼을 활성화합니다.
+  // 이 우회 방식으로 스킵된 문항은 성적 합산 점수에 누적되지 않도록(오답 처리) 설계합니다.
+  document.addEventListener("click", (e) => {
+    if (e.ctrlKey && e.target && e.target.classList.contains("minigame-badge")) {
+      e.preventDefault();
+      console.log("[디버그 모드] 미니게임 건너뛰기 감지 - 현재 문항 오답 처리");
+
+      if (minigame1Section && minigame1Section.classList.contains("active")) {
+        // 1번 미니게임 (9개 카드 매칭):
+        if (btnMinigame1Next) {
+          btnMinigame1Next.disabled = false;
+          btnMinigame1Next.focus();
+        }
+      } else if (minigame2Section && minigame2Section.classList.contains("active")) {
+        // 2번 미니게임 (객관식 10문제):
+        accuracyTracker.currentQuestionFailed = true;
+        isMiniGame2CurrentAnswered = true;
+        if (btnMinigame2Next) {
+          btnMinigame2Next.disabled = false;
+          btnMinigame2Next.focus();
+        }
+      } else if (minigame3Section && minigame3Section.classList.contains("active")) {
+        // 3번 미니게임 (빈칸 타이핑 10문제):
+        accuracyTracker.currentQuestionFailed = true;
+        isMiniGame3Answered = true;
+        if (btnMinigame3Next) {
+          btnMinigame3Next.disabled = false;
+          btnMinigame3Next.focus();
+        }
+      } else if (minigame4Section && minigame4Section.classList.contains("active")) {
+        // 4번 미니게임 (듣고 사지선다 10문제):
+        accuracyTracker.currentQuestionFailed = true;
+        isMiniGame4Answered = true;
+        if (btnMinigame4Next) {
+          btnMinigame4Next.disabled = false;
+          btnMinigame4Next.focus();
+        }
+      }
+    }
+  });
 
   // [Comment Policy: 비활동 및 앱 종료 감지를 위한 시간 기반 세션 만료 시스템]
   // 모바일 브라우저의 백그라운드 탭 복원(세션스토리지 유지) 특성을 우회하기 위해,
