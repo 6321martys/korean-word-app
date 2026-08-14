@@ -1488,6 +1488,8 @@ document.addEventListener("DOMContentLoaded", () => {
           // [Comment Policy: active_user 보관소를 sessionStorage로 변경]
           sessionStorage.setItem("active_user", JSON.stringify(authResult));
           sessionStorage.setItem("last_logged_in_id", studentId); // 자동완성용 백업
+          // [Comment Policy: 로그인 성공 즉시 세션 시작/마지막 활동 시간을 로컬스토리지에 저장]
+          localStorage.setItem("session_last_active", Date.now().toString());
 
           // 대시보드 또는 웰컴 화면 출력
           await showWelcomeScreen(authResult);
@@ -1518,6 +1520,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // [Comment Policy: active_user 보관소를 sessionStorage로 변경]
       sessionStorage.removeItem("active_user");
+      // [Comment Policy: 로그아웃 시 타임아웃 검증용 세션 활동 시간 초기화]
+      localStorage.removeItem("session_last_active");
 
       welcomeSection.classList.add("hidden");
       welcomeSection.classList.remove("active");
@@ -1545,6 +1549,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // [Comment Policy: active_user 보관소를 sessionStorage로 변경]
       sessionStorage.removeItem("active_user");
+      // [Comment Policy: 로그아웃 시 타임아웃 검증용 세션 활동 시간 초기화]
+      localStorage.removeItem("session_last_active");
 
       const teacherSection = document.getElementById("teacher-section");
       if (teacherSection) {
@@ -1847,7 +1853,58 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
-  // [Comment Policy: 자동 로그인 세션 복구 및 학번 복원 자동완성]
+  // [Comment Policy: 비활동 및 앱 종료 감지를 위한 시간 기반 세션 만료 시스템]
+  // 모바일 브라우저의 백그라운드 탭 복원(세션스토리지 유지) 특성을 우회하기 위해,
+  // 60분(60 * 60 * 1000 ms) 동안 아무런 활동이 없거나 앱 종료 후 60분이 지난 경우 세션을 만료시킵니다.
+  const SESSION_TIMEOUT_MS = 60 * 60 * 1000;
+
+  function checkSessionTimeout() {
+    const user = sessionStorage.getItem("active_user");
+    if (!user) return;
+
+    const lastActive = localStorage.getItem("session_last_active");
+    const now = Date.now();
+
+    if (lastActive && (now - parseInt(lastActive, 10) > SESSION_TIMEOUT_MS)) {
+      // 세션 만료 시 데이터 삭제 후 화면 갱신으로 로그인 상태 해제 유도
+      sessionStorage.removeItem("active_user");
+      localStorage.removeItem("session_last_active");
+      window.location.reload();
+    } else {
+      localStorage.setItem("session_last_active", now.toString());
+    }
+  }
+
+  // 활동 시간 갱신 헬퍼
+  function updateActiveTime() {
+    if (sessionStorage.getItem("active_user")) {
+      localStorage.setItem("session_last_active", Date.now().toString());
+    }
+  }
+
+  // 공부하는 도중 비활동 만료되는 문제를 예방하기 위해 화면이 켜져 있는 동안 15초 간격으로 시간 갱신
+  setInterval(() => {
+    if (document.visibilityState === "visible") {
+      updateActiveTime();
+    }
+  }, 15000);
+
+  // 사용자 터치, 클릭, 스크롤, 키다운 등의 이벤트 시 즉시 갱신
+  ["click", "touchstart", "keydown", "scroll"].forEach(event => {
+    document.addEventListener(event, updateActiveTime, { passive: true });
+  });
+
+  // 백그라운드에서 다시 웹 화면으로 복귀 시 만료 여부 판정
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      checkSessionTimeout();
+    }
+  });
+
+  // 1. 초기 실행 시 세션 만료 체크
+  checkSessionTimeout();
+
+  // 2. [Comment Policy: 자동 로그인 세션 복구 및 학번 복원 자동완성]
   // [Comment Policy: active_user 보관소를 sessionStorage로 변경]
   const activeUser = JSON.parse(sessionStorage.getItem("active_user"));
   const lastLoggedInId = sessionStorage.getItem("last_logged_in_id");

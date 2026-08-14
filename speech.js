@@ -55,77 +55,36 @@ function resetSpeechSynthesis() {
 }
 
 /**
- * [Comment Policy: 하이브리드 발음 재생 함수 (구글 TTS 최우선)]
- * 일관성 있는 발음 전달을 위해 구글 온라인 발음(MP3)을 1순위로 1회 낭독하며, 
- * 오프라인 등의 오류로 로딩 실패 시 2순위 브라우저 내장 음성합성(SpeechSynthesis)으로 즉시 폴백(우회)합니다.
+ * [Comment Policy: 구글 온라인 고품질 음성 재생 함수 (로컬 저품질 TTS 미사용)]
+ * 사용자 요청에 따라 저품질 로컬 SpeechSynthesis 폴백을 완전히 배제하고,
+ * 오직 구글 온라인 발음 스트리밍(MP3)만을 사용하여 일관성 있는 고품질 발음을 전달합니다.
  */
 function speakWord(wordText) {
   resetSpeechSynthesis(); // 진행 중인 소리 리셋
   if (!wordText) return;
 
-  // [Comment Policy: 구글 TTS 클라이언트 속성 변경 및 중복 폴백 방지 기법]
+  // [Comment Policy: 구글 TTS 클라이언트 속성 변경]
   // client를 tw-ob 대신 더 범용적이고 호환성이 높은 gtx로 변경하여 외부 사이트 스트리밍 시 CORS 유실을 완화합니다.
   const googleUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=ko&client=gtx&q=${encodeURIComponent(wordText)}`;
   activeAudio = new Audio(googleUrl);
 
-  setSpeakButtonActive(false); // 연타 방지 락 기동
-
-  let fallbackTriggered = false;
-  const triggerFallback = () => {
-    if (!fallbackTriggered) {
-      fallbackTriggered = true;
-      console.warn("[TTS] 구글 오디오 스트리밍 실패. 로컬 내장 SpeechSynthesis로 폴백 재생합니다.");
-      speakNativeFallback(wordText);
-    }
-  };
+  setSpeakButtonActive(false); // 재생 연타 방지 락 기동
 
   // 정상 재생 종료 시 락 해제
   activeAudio.onended = () => {
     setSpeakButtonActive(true);
   };
 
+  // 구글 오디오 스트리밍 실패 시, 저품질 폴백을 태우지 않고 락만 해제합니다.
   activeAudio.onerror = () => {
-    triggerFallback();
+    console.warn("[TTS] 구글 오디오 스트리밍에 실패하여 재생을 중단합니다. (로컬 TTS 폴백 적용 안 됨)");
+    setSpeakButtonActive(true);
   };
 
   activeAudio.play().catch(err => {
-    console.warn("[TTS] 구글 오디오 자동 재생이 차단되었거나 실패했습니다. 로컬 TTS로 우회합니다.", err);
-    triggerFallback();
-  });
-}
-
-/**
- * [Comment Policy: 로컬 내장 SpeechSynthesis 음성 낭독 (2순위 폴백)]
- * 구글 온라인 오디오 재생이 유실되거나 실패 시 로컬 음성 합성 엔진으로 0.8배속 1회 재생합니다.
- * 이때 사용자에게 붉은색 깜빡임 피드백(fallback-active 클래스)을 결합 제공합니다.
- */
-function speakNativeFallback(wordText) {
-  const btnSpeak = document.getElementById("btn-speak");
-  if (btnSpeak) {
-    btnSpeak.classList.add("fallback-active"); // 빨간 경고색 점멸 클래스 주입
-  }
-
-  if (window.speechSynthesis) {
-    const utterance = new SpeechSynthesisUtterance(wordText);
-    utterance.lang = "ko-KR";
-    utterance.rate = 0.8; // 천천히 따라 읽을 수 있게 0.8배속 지정
-
-    utterance.onend = () => {
-      setSpeakButtonActive(true); // 낭독 완료 후 락 해제
-      if (btnSpeak) btnSpeak.classList.remove("fallback-active");
-    };
-
-    utterance.onerror = () => {
-      setSpeakButtonActive(true);
-      if (btnSpeak) btnSpeak.classList.remove("fallback-active");
-    };
-
-    window.speechSynthesis.speak(utterance);
-  } else {
-    // 음성 합성 마저 미지원 시 락 즉시 복구
+    console.warn("[TTS] 구글 오디오 자동 재생이 차단되었거나 실패했습니다.", err);
     setSpeakButtonActive(true);
-    if (btnSpeak) btnSpeak.classList.remove("fallback-active");
-  }
+  });
 }
 
 /**
