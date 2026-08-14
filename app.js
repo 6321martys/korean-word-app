@@ -289,6 +289,23 @@ function parseLocalCsv(text) {
  * @param {number} session
  */
 function startStudySessionForDay(dayLabel, session) {
+  // [Comment Policy: 준비물 체크박스 필수 체크 검증]
+  // 단어공책(chk-notebook)과 볼펜(chk-pen) 체크박스가 둘 다 체크되어 있는지 확인하고,
+  // 하나라도 체크되어 있지 않다면 경고 토스트 팝업을 중앙에 표시하며 진행을 전면 차단합니다.
+  const chkNotebook = document.getElementById("chk-notebook");
+  const chkPen = document.getElementById("chk-pen");
+  const isNotebookChecked = chkNotebook ? chkNotebook.checked : false;
+  const isPenChecked = chkPen ? chkPen.checked : false;
+
+  if (!isNotebookChecked || !isPenChecked) {
+    if (typeof showToast === "function") {
+      showToast("단어공책과 볼펜을 준비하고 체크 표시를 하십시오.");
+    } else {
+      alert("단어공책과 볼펜을 준비하고 체크 표시를 하십시오.");
+    }
+    return;
+  }
+
   currentSelectedDay = dayLabel;
   currentSelectedSession = session;
 
@@ -309,6 +326,12 @@ function startStudySessionForDay(dayLabel, session) {
   if (currentStudyWords.length === 0) {
     alert("해당 회차에 배정된 단어가 없습니다.");
     return;
+  }
+
+  // [Comment Policy: 10단어 음성 일괄 프리로드 기동]
+  // 단어 학습을 시작하는 시점에 10단어의 구글 TTS 음성을 백그라운드에 미리 버퍼링해 둡니다.
+  if (typeof preloadSessionAudios === "function") {
+    preloadSessionAudios(currentStudyWords);
   }
 
   currentWordIndex = 0;

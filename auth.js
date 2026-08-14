@@ -9,8 +9,16 @@
  * @returns {Promise<object|null>}
  */
 async function verifyUserWithGoogleSheet(studentId) {
+  // [Comment Policy: 클라이언트 현지 날짜 파라미터 전달]
+  // 주말(토, 일) 로그인 및 서버 시차 보정을 위해 브라우저의 현지 날짜(YYYY-MM-DD)를 파라미터로 함께 전송합니다.
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const localDateStr = `${year}-${month}-${day}`;
+
   // 캐시 방지를 위한 타임스탬프 파라미터 포함하여 요청 전송
-  const requestUrl = `${GOOGLE_SCRIPT_URL}?id=${encodeURIComponent(studentId)}&_=${Date.now()}`;
+  const requestUrl = `${GOOGLE_SCRIPT_URL}?id=${encodeURIComponent(studentId)}&clientDate=${localDateStr}&_=${Date.now()}`;
 
   try {
     showConnectionLoading(); // 구글 서버 통신 중 뱃지 로딩 시작
@@ -128,7 +136,15 @@ async function showWelcomeScreen(user) {
  * @returns {Promise<boolean>}
  */
 async function registerPlannerWithGoogleSheet(studentId, level) {
-  const requestUrl = `${GOOGLE_SCRIPT_URL}?action=registerPlanner&id=${encodeURIComponent(studentId)}&level=${encodeURIComponent(level)}&_=${Date.now()}`;
+  // [Comment Policy: 클라이언트 현지 날짜 파라미터 전달]
+  // 플래너 생성 시 서버 시차에 영향을 받지 않고 주말 차단을 적용하기 위해 브라우저의 현지 날짜를 백엔드에 보냅니다.
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const localDateStr = `${year}-${month}-${day}`;
+
+  const requestUrl = `${GOOGLE_SCRIPT_URL}?action=registerPlanner&id=${encodeURIComponent(studentId)}&level=${encodeURIComponent(level)}&clientDate=${localDateStr}&_=${Date.now()}`;
   try {
     showConnectionLoading();
     const response = await fetch(requestUrl);

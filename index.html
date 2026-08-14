@@ -1,21 +1,25 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>한국어 단어 학습기 - 로그인</title>
-  
+
   <!-- SEO 메타 태그 정의 -->
   <meta name="description" content="다국어 학생들을 위한 모던 한국어 단어 학습기 로그인 화면입니다.">
-  
+
   <!-- 구글 폰트 로드: 영문 Inter 및 한글 Noto Sans KR 적용으로 가독성 향상 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap"
+    rel="stylesheet">
+
   <!-- 외부 스타일시트 및 스크립트 연결 -->
   <link rel="stylesheet" href="style.css?v=1.0.3">
 </head>
+
 <body>
   <!-- 배경 애니메이션 효과용 데코레이션 요소 (격리 컨테이너 적용) -->
   <div class="bg-glow-container">
@@ -34,7 +38,7 @@
       <div id="status-tooltip" class="status-tooltip">구글 서버와 연결되었습니다. 실시간으로 데이터를 동기화 중입니다.</div>
     </div>
     -->
-    
+
     <!-- [섹션 1] 로그인 입력 카드 (기본 활성화 상태) -->
     <div id="login-section" class="card login-card active">
       <!-- [Comment Policy: 로그인 카드 헤더 변경]
@@ -43,7 +47,7 @@
         <h1 class="app-title">오늘의 단어 학습</h1>
         <p class="app-subtitle">모국어와 학번을 입력하십시오.</p>
       </div>
-      
+
       <!-- 로그인 폼 (기기 기본 유효성 검사 적용) -->
       <form id="login-form" class="login-form">
         <!-- [Comment Policy: 모국어 선택 드롭다운 수정]
@@ -61,20 +65,14 @@
              사용자 요구사항에 따라 식별번호 레이블을 'ID'로 줄이고, 플레이스홀더 텍스트를 '학번'으로 정밀 수정합니다. -->
         <div class="input-group">
           <label for="student-id" class="input-label">ID</label>
-          <input 
-            type="text" 
-            id="student-id" 
-            name="studentId" 
-            placeholder="학번" 
-            required 
-            autocomplete="off"
-            class="input-field"
-          >
+          <input type="text" id="student-id" name="studentId" placeholder="학번" required autocomplete="off"
+            class="input-field">
           <!-- [Comment Policy: 에러 안내 문구 변경]
                사용자 요구사항에 맞춰 오류 가이드 메시지를 교수님 안내 템플릿으로 교체합니다. -->
-          <div id="error-message" class="error-message hidden">학번을 다시 확인하고 바르게 입력하십시오. 그렇게 했는데도 로그인이 안 되면 교수님에게 학번을 보여주십시오.</div>
+          <div id="error-message" class="error-message hidden">학번을 다시 확인하고 바르게 입력하십시오. 그렇게 했는데도 로그인이 안 되면 교수님에게 학번을
+            보여주십시오.</div>
         </div>
-        
+
         <!-- 로그인 제출 버튼 (로딩 상태 스피너 내장) -->
         <button type="submit" id="btn-login" class="btn btn-primary">
           <span id="btn-text">학습 시작하기</span>
@@ -92,39 +90,54 @@
         <h2 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 16px; margin-top: 10px;">
           <span id="user-display-id-1" class="highlight-name-badge"></span>님!
         </h2>
-        
-        <div class="welcome-message" style="margin-bottom: 20px; text-align: center; line-height: 1.8; font-size: 0.98rem; color: var(--color-text-primary);">
+
+        <div class="welcome-message"
+          style="margin-bottom: 20px; text-align: center; line-height: 1.8; font-size: 0.98rem; color: var(--color-text-primary);">
           <div style="font-size: 1.15rem; color: var(--color-text-secondary); margin-bottom: 6px;">2026년 2학기 동안</div>
-          <div style="font-size: 1.5rem; font-weight: 800; color: var(--color-text-primary); margin-bottom: 20px;">매일 단어 10개</div>
-          
+          <div style="font-size: 1.5rem; font-weight: 800; color: var(--color-text-primary); margin-bottom: 20px;">매일 단어
+            10개</div>
+
           <!-- [Comment Policy: 준비물 체크박스 영역]
                기획서에 명시된 "준비했으면 체크 표시"를 둥근 반투명 박스 형태로 렌더링하고, 단어공책/볼펜 체크박스를 제공합니다. -->
-          <div class="preparation-checklist" style="border: 2px solid var(--color-border); border-radius: 16px; padding: 16px; margin: 0 auto 20px; max-width: 280px; text-align: left; background: rgba(255, 255, 255, 0.02);">
-            <div style="font-size: 1.1rem; font-weight: 700; margin-bottom: 12px; text-align: center; color: var(--color-text-primary);">준비했으면 체크 표시</div>
-            <label style="display: flex; align-items: center; gap: 10px; font-size: 1.1rem; margin-bottom: 8px; cursor: pointer; color: var(--color-text-primary); user-select: none;">
-              <input type="checkbox" id="chk-notebook" style="width: 20px; height: 20px; cursor: pointer; accent-color: var(--color-primary);">
+          <div class="preparation-checklist"
+            style="border: 2px solid var(--color-border); border-radius: 16px; padding: 16px; margin: 0 auto 20px; max-width: 280px; text-align: left; background: rgba(255, 255, 255, 0.02);">
+            <div
+              style="font-size: 1.1rem; font-weight: 700; margin-bottom: 12px; text-align: center; color: var(--color-text-primary);">
+              준비했으면 체크 표시</div>
+            <label
+              style="display: flex; align-items: center; gap: 10px; font-size: 1.1rem; margin-bottom: 8px; cursor: pointer; color: var(--color-text-primary); user-select: none;">
+              <input type="checkbox" id="chk-notebook"
+                style="width: 20px; height: 20px; cursor: pointer; accent-color: var(--color-primary);">
               <span>단어공책</span>
             </label>
-            <label style="display: flex; align-items: center; gap: 10px; font-size: 1.1rem; cursor: pointer; color: var(--color-text-primary); user-select: none;">
-              <input type="checkbox" id="chk-pen" style="width: 20px; height: 20px; cursor: pointer; accent-color: var(--color-primary);">
+            <label
+              style="display: flex; align-items: center; gap: 10px; font-size: 1.1rem; cursor: pointer; color: var(--color-text-primary); user-select: none;">
+              <input type="checkbox" id="chk-pen"
+                style="width: 20px; height: 20px; cursor: pointer; accent-color: var(--color-primary);">
               <span>볼펜</span>
             </label>
           </div>
-          
-          <div style="font-weight: 700; color: var(--color-primary); font-size: 1.1rem; margin-bottom: 20px;">달력에서 오늘을 클릭하십시오.</div>
-          
+
+          <div style="font-weight: 700; color: var(--color-primary); font-size: 1.1rem; margin-bottom: 20px;">달력에서 오늘을
+            클릭하십시오.</div>
+
           <!-- [Comment Policy: 오늘까지 학습 현황 영역]
-               오늘까지 ooo님은 N개의 단어를 학습하였습니다. 문구를 표시하며 숫자는 자릿수별로 .digit-box를 동적 바인딩합니다. -->
+               지금까지 ooo님은 N개의 단어를 학습하였습니다. 문구를 표시하며 숫자는 자릿수별로 .digit-box를 동적 바인딩합니다. -->
           <div style="margin-bottom: 12px; color: var(--color-text-primary); font-size: 1.05rem;">
-            오늘까지 <span id="user-display-id-2" style="font-weight: 700;"></span>님은
+            지금까지 <span id="user-display-id-2" style="font-weight: 700;"></span>님은
           </div>
-          <div style="display: flex; align-items: center; justify-content: center; gap: 4px; margin-bottom: 12px; color: var(--color-text-primary); font-size: 1.05rem;">
-            <span id="word-count-text" style="font-weight: 700; color: var(--color-primary); font-size: 1.15rem;">0</span>개의 단어를 학습하였습니다.
+          <div
+            style="display: flex; align-items: center; justify-content: center; gap: 4px; margin-bottom: 12px; color: var(--color-text-primary); font-size: 1.05rem;">
+            <span id="word-count-text"
+              style="font-weight: 700; color: var(--color-primary); font-size: 1.15rem;">0</span>개의 단어를 학습하였습니다.
           </div>
-          <div style="font-weight: 700; color: var(--color-primary); font-size: 1.05rem; margin-bottom: 10px;">오늘도 성공하세요!</div>
+          <div style="font-weight: 700; color: var(--color-primary); font-size: 1.05rem; margin-bottom: 10px;">오늘도
+            성공하세요!</div>
         </div>
-        <!-- 유저 권한 표시 배지 (선생님/학생 구분용) - 레이아웃상 필요하여 숨김 처리 보존 -->
-        <div class="user-type-badge hidden" id="user-role-badge">학생</div>
+        <!-- [Comment Policy: 유저 권한 표시 배지 임시 은폐]
+             자바스크립트(auth.js) 로그인 로직에서 에러가 발생하는 것을 방지하기 위해 
+             태그 구조(DOM)는 유지하되, 화면에 보이지 않도록 inline style로 숨김 처리합니다. -->
+        <div class="user-type-badge hidden" id="user-role-badge" style="display: none !important;">학생</div>
       </div>
 
 
@@ -136,7 +149,7 @@
           <span id="calendar-title" class="calendar-title">2026년 7월</span>
           <button id="btn-next-month" class="btn-cal-nav">&gt;</button>
         </div>
-        
+
         <!-- 달력 요일 바 -->
         <div class="calendar-weekdays">
           <div class="weekday sun">일</div>
@@ -147,14 +160,15 @@
           <div class="weekday">금</div>
           <div class="weekday sat">토</div>
         </div>
-        
+
         <!-- 달력 일자 그리드 (JS에 의해 동적 생성됨) -->
         <div id="calendar-grid" class="calendar-grid"></div>
       </div>
-      
+
       <!-- [Comment Policy: 달력 하단 단어 복습 유도 텍스트 추가]
            기획서 하단에 기재된 학습 완료 후 복습 유도 메시지를 마크업에 반영합니다. -->
-      <div style="margin-top: 24px; text-align: center; line-height: 1.6; font-size: 1.05rem; color: var(--color-text-secondary);">
+      <div
+        style="margin-top: 24px; text-align: center; line-height: 1.6; font-size: 1.05rem; color: var(--color-text-secondary);">
         <div>지금까지 학습한 단어들은</div>
         <div style="font-weight: 700; color: var(--color-text-primary);">언제든지 다시 볼 수 있습니다.</div>
       </div>
@@ -166,49 +180,51 @@
       </div>
     </div>
 
-      <!-- [신규 섹션 2-B] 선생님/관리자 대시보드 카드 (기본 숨김 상태) -->
+    <!-- [신규 섹션 2-B] 선생님/관리자 대시보드 카드 (기본 숨김 상태) -->
     <div id="teacher-section" class="card teacher-card hidden" style="max-width: 850px; width: 100%;">
-      <div class="card-header" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+      <div class="card-header"
+        style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
         <div>
           <h2 class="welcome-title" style="margin: 0;">선생님 관리 대시보드 👩‍🏫</h2>
           <p class="app-subtitle" style="margin: 5px 0 0 0;">학생들의 한국어 단어 학습 현황과 일정을 관리합니다.</p>
         </div>
-        <button id="btn-teacher-logout" class="btn btn-secondary btn-sm" style="padding: 8px 16px; font-size: 0.9rem;">로그아웃</button>
+        <button id="btn-teacher-logout" class="btn btn-secondary btn-sm"
+          style="padding: 8px 16px; font-size: 0.9rem;">로그아웃</button>
       </div>
 
       <!-- [Comment Policy: 실시간 검색 및 필터 컨트롤 행] 
            학번/이름 검색 필드와 모국어 언어 필터 드롭다운, 지각 학생 필터 체크박스를 정렬하여 배치합니다. -->
-      <div class="admin-filter-bar" style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 18px; align-items: center; background: rgba(255, 255, 255, 0.02); padding: 12px 16px; border-radius: 12px; border: 1px solid var(--color-border);">
-        <input 
-          type="text" 
-          id="search-student" 
-          placeholder="학번 또는 이름 검색" 
-          class="input-field" 
-          style="flex: 1; min-width: 180px; padding: 10px 14px; font-size: 0.9rem; margin-bottom: 0;"
-        >
-        
+      <div class="admin-filter-bar"
+        style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 18px; align-items: center; background: rgba(255, 255, 255, 0.02); padding: 12px 16px; border-radius: 12px; border: 1px solid var(--color-border);">
+        <input type="text" id="search-student" placeholder="학번 또는 이름 검색" class="input-field"
+          style="flex: 1; min-width: 180px; padding: 10px 14px; font-size: 0.9rem; margin-bottom: 0;">
+
         <!-- [Comment Policy: 선생님 대시보드 언어 필터 변경]
              로그인 화면의 다국어 기준 변경에 발맞추어 한국어 필터 옵션을 영어 필터 옵션으로 대체 수정합니다. -->
-        <select id="filter-language" class="select-field" style="width: auto; min-width: 140px; padding: 10px 32px 10px 14px; font-size: 0.9rem; margin-bottom: 0;">
+        <select id="filter-language" class="select-field"
+          style="width: auto; min-width: 140px; padding: 10px 32px 10px 14px; font-size: 0.9rem; margin-bottom: 0;">
           <option value="all">모든 언어 (All)</option>
           <option value="vi">베트남어 (Vietnamese)</option>
           <option value="zh">중국어 (Chinese)</option>
           <option value="en">영어 (English)</option>
         </select>
-        
-        <label class="toggle-container" style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem; cursor: pointer; user-select: none; color: var(--color-text-secondary);">
+
+        <label class="toggle-container"
+          style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem; cursor: pointer; user-select: none; color: var(--color-text-secondary);">
           <input type="checkbox" id="toggle-late" style="width: 16px; height: 16px; cursor: pointer;">
           <span>지각 학생만 보기</span>
         </label>
       </div>
 
       <!-- 학생 목록 테이블 -->
-      <div class="table-container" style="overflow-x: auto; margin-top: 15px; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.5);">
-        <table class="student-table" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem;">
+      <div class="table-container"
+        style="overflow-x: auto; margin-top: 15px; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.5);">
+        <table class="student-table"
+          style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem;">
           <thead>
-          <thead id="student-list-header">
-            <!-- 구글 시트 원본 헤더 및 통계 헤더가 동적으로 생성됩니다. -->
-          </thead>
+            <thead id="student-list-header">
+              <!-- 구글 시트 원본 헤더 및 통계 헤더가 동적으로 생성됩니다. -->
+            </thead>
           <tbody id="student-list-body">
             <tr>
               <td colspan="7" style="padding: 20px; text-align: center; color: #888;">학생 데이터를 불러오는 중...</td>
@@ -234,23 +250,25 @@
         </div>
         <!-- [Comment Policy: 단어 학습 지침 추가]
              학습 진행 바 하단에 공책 쓰기 및 소리내어 읽기 지침을 노출하여 참여를 유도합니다. -->
-        <div class="study-instructions" style="margin-top: 14px; font-size: 0.88rem; color: var(--color-text-secondary); text-align: left; line-height: 1.5; padding: 10px 14px; background: rgba(255, 255, 255, 0.02); border-radius: 12px; border: 1px solid var(--color-border);">
+        <div class="study-instructions"
+          style="margin-top: 14px; font-size: 0.88rem; color: var(--color-text-secondary); text-align: left; line-height: 1.5; padding: 10px 14px; background: rgba(255, 255, 255, 0.02); border-radius: 12px; border: 1px solid var(--color-border);">
           <div style="margin-bottom: 4px;">• 한국어와 모국어를 공책에 3~5번 쓰십시오.</div>
           <div>• 소리 내어 읽으십시오.</div>
         </div>
       </div>
-      
+
       <!-- 중앙 단어 전시 영역 (한국어와 모국어 번역의 계층 구조화) -->
       <div class="word-card-body">
         <!-- [Comment Policy: 한국어 어휘 및 발음 스피커 배치]
              어휘 우측에 다시 듣기용 스피커 이모지 버튼(btn-speak)을 결합하여 직관적으로 발음을 요청할 수 있게 합니다. -->
         <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 8px;">
           <h1 id="study-word-ko" class="word-ko" style="margin-bottom: 0;">가꾸다</h1>
-          <button type="button" id="btn-speak" class="btn-speak" title="발음 다시 듣기" style="background: transparent; border: none; cursor: pointer; font-size: 1.6rem; color: var(--color-primary); padding: 4px; display: inline-flex; align-items: center; justify-content: center; outline: none;">🔊</button>
+          <button type="button" id="btn-speak" class="btn-speak" title="발음 다시 듣기"
+            style="background: transparent; border: none; cursor: pointer; font-size: 1.6rem; color: var(--color-primary); padding: 4px; display: inline-flex; align-items: center; justify-content: center; outline: none;">🔊</button>
         </div>
         <!-- 단어의 쓰임새 힌트 (품사 및 길잡이말 조합) -->
         <p id="study-word-hint" class="word-hint">동사 · 나무를 가꾸다</p>
-        
+
         <!-- [Comment Policy: 3D 카드 뒤집기 번역 카드 구조 적용]
              번역 뜻을 가려주는 3D 플립 카드 컴포넌트입니다. 클릭 시 rotateY 회전 애니메이션이 구동됩니다. -->
         <div id="translation-flip-card" class="flip-card">
@@ -269,7 +287,7 @@
           </div>
         </div>
       </div>
-      
+
       <!-- 하단 네비게이션 버튼: 이전 단어, 다음/완료 버튼 배치 -->
       <div class="navigation-group">
         <button id="btn-prev-word" class="btn btn-secondary btn-nav">이전</button>
@@ -406,7 +424,7 @@
     <!-- [신규 섹션 4] 학습 완료 축하 카드 (기본 숨김 상태) -->
     <div id="completion-section" class="card completion-card hidden">
       <div id="completion-icon" class="completion-icon">🏆</div>
-      
+
       <!-- 정답률 배지 영역 -->
       <div class="accuracy-badge-container">
         <div id="completion-accuracy-badge" class="accuracy-badge">
@@ -419,7 +437,7 @@
         오늘의 단어 10개 학습을 성공적으로 마쳤습니다!<br>
         매일 꾸준히 학습하면 한국어 실력이 더욱 좋아집니다.
       </p>
-      
+
       <!-- [Comment Policy: 완료 복귀 및 다시하기 버튼 상하 배치]
            70% 미만인 경우 메인 메뉴로 버튼이 비활성화됩니다. -->
       <button id="btn-go-menu" class="btn btn-primary" style="margin-top: 24px; width: 100%;">메인 메뉴로</button>
@@ -431,28 +449,39 @@
   <!-- [Comment Policy: 학생 상세 학습 정보 모달 레이아웃]
        어두운 반투명 오버레이 뒷배경과 상세 진도 게이지바, 그리고 시간순 단어 이력 스크롤 영역을 포함합니다. -->
   <div id="student-modal" class="modal-overlay hidden">
-    <div class="modal-content card" style="max-width: 460px; width: 90%; padding: 30px; display: block; border-radius: 20px;">
-      <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; margin-bottom: 16px;">
-        <h3 id="modal-student-title" style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--color-text-primary);">학업 진도 상세 정보</h3>
-        <button id="btn-close-modal" style="background: transparent; border: none; font-size: 1.6rem; color: var(--color-text-secondary); cursor: pointer; line-height: 1;">&times;</button>
+    <div class="modal-content card"
+      style="max-width: 460px; width: 90%; padding: 30px; display: block; border-radius: 20px;">
+      <div class="modal-header"
+        style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; margin-bottom: 16px;">
+        <h3 id="modal-student-title"
+          style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--color-text-primary);">학업 진도 상세 정보</h3>
+        <button id="btn-close-modal"
+          style="background: transparent; border: none; font-size: 1.6rem; color: var(--color-text-secondary); cursor: pointer; line-height: 1;">&times;</button>
       </div>
-      
+
       <!-- 모달 상단 정보 배지 목록 -->
       <div class="modal-info-badges" style="display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;">
         <span id="modal-student-id" class="highlight-id" style="font-size: 0.85rem; padding: 4px 8px;">학번: -</span>
         <span id="modal-student-lang" class="highlight-lang" style="font-size: 0.85rem; padding: 4px 8px;">모국어: -</span>
       </div>
-      
+
       <!-- 5일 단위기간 미니 달력 현황판 -->
-      <div class="modal-section-title" style="font-size: 0.85rem; font-weight: 700; color: var(--color-text-secondary); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">5일 단위기간 요일 진도 (Day 1 - Day 5)</div>
-      <div id="modal-progress-bar-container" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 24px;">
+      <div class="modal-section-title"
+        style="font-size: 0.85rem; font-weight: 700; color: var(--color-text-secondary); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">
+        5일 단위기간 요일 진도 (Day 1 - Day 5)</div>
+      <div id="modal-progress-bar-container"
+        style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 24px;">
         <!-- Day 1 ~ Day 5 렌더링 영역 -->
       </div>
-      
+
       <!-- 단어 학습 시간 이력 로그 목록 -->
-      <div class="modal-section-title" style="font-size: 0.85rem; font-weight: 700; color: var(--color-text-secondary); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">완료 단어 상세 기록 (최신순)</div>
-      <div class="word-log-container" style="border: 1px solid var(--color-border); border-radius: 12px; background: rgba(255, 255, 255, 0.02); overflow: hidden;">
-        <div id="modal-word-log-scroll" class="word-log-scroll" style="max-height: 180px; overflow-y: auto; padding: 12px;">
+      <div class="modal-section-title"
+        style="font-size: 0.85rem; font-weight: 700; color: var(--color-text-secondary); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">
+        완료 단어 상세 기록 (최신순)</div>
+      <div class="word-log-container"
+        style="border: 1px solid var(--color-border); border-radius: 12px; background: rgba(255, 255, 255, 0.02); overflow: hidden;">
+        <div id="modal-word-log-scroll" class="word-log-scroll"
+          style="max-height: 180px; overflow-y: auto; padding: 12px;">
           <!-- 단어 목록 동적 렌더링 영역 -->
         </div>
       </div>
@@ -461,10 +490,13 @@
 
   <!-- [신규] 선생님용 학생 정보 통합 편집 모달 -->
   <div id="admin-edit-modal" class="modal-overlay hidden">
-    <div class="modal-content card" style="max-width: 480px; width: 90%; padding: 30px; display: block; border-radius: 20px; background: var(--color-card-bg); border: 1px solid var(--color-border); box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
-      <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; margin-bottom: 20px;">
+    <div class="modal-content card"
+      style="max-width: 480px; width: 90%; padding: 30px; display: block; border-radius: 20px; background: var(--color-card-bg); border: 1px solid var(--color-border); box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
+      <div class="modal-header"
+        style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; margin-bottom: 20px;">
         <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--color-text-primary);">학생 학습 정보 수정</h3>
-        <button id="btn-close-edit-modal" style="background: transparent; border: none; font-size: 1.6rem; color: var(--color-text-secondary); cursor: pointer; line-height: 1;">&times;</button>
+        <button id="btn-close-edit-modal"
+          style="background: transparent; border: none; font-size: 1.6rem; color: var(--color-text-secondary); cursor: pointer; line-height: 1;">&times;</button>
       </div>
 
       <!-- 편집 폼 -->
@@ -472,13 +504,17 @@
         <!-- 학번 (ID) - 읽기 전용 -->
         <div class="input-group">
           <label class="input-label">학번 (ID)</label>
-          <input type="text" id="edit-student-id" class="input-field" style="background: rgba(255,255,255,0.02); color: var(--color-text-secondary); cursor: not-allowed;" readonly>
+          <input type="text" id="edit-student-id" class="input-field"
+            style="background: rgba(255,255,255,0.02); color: var(--color-text-secondary); cursor: not-allowed;"
+            readonly>
         </div>
 
         <!-- 이름 (Name) - 읽기 전용 -->
         <div class="input-group">
           <label class="input-label">이름 (Name)</label>
-          <input type="text" id="edit-student-name" class="input-field" style="background: rgba(255,255,255,0.02); color: var(--color-text-secondary); cursor: not-allowed;" readonly>
+          <input type="text" id="edit-student-name" class="input-field"
+            style="background: rgba(255,255,255,0.02); color: var(--color-text-secondary); cursor: not-allowed;"
+            readonly>
         </div>
 
         <!-- 레벨 설정 (드롭다운) -->
@@ -494,22 +530,27 @@
         <div class="input-group">
           <label class="input-label">학습시작일 (Start Date)</label>
           <div style="display: flex; gap: 8px;">
-            <input type="text" id="edit-student-startdate" class="input-field" placeholder="YYYY-MM-DD" style="flex: 1;" readonly>
-            <button type="button" id="btn-open-datepicker" class="btn btn-secondary" style="width: auto; padding: 0 16px; border-radius: 12px; margin-top: 0; font-size: 0.95rem;">📅 선택</button>
+            <input type="text" id="edit-student-startdate" class="input-field" placeholder="YYYY-MM-DD" style="flex: 1;"
+              readonly>
+            <button type="button" id="btn-open-datepicker" class="btn btn-secondary"
+              style="width: auto; padding: 0 16px; border-radius: 12px; margin-top: 0; font-size: 0.95rem;">📅
+              선택</button>
           </div>
         </div>
 
         <!-- 동적으로 추가된 기타 시트 열 데이터를 보여주는 서브 컨테이너 -->
         <div style="border-top: 1px dashed var(--color-border); padding-top: 16px; margin-top: 6px;">
           <div class="input-label" style="margin-bottom: 8px;">추가 시트 정보 (기타 열)</div>
-          <div id="edit-dynamic-fields-container" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 0.85rem; max-height: 100px; overflow-y: auto;">
+          <div id="edit-dynamic-fields-container"
+            style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 0.85rem; max-height: 100px; overflow-y: auto;">
             <!-- 동적 시트 열 정보가 Key-Value 형식으로 바인딩됩니다. -->
           </div>
         </div>
 
         <!-- 버튼 그룹 -->
         <div style="display: flex; gap: 12px; margin-top: 12px;">
-          <button type="button" id="btn-cancel-edit" class="btn btn-secondary" style="flex: 1; margin-top: 0;">취소</button>
+          <button type="button" id="btn-cancel-edit" class="btn btn-secondary"
+            style="flex: 1; margin-top: 0;">취소</button>
           <button type="submit" class="btn btn-primary" style="flex: 1;">정보 저장</button>
         </div>
       </form>
@@ -518,10 +559,13 @@
 
   <!-- [신규] 학습시작일 지정을 위한 평일 전용 미니 달력 팝업 모달 -->
   <div id="admin-date-picker-modal" class="modal-overlay hidden" style="z-index: 2000; background: rgba(0,0,0,0.6);">
-    <div class="modal-content card" style="max-width: 380px; width: 90%; padding: 24px; display: block; border-radius: 20px;">
-      <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; margin-bottom: 14px; border-bottom: 1px solid var(--color-border);">
+    <div class="modal-content card"
+      style="max-width: 380px; width: 90%; padding: 24px; display: block; border-radius: 20px;">
+      <div class="modal-header"
+        style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; margin-bottom: 14px; border-bottom: 1px solid var(--color-border);">
         <h4 style="margin: 0; font-weight: 700; color: var(--color-text-primary);">시작일 평일 선택</h4>
-        <button id="btn-close-datepicker" style="background: transparent; border: none; font-size: 1.4rem; color: var(--color-text-secondary); cursor: pointer; line-height: 1;">&times;</button>
+        <button id="btn-close-datepicker"
+          style="background: transparent; border: none; font-size: 1.4rem; color: var(--color-text-secondary); cursor: pointer; line-height: 1;">&times;</button>
       </div>
 
       <!-- 미니 달력 컴포넌트 -->
@@ -547,8 +591,11 @@
 
   <!-- [신규] 90일 맞춤 학습 계획 일괄 생성 로딩 오버레이 -->
   <div id="bulk-register-overlay" class="modal-overlay hidden">
-    <div class="bulk-register-loading-content" style="display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center; color: var(--color-text-primary); background: rgba(0, 0, 0, 0.85); padding: 40px; border-radius: 20px; border: 1px solid var(--color-border); backdrop-filter: blur(10px);">
-      <div class="spinner" style="border-width: 4px; border-color: rgba(255, 255, 255, 0.1); border-top-color: var(--color-primary); width: 48px; height: 48px;"></div>
+    <div class="bulk-register-loading-content"
+      style="display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center; color: var(--color-text-primary); background: rgba(0, 0, 0, 0.85); padding: 40px; border-radius: 20px; border: 1px solid var(--color-border); backdrop-filter: blur(10px);">
+      <div class="spinner"
+        style="border-width: 4px; border-color: rgba(255, 255, 255, 0.1); border-top-color: var(--color-primary); width: 48px; height: 48px;">
+      </div>
       <div style="font-size: 1.1rem; font-weight: 600;">90일 맞춤 학습 계획을 수립하고 있습니다...</div>
       <p style="margin: 0; font-size: 0.9rem; color: var(--color-text-secondary); max-width: 320px;">
         학생의 최초 로그인을 감지하여 전체 학습 일정 및 시트를 구성하고 있습니다. 잠시만 기다려 주세요.
@@ -558,8 +605,11 @@
 
   <!-- [신규] 글로벌 API 통신 중 로딩 오버레이 -->
   <div id="global-loading-overlay" class="modal-overlay hidden">
-    <div class="bulk-register-loading-content" style="display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; color: var(--color-text-primary); background: rgba(0, 0, 0, 0.85); padding: 30px; border-radius: 20px; border: 1px solid var(--color-border); backdrop-filter: blur(10px);">
-      <div class="spinner" style="border-width: 4px; border-color: rgba(255, 255, 255, 0.1); border-top-color: var(--color-primary); width: 36px; height: 36px;"></div>
+    <div class="bulk-register-loading-content"
+      style="display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; color: var(--color-text-primary); background: rgba(0, 0, 0, 0.85); padding: 30px; border-radius: 20px; border: 1px solid var(--color-border); backdrop-filter: blur(10px);">
+      <div class="spinner"
+        style="border-width: 4px; border-color: rgba(255, 255, 255, 0.1); border-top-color: var(--color-primary); width: 36px; height: 36px;">
+      </div>
       <div style="font-size: 1rem; font-weight: 600;">서버와 통신하고 있습니다...</div>
     </div>
   </div>
@@ -572,4 +622,5 @@
   <script src="admin.js?v=1.0.4"></script>
   <script src="app.js?v=1.0.4"></script>
 </body>
+
 </html>
