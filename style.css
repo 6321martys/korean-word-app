@@ -47,16 +47,25 @@
   box-sizing: border-box;
 }
 
+/* 모바일 가로 넘침 방지를 위한 기본 html 설정 */
+html {
+  overflow-x: hidden;
+  width: 100%;
+  height: 100%;
+}
+
 body {
   font-family: var(--font-main);
   background-color: var(--color-bg);
   color: var(--color-text-primary);
   min-height: 100vh;
   display: flex;
+  flex-direction: column; /* 세로 스택 레이아웃 지원 */
   justify-content: center;
   align-items: center;
-  overflow: hidden;
-  /* 배경 발광 레이어의 넘침을 방지 */
+  overflow-x: hidden; /* 가로 스크롤을 방지하여 모바일 좌우 흔들림 방지 */
+  overflow-y: auto;   /* 콘텐츠가 넘칠 때 세로 스크롤을 native로 활성화 */
+  -webkit-overflow-scrolling: touch; /* iOS 및 모바일 웹킷 브라우저에서 관성 스크롤 부드럽게 지원 */
   position: relative;
 }
 
@@ -64,11 +73,22 @@ body {
    BACKGROUND ANIMATION EFFECTS
    화면에 역동성과 깊이감을 주는 서서히 회전/이동하는 배경 그라디언트 광원
    ========================================================================== */
+/* 배경 발광 레이어가 문서 크기를 확장하지 못하도록 fixed 샌드박스 박스로 격리 */
+.bg-glow-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: -1;
+  pointer-events: none;
+}
+
 .bg-glow {
-  position: absolute;
+  position: absolute; /* .bg-glow-container 고정 컨테이너 내부에서 배치됨 */
   border-radius: 50%;
   filter: blur(100px);
-  z-index: -1;
   opacity: 0.4;
   pointer-events: none;
 }
@@ -121,6 +141,13 @@ body {
   padding: 20px;
   position: relative;
   z-index: 10;
+  margin: auto; /* 상하좌우 auto 마진으로 웰컴 카드가 화면 높이를 초과할 때 잘리지 않고 세로 스크롤 가능하게 함 */
+  transition: max-width var(--transition-normal); /* 대시보드 확장 시 폭 변환 효과 */
+}
+
+/* 선생님 관리 대시보드가 활성화되었을 때 앱 컨테이너 폭을 넓혀서 표가 잘 보이고 쾌적하게 렌더링되게 함 */
+.app-container:has(#teacher-section.active) {
+  max-width: 900px;
 }
 
 /* 글래스모피즘 효과가 적용된 공통 카드 스타일 */
@@ -853,9 +880,9 @@ body {
    [신규] 구글 스프레드시트 연동 상태 뱃지 스타일
    ========================================================================== */
 .connection-status-badge {
-  position: fixed;
-  top: 16px;
-  right: 16px;
+  position: absolute; /* fixed에서 absolute로 변경하여 .app-container 부모 영역 내 배치 */
+  top: 32px; /* 카드 상단 여백에 어울리도록 조절 */
+  right: 20px; /* 카드 우상단 코너에 맞춤 정렬 */
   z-index: 1000;
   display: flex;
   align-items: center;
