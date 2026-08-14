@@ -2094,4 +2094,26 @@ document.addEventListener("DOMContentLoaded", () => {
   } else if (lastLoggedInId && studentIdInput) {
     studentIdInput.value = lastLoggedInId;
   }
+
+  // 3. [Comment Policy: 배포 타임스탬프 및 버전 자동 동적 렌더링]
+  // document.lastModified 값을 읽어 파일이 서버에 배포된 날짜/시간을 화면 하단 버전 태그에 동적으로 병합 렌더링합니다.
+  function renderAppVersion() {
+    const versionTag = document.querySelector(".app-version-tag");
+    if (!versionTag) return;
+
+    try {
+      const baseVersion = versionTag.textContent.trim().split(" ")[0] || "v1.0.6";
+      const modDate = new Date(document.lastModified);
+      if (!isNaN(modDate.getTime())) {
+        const month = String(modDate.getMonth() + 1).padStart(2, '0');
+        const day = String(modDate.getDate()).padStart(2, '0');
+        const hours = String(modDate.getHours()).padStart(2, '0');
+        const mins = String(modDate.getMinutes()).padStart(2, '0');
+        versionTag.textContent = `${baseVersion} · ${month}.${day} ${hours}:${mins} 배포`;
+      }
+    } catch (e) {
+      // 오류 시 기본 텍스트 유지
+    }
+  }
+  renderAppVersion();
 });
