@@ -90,7 +90,8 @@ async function showWelcomeScreen(user) {
 
     // 최초 로그인 처리 완료로 상태 변경
     user.isFirstLogin = false;
-    localStorage.setItem("active_user", JSON.stringify(user));
+    // [Comment Policy: 자동 로그인 세션 sessionStorage로 변경] 브라우저 종료 시 자동 로그아웃되도록 세션 스토리지 사용
+    sessionStorage.setItem("active_user", JSON.stringify(user));
   }
 
   // [Comment Policy: 로그인한 학생의 이름 다중 바인딩 처리]

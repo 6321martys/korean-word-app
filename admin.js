@@ -275,9 +275,9 @@ function showAdminEditModal(studentId) {
   editStudentId.value = student.id;
   editStudentName.value = student.name;
   editStudentStartDate.value = student.startDate || "";
-  
   // 학생 등급 지정
-  const activeUser = JSON.parse(localStorage.getItem("active_user"));
+  // [Comment Policy: active_user 보관소를 sessionStorage로 통일하여 브라우저 종료 시 초기화]
+  const activeUser = JSON.parse(sessionStorage.getItem("active_user"));
   const levelVal = (activeUser && activeUser.id === studentId) ? activeUser.level : (student.rawWords && student.rawWords.length > 0 ? (student.rawWords[0].level || "단어장-초급") : "단어장-초급");
   editStudentLevel.value = levelVal;
 
@@ -646,10 +646,11 @@ function bindAdminEditEvents() {
         success = true;
 
         // 만약 수정한 대상이 현재 로그인한 유저 본인이라면 메모리 캐시도 교체
-        const activeUser = JSON.parse(localStorage.getItem("active_user"));
+        // [Comment Policy: active_user 보관소를 sessionStorage로 통일하여 브라우저 종료 시 초기화]
+        const activeUser = JSON.parse(sessionStorage.getItem("active_user"));
         if (activeUser && activeUser.id === targetId) {
           activeUser.level = newLevel;
-          localStorage.setItem("active_user", JSON.stringify(activeUser));
+          sessionStorage.setItem("active_user", JSON.stringify(activeUser));
           plannerState = newState;
         }
       }

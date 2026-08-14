@@ -27,14 +27,13 @@
   <div class="app-container">
     <!-- [Comment Policy: 구글 서버 연동 뱃지] 
          앱 컨테이너 최상단으로 옮겨 유동적인 레이아웃 내에서 절대 좌표 배치되도록 수정 -->
+    <!-- [구글 서버 연동 뱃지 임시 비활성화 - 코드 보존]
     <div id="connection-status" class="connection-status-badge connected" title="구글 서버 연동 완료 [V]">
       <span id="status-icon" style="transition: opacity var(--transition-fast);">V</span>
-      <!-- [Comment Policy: 구글 서버 통신 중 스피커 뱃지 내 로딩 스피너 배치]
-           서버와 데이터 동기화 fetch가 일어나는 동안 빙글빙글 회전하는 소형 인디케이터 스피너입니다. -->
       <div id="status-spinner" class="spinner hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; box-sizing: border-box; border-width: 3px; border-color: rgba(255, 255, 255, 0.15); border-top-color: var(--color-primary); pointer-events: none; transition: all var(--transition-fast);"></div>
-      <!-- 상태 설명 안내 팝업 레이어 (마우스 호버 시 노출) -->
       <div id="status-tooltip" class="status-tooltip">구글 서버와 연결되었습니다. 실시간으로 데이터를 동기화 중입니다.</div>
     </div>
+    -->
     
     <!-- [섹션 1] 로그인 입력 카드 (기본 활성화 상태) -->
     <div id="login-section" class="card login-card active">

@@ -175,7 +175,8 @@ function hideConnectionLoading() {
  */
 async function loadWordDatabase() {
   if (isWordsLoaded) return;
-  const activeUser = JSON.parse(localStorage.getItem("active_user"));
+  // [Comment Policy: active_user 보관소를 sessionStorage로 변경]
+  const activeUser = JSON.parse(sessionStorage.getItem("active_user"));
   const level = (activeUser && activeUser.level) ? activeUser.level : "단어장-초급";
   let isGoogleFetch = !!GOOGLE_SCRIPT_URL;
 
@@ -347,7 +348,8 @@ function startStudySessionForDay(dayLabel, session) {
  * 현재 단어 상태 렌더링
  */
 function renderCurrentWord() {
-  const activeUser = JSON.parse(localStorage.getItem("active_user"));
+  // [Comment Policy: active_user 보관소를 sessionStorage로 변경]
+  const activeUser = JSON.parse(sessionStorage.getItem("active_user"));
   if (!activeUser || currentStudyWords.length === 0) return;
 
   // [Comment Policy: 번역 플립 카드 리셋 (Transition Snap 기법)]
@@ -447,7 +449,8 @@ let isMiniGame1Animating = false;   // 오답 점멸 등 애니메이션 진행 
  * 아래쪽 3x3에는 모국어 단어를 무작위로 뒤섞어 배치합니다.
  */
 function initMiniGame1() {
-  const activeUser = JSON.parse(localStorage.getItem("active_user"));
+  // [Comment Policy: active_user 보관소를 sessionStorage로 변경]
+  const activeUser = JSON.parse(sessionStorage.getItem("active_user"));
   const userLang = activeUser?.lang || "vi";
 
   // 10개 단어 중 1~9번 단어 추출
@@ -667,7 +670,8 @@ function initMiniGame2() {
  * 현재 차례 단어에 대한 정답 1개와 오답 3개를 구성하여 무작위 위치로 섞어 렌더링합니다.
  */
 function renderMiniGame2Question() {
-  const activeUser = JSON.parse(localStorage.getItem("active_user"));
+  // [Comment Policy: active_user 보관소를 sessionStorage로 변경]
+  const activeUser = JSON.parse(sessionStorage.getItem("active_user"));
   const userLang = activeUser?.lang || "vi";
 
   if (!miniGame2Questions || miniGame2Questions.length === 0) return;
@@ -864,7 +868,8 @@ function initMiniGame3() {
  * 단어에서 1글자를 무작위로 선택하여 1자 제한 빈칸 인풋으로 치환하고, 하단에 모국어를 온전히 표시합니다.
  */
 function renderMiniGame3Question() {
-  const activeUser = JSON.parse(localStorage.getItem("active_user"));
+  // [Comment Policy: active_user 보관소를 sessionStorage로 변경]
+  const activeUser = JSON.parse(sessionStorage.getItem("active_user"));
   const userLang = activeUser?.lang || "vi";
 
   if (!miniGame3Questions || miniGame3Questions.length === 0) return;
@@ -1104,7 +1109,8 @@ function initMiniGame4() {
  * 텍스트 힌트 없이 스피커 버튼과 4지선다 보기를 제공하며, 문제가 열릴 때 한국어 발음을 1회 자동 재생합니다.
  */
 function renderMiniGame4Question() {
-  const activeUser = JSON.parse(localStorage.getItem("active_user"));
+  // [Comment Policy: active_user 보관소를 sessionStorage로 변경]
+  const activeUser = JSON.parse(sessionStorage.getItem("active_user"));
   const userLang = activeUser?.lang || "vi";
 
   if (!miniGame4Questions || miniGame4Questions.length === 0) return;
@@ -1336,7 +1342,8 @@ function renderCompletionScreen() {
  * @param {number} session
  */
 async function recordSessionProgress(dayLabel, session) {
-  const activeUser = JSON.parse(localStorage.getItem("active_user"));
+  // [Comment Policy: active_user 보관소를 sessionStorage로 변경]
+  const activeUser = JSON.parse(sessionStorage.getItem("active_user"));
   if (!activeUser) return;
 
   let isGoogleFetch = !!GOOGLE_SCRIPT_URL;
@@ -1478,7 +1485,8 @@ document.addEventListener("DOMContentLoaded", () => {
           authResult.id = studentId;
 
           // 로그인 세션 보존
-          localStorage.setItem("active_user", JSON.stringify(authResult));
+          // [Comment Policy: active_user 보관소를 sessionStorage로 변경]
+          sessionStorage.setItem("active_user", JSON.stringify(authResult));
           sessionStorage.setItem("last_logged_in_id", studentId); // 자동완성용 백업
 
           // 대시보드 또는 웰컴 화면 출력
@@ -1502,12 +1510,14 @@ document.addEventListener("DOMContentLoaded", () => {
       resetSpeechSynthesis(); // 가동 중인 음성 차단
 
       // 직전 아이디 저장 후 클리어
-      const lastId = JSON.parse(localStorage.getItem("active_user"))?.id;
+      // [Comment Policy: active_user 보관소를 sessionStorage로 변경]
+      const lastId = JSON.parse(sessionStorage.getItem("active_user"))?.id;
       if (lastId) {
         sessionStorage.setItem("last_logged_in_id", lastId);
       }
 
-      localStorage.removeItem("active_user");
+      // [Comment Policy: active_user 보관소를 sessionStorage로 변경]
+      sessionStorage.removeItem("active_user");
 
       welcomeSection.classList.add("hidden");
       welcomeSection.classList.remove("active");
@@ -1527,12 +1537,14 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
       resetSpeechSynthesis();
 
-      const lastId = JSON.parse(localStorage.getItem("active_user"))?.id;
+      // [Comment Policy: active_user 보관소를 sessionStorage로 변경]
+      const lastId = JSON.parse(sessionStorage.getItem("active_user"))?.id;
       if (lastId) {
         sessionStorage.setItem("last_logged_in_id", lastId);
       }
 
-      localStorage.removeItem("active_user");
+      // [Comment Policy: active_user 보관소를 sessionStorage로 변경]
+      sessionStorage.removeItem("active_user");
 
       const teacherSection = document.getElementById("teacher-section");
       if (teacherSection) {
@@ -1606,7 +1618,8 @@ document.addEventListener("DOMContentLoaded", () => {
         welcomeSection.classList.add("active");
         
         // 플래너 달력 상태 리로드
-        const activeUser = JSON.parse(localStorage.getItem("active_user"));
+        // [Comment Policy: active_user 보관소를 sessionStorage로 변경]
+        const activeUser = JSON.parse(sessionStorage.getItem("active_user"));
         if (activeUser) {
           loadPlannerState(activeUser.id);
         }
@@ -1807,7 +1820,8 @@ document.addEventListener("DOMContentLoaded", () => {
       welcomeSection.classList.add("active");
 
       // 메인 달력 리로드로 지각/출석 뱃지 최신화
-      const activeUser = JSON.parse(localStorage.getItem("active_user"));
+      // [Comment Policy: active_user 보관소를 sessionStorage로 변경]
+      const activeUser = JSON.parse(sessionStorage.getItem("active_user"));
       if (activeUser) {
         await loadPlannerState(activeUser.id);
       }
@@ -1834,7 +1848,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // [Comment Policy: 자동 로그인 세션 복구 및 학번 복원 자동완성]
-  const activeUser = JSON.parse(localStorage.getItem("active_user"));
+  // [Comment Policy: active_user 보관소를 sessionStorage로 변경]
+  const activeUser = JSON.parse(sessionStorage.getItem("active_user"));
   const lastLoggedInId = sessionStorage.getItem("last_logged_in_id");
 
   if (activeUser) {

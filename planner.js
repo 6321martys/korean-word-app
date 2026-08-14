@@ -44,7 +44,8 @@ function getLocalDateString(date) {
 async function generateMockPlannerState(studentId) {
   const localKey = `planner_session_${studentId}`;
   let localData = localStorage.getItem(localKey);
-  const activeUser = JSON.parse(localStorage.getItem("active_user"));
+  // [Comment Policy: active_user 보관소를 sessionStorage로 통일하여 브라우저 종료 시 초기화]
+  const activeUser = JSON.parse(sessionStorage.getItem("active_user"));
   const level = activeUser ? activeUser.level : "단어장-초급";
 
   if (localData) {
@@ -167,7 +168,8 @@ async function loadPlannerState(studentId) {
     // 최초 로그인 시점에 알 수 없는 이유로 생성이 생략되었거나 정리가 수행된 것으로 보고 90일 일정을 즉시 재생성합니다.
     if (state && state.success && (!state.words || state.words.length === 0)) {
       console.warn("학습 기록이 비어있어 90일 일정을 새로 구성합니다.");
-      const activeUser = JSON.parse(localStorage.getItem("active_user"));
+      // [Comment Policy: active_user 보관소를 sessionStorage로 통일하여 브라우저 종료 시 초기화]
+      const activeUser = JSON.parse(sessionStorage.getItem("active_user"));
       const level = (activeUser && activeUser.level) ? activeUser.level : "단어장-초급";
 
       // [신규] 90일 생성 로딩창을 띄우기 전, 백그라운드의 일반 통신 로딩창은 은폐
