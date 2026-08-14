@@ -1671,6 +1671,55 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
+  // [Comment Policy: 미니게임 건너뛰기 디버그 단축키 연동]
+  // Ctrl 키를 누른 채 비활성화된 '다음' 버튼(또는 .minigame-badge)을 클릭하면
+  // 해당 문항을 즉시 오답(스킵) 처리하고 다음 문항/게임으로 자동 직행합니다.
+  // button이 disabled 상태여도 캡처링(capture: true) 단계에서 안전하게 가로채어 실행합니다.
+  document.addEventListener("pointerdown", (e) => {
+    if (!e.ctrlKey) return;
+
+    const targetNextBtn = e.target.closest("#btn-minigame1-next, #btn-minigame2-next, #btn-minigame3-next, #btn-minigame4-next");
+    const targetBadge = e.target.classList && e.target.classList.contains("minigame-badge");
+
+    if (targetNextBtn || targetBadge) {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log("[디버그 모드] Ctrl + '다음' 버튼 클릭 감지 - 현재 문항 오답 처리 및 즉시 스킵");
+
+      if (minigame1Section && minigame1Section.classList.contains("active")) {
+        // 1번 미니게임 (카드 매칭):
+        if (btnMinigame1Next) {
+          btnMinigame1Next.disabled = false;
+          btnMinigame1Next.click();
+        }
+      } else if (minigame2Section && minigame2Section.classList.contains("active")) {
+        // 2번 미니게임 (사지선다 10문제):
+        accuracyTracker.currentQuestionFailed = true;
+        isMiniGame2CurrentAnswered = true;
+        if (btnMinigame2Next) {
+          btnMinigame2Next.disabled = false;
+          btnMinigame2Next.click();
+        }
+      } else if (minigame3Section && minigame3Section.classList.contains("active")) {
+        // 3번 미니게임 (빈칸 타이핑 10문제):
+        accuracyTracker.currentQuestionFailed = true;
+        isMiniGame3Answered = true;
+        if (btnMinigame3Next) {
+          btnMinigame3Next.disabled = false;
+          btnMinigame3Next.click();
+        }
+      } else if (minigame4Section && minigame4Section.classList.contains("active")) {
+        // 4번 미니게임 (듣고 사지선다 10문제):
+        accuracyTracker.currentQuestionFailed = true;
+        isMiniGame4Answered = true;
+        if (btnMinigame4Next) {
+          btnMinigame4Next.disabled = false;
+          btnMinigame4Next.click();
+        }
+      }
+    }
+  }, true);
+
   // 4. 달력 월 이전/다음 이동 버튼
   if (btnPrevMonth) {
     btnPrevMonth.onclick = (e) => {
@@ -1983,47 +2032,6 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
-  // [Comment Policy: 미니게임 건너뛰기 디버그 단축키 연동]
-  // Ctrl 키를 누른 채 .minigame-badge 요소를 클릭하면 해당 단계를 즉시 패스하며 다음 버튼을 활성화합니다.
-  // 이 우회 방식으로 스킵된 문항은 성적 합산 점수에 누적되지 않도록(오답 처리) 설계합니다.
-  document.addEventListener("click", (e) => {
-    if (e.ctrlKey && e.target && e.target.classList.contains("minigame-badge")) {
-      e.preventDefault();
-      console.log("[디버그 모드] 미니게임 건너뛰기 감지 - 현재 문항 오답 처리");
-
-      if (minigame1Section && minigame1Section.classList.contains("active")) {
-        // 1번 미니게임 (9개 카드 매칭):
-        if (btnMinigame1Next) {
-          btnMinigame1Next.disabled = false;
-          btnMinigame1Next.focus();
-        }
-      } else if (minigame2Section && minigame2Section.classList.contains("active")) {
-        // 2번 미니게임 (객관식 10문제):
-        accuracyTracker.currentQuestionFailed = true;
-        isMiniGame2CurrentAnswered = true;
-        if (btnMinigame2Next) {
-          btnMinigame2Next.disabled = false;
-          btnMinigame2Next.focus();
-        }
-      } else if (minigame3Section && minigame3Section.classList.contains("active")) {
-        // 3번 미니게임 (빈칸 타이핑 10문제):
-        accuracyTracker.currentQuestionFailed = true;
-        isMiniGame3Answered = true;
-        if (btnMinigame3Next) {
-          btnMinigame3Next.disabled = false;
-          btnMinigame3Next.focus();
-        }
-      } else if (minigame4Section && minigame4Section.classList.contains("active")) {
-        // 4번 미니게임 (듣고 사지선다 10문제):
-        accuracyTracker.currentQuestionFailed = true;
-        isMiniGame4Answered = true;
-        if (btnMinigame4Next) {
-          btnMinigame4Next.disabled = false;
-          btnMinigame4Next.focus();
-        }
-      }
-    }
-  });
 
   // [Comment Policy: 비활동 및 앱 종료 감지를 위한 시간 기반 세션 만료 시스템]
   // 모바일 브라우저의 백그라운드 탭 복원(세션스토리지 유지) 특성을 우회하기 위해,
