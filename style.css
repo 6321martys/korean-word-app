@@ -1658,7 +1658,7 @@ body {
   color: #22c55e !important;
 }
 
-/* 정답 피드백 메시지 */
+/* 정답/오답 피드백 메시지 */
 .quiz-feedback {
   font-size: 1.15rem;
   font-weight: 800;
@@ -1669,6 +1669,13 @@ body {
   background: rgba(34, 197, 94, 0.1);
   border-radius: 8px;
   animation: quiz-pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* 오답 피드백 스타일 (주황/붉은색 계열 경고 톤) */
+.quiz-feedback.feedback-wrong {
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.25);
 }
 
 @keyframes quiz-pop-in {

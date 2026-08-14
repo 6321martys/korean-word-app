@@ -1049,6 +1049,13 @@ function renderMiniGame3Question() {
       }
     };
 
+    // 사용자가 다시 타이핑을 시작하면 오답 피드백 숨김
+    inputEl.oninput = () => {
+      if (minigame3Feedback && !isMiniGame3Answered) {
+        minigame3Feedback.classList.add("hidden");
+      }
+    };
+
     // 엔터 키 누르면 정답 확인 자동 트리거
     inputEl.onkeydown = (e) => {
       if (e.key === "Enter") {
@@ -1081,7 +1088,7 @@ function renderMiniGame3Question() {
 
 /**
  * [Comment Policy: 3번 미니게임 정답 확인 및 인터랙션 처리]
- * 정답 시 연두색 활성화 및 [다음] 버튼 활성화, 오답 시 [정답 확인] 버튼 붉은색 점멸
+ * 정답 시 연두색 활성화 및 [다음] 버튼 활성화, 오답 시 [정답 확인] 버튼 붉은색 점멸 및 '다시 생각해 보세요' 안내
  */
 function checkMiniGame3Answer() {
   if (isMiniGame3Answered || isMiniGame3CheckAnimating) return;
@@ -1109,6 +1116,7 @@ function checkMiniGame3Answer() {
     // 정답 피드백 메시지 노출
     if (minigame3Feedback) {
       minigame3Feedback.textContent = "🎉 정답입니다!";
+      minigame3Feedback.className = "quiz-feedback";
       minigame3Feedback.classList.remove("hidden");
     }
 
@@ -1120,13 +1128,20 @@ function checkMiniGame3Answer() {
       btnMinigame3Next.disabled = false;
     }
   } else {
-    // [오답 판정] [정답 확인] 버튼 붉은색 점멸 및 진동
+    // [오답 판정] [정답 확인] 버튼 붉은색 점멸 및 '다시 생각해 보세요' 피드백 노출
     accuracyTracker.currentQuestionFailed = true;
     isMiniGame3WrongOccurred = true;
     isMiniGame3CheckAnimating = true;
 
     if (btnMinigame3Check) {
       btnMinigame3Check.classList.add("cell-wrong-flash");
+    }
+
+    // 오답 피드백 메시지 노출
+    if (minigame3Feedback) {
+      minigame3Feedback.textContent = "다시 생각해 보세요";
+      minigame3Feedback.className = "quiz-feedback feedback-wrong";
+      minigame3Feedback.classList.remove("hidden");
     }
 
     setTimeout(() => {
