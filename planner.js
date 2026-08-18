@@ -234,3 +234,132 @@ function updateLearningStatus() {
     wordCountText.textContent = totalLearnedWords;
   }
 }
+
+// ==========================================================================
+// [신규] 최초 로그인 학생용 '학습 시작일 설정' 온보딩 달력 로직
+// ==========================================================================
+let onboardingSelectedDate = getLocalDateString(new Date());
+let onboardingYear = new Date().getFullYear();
+let onboardingMonth = new Date().getMonth();
+let isOnboardingListenersBound = false;
+
+/**
+ * 한국어 날짜 포맷팅 헬퍼 (예: 2026년 8월 18일 (화))
+ * @param {string} dateStr (YYYY-MM-DD)
+ * @returns {string}
+ */
+function formatKoreanDate(dateStr) {
+  const d = parseLocalDate(dateStr);
+  const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
+  return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 (${dayNames[d.getDay()]})`;
+}
+
+/**
+ * [Comment Policy: 온보딩 시작일 피커 초기화]
+ * 오늘 날짜를 기본값으로 설정하고 달력 그리드와 이벤트 리스너를 준비합니다.
+ */
+function initStartDatePicker() {
+  const today = new Date();
+  onboardingSelectedDate = getLocalDateString(today);
+  onboardingYear = today.getFullYear();
+  onboardingMonth = today.getMonth();
+
+  // 이벤트 리스너 1회 바인딩
+  if (!isOnboardingListenersBound) {
+    const btnPrev = document.getElementById("btn-start-prev-month");
+    const btnNext = document.getElementById("btn-start-next-month");
+
+    if (btnPrev) {
+      btnPrev.onclick = () => {
+        onboardingMonth--;
+        if (onboardingMonth < 0) {
+          onboardingMonth = 11;
+          onboardingYear--;
+        }
+        renderStartDatePickerGrid();
+      };
+    }
+
+    if (btnNext) {
+      btnNext.onclick = () => {
+        onboardingMonth++;
+        if (onboardingMonth > 11) {
+          onboardingMonth = 0;
+          onboardingYear++;
+        }
+        renderStartDatePickerGrid();
+      };
+    }
+
+    isOnboardingListenersBound = true;
+  }
+
+  renderStartDatePickerGrid();
+}
+
+/**
+ * [Comment Policy: 시작일 선택 달력 그리드 렌더링]
+ */
+function renderStartDatePickerGrid() {
+  const titleElem = document.getElementById("start-date-calendar-title");
+  const gridElem = document.getElementById("start-date-calendar-grid");
+  const previewElem = document.getElementById("start-date-selected-preview");
+
+  if (!gridElem || !titleElem) return;
+
+  titleElem.textContent = `${onboardingYear}년 ${onboardingMonth + 1}월`;
+  gridElem.innerHTML = "";
+
+  if (previewElem) {
+    previewElem.textContent = `선택한 시작일: ${formatKoreanDate(onboardingSelectedDate)}`;
+  }
+
+  const firstDayIndex = new Date(onboardingYear, onboardingMonth, 1).getDay();
+  const lastDayDate = new Date(onboardingYear, onboardingMonth + 1, 0).getDate();
+  const todayStr = getLocalDateString(new Date());
+
+  // 이전 달 빈 셀
+  for (let i = 0; i < firstDayIndex; i++) {
+    const emptyCell = document.createElement("div");
+    emptyCell.className = "calendar-day empty";
+    gridElem.appendChild(emptyCell);
+  }
+
+  // 일자 셀 렌더링
+  for (let d = 1; d <= lastDayDate; d++) {
+    const cell = document.createElement("div");
+    cell.className = "start-date-day-cell";
+
+    const numSpan = document.createElement("span");
+    numSpan.className = "day-number";
+    numSpan.textContent = d;
+    cell.appendChild(numSpan);
+
+    const fullD = new Date(onboardingYear, onboardingMonth, d);
+    const dateStr = getLocalDateString(fullD);
+    const dayOfWeek = fullD.getDay();
+
+    // 일요일/토요일 색상 클래스
+    if (dayOfWeek === 0) cell.style.color = "hsl(354, 85%, 70%)";
+    if (dayOfWeek === 6) cell.style.color = "hsl(200, 85%, 70%)";
+
+    // 오늘 날짜 마커
+    if (dateStr === todayStr) {
+      cell.classList.add("today-marker");
+    }
+
+    // 현재 선택된 날짜 하이라이트
+    if (dateStr === onboardingSelectedDate) {
+      cell.classList.add("selected-start-day");
+    }
+
+    // 클릭 시 선택 날짜 변경
+    cell.onclick = () => {
+      onboardingSelectedDate = dateStr;
+      renderStartDatePickerGrid();
+    };
+
+    gridElem.appendChild(cell);
+  }
+}
+

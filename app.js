@@ -10,6 +10,7 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz0mmFTjqYQs8
 
 // 핵심 학습 상태 전역 변수
 let wordDatabase = [];         // 전체 단어장 목록 저장 캐시
+let loadedWordbookLevel = "";  // 현재 메모리에 로드된 단어장 레벨 (예: "단어장-초급", "단어장-중급")
 let currentStudyWords = [];    // 현재 학습 중인 10개 단어 목록
 let currentWordIndex = 0;      // 현재 보고 있는 단어의 인덱스 (0 ~ 9)
 let isWordsLoaded = false;     // 단어 데이터 로딩 여부 플래그
@@ -161,12 +162,19 @@ function hideConnectionLoading() {
 
 /**
  * 구글 스프레드시트 API를 호출하여 전체 단어 데이터를 가져옵니다. (학생 레벨에 매핑)
+ * [Comment Policy: 레벨별 캐시 무효화 적용]
+ * 현재 로드된 레벨과 학생의 레벨이 일치할 때만 캐시를 재사용하고, 레벨이 다르면 항상 최신 단어장을 새로 로드합니다.
+ * @param {string} [targetLevel]
  */
-async function loadWordDatabase() {
-  if (isWordsLoaded) return;
-  // [Comment Policy: active_user 보관소를 sessionStorage로 변경]
+async function loadWordDatabase(targetLevel) {
   const activeUser = JSON.parse(sessionStorage.getItem("active_user"));
-  const level = (activeUser && activeUser.level) ? activeUser.level : "단어장-초급";
+  const level = targetLevel || ((activeUser && activeUser.level) ? activeUser.level : "단어장-초급");
+
+  // 이미 해당 레벨의 단어장이 정상 로드되어 있다면 캐시 재사용
+  if (isWordsLoaded && loadedWordbookLevel === level && wordDatabase.length > 0) {
+    return;
+  }
+
   let isGoogleFetch = !!GOOGLE_SCRIPT_URL;
 
   try {
@@ -211,6 +219,7 @@ async function loadWordDatabase() {
     }
 
     wordDatabase = words;
+    loadedWordbookLevel = level;
     isWordsLoaded = true;
     console.log(`[Database] 단어 데이터 확보 완료: ${wordDatabase.length}개 (${level})`);
   } catch (error) {
@@ -1575,11 +1584,27 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
+  /**
+   * [Comment Policy: 전역 학습 상태 및 단어장 캐시 완전 초기화]
+   * 학생 간 전환이나 로그아웃 시 이전 사용자의 단어장 데이터 및 플래너 상태가 메모리에 잔류하지 않도록 클리어합니다.
+   */
+  function resetGlobalAppState() {
+    wordDatabase = [];
+    isWordsLoaded = false;
+    loadedWordbookLevel = "";
+    currentStudyWords = [];
+    currentWordIndex = 0;
+    plannerState = null;
+    currentSelectedDay = "";
+    currentSelectedSession = 1;
+  }
+
   // 2. 로그아웃 버튼 바인딩
   if (btnLogout) {
     btnLogout.onclick = (e) => {
       e.preventDefault();
       resetSpeechSynthesis(); // 가동 중인 음성 차단
+      resetGlobalAppState();  // [중요] 단어장 캐시 및 플래너 메모리 클리어
 
       // 직전 아이디 저장 후 클리어
       // [Comment Policy: active_user 보관소를 sessionStorage로 변경]
@@ -1610,6 +1635,7 @@ document.addEventListener("DOMContentLoaded", () => {
     btnTeacherLogout.onclick = (e) => {
       e.preventDefault();
       resetSpeechSynthesis();
+      resetGlobalAppState(); // [중요] 단어장 캐시 및 메모리 클리어
 
       // [Comment Policy: active_user 보관소를 sessionStorage로 변경]
       const lastId = JSON.parse(sessionStorage.getItem("active_user"))?.id;

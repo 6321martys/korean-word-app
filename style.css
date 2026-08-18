@@ -1832,3 +1832,45 @@ body {
   line-height: 1;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
 }
+
+/* ==========================================================================
+   [신규] 시작일 설정 온보딩 카드 스타일 (start-date-section)
+   ========================================================================== */
+.start-date-card {
+  animation: fadeIn var(--transition-normal) forwards;
+}
+
+.start-date-day-cell {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.start-date-day-cell:hover {
+  background: rgba(108, 92, 231, 0.15);
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+}
+
+.start-date-day-cell.selected-start-day {
+  background: linear-gradient(135deg, rgba(108, 92, 231, 0.35) 0%, rgba(0, 206, 201, 0.25) 100%) !important;
+  border: 2px solid var(--color-primary) !important;
+  box-shadow: 0 0 16px rgba(108, 92, 231, 0.5), inset 0 0 8px rgba(0, 206, 201, 0.3);
+  color: #ffffff !important;
+  transform: scale(1.04);
+}
+
+.start-date-day-cell.today-marker {
+  box-shadow: inset 0 0 0 1.5px hsl(190, 80%, 50%);
+}

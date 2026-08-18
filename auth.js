@@ -1,17 +1,16 @@
 /**
  * [Comment Policy: 사용자 식별 및 로그인 인증 모듈 (auth.js)]
- * 학생/선생님 계정 정보 매칭 및 구글 스프레드시트 서버와의 API를 통한 90일 최초 일정 생성을 통제합니다.
+ * 학생/선생님 계정 정보 매칭 및 최초 로그인 시 학습시작일/단어장 온보딩 선택 카드 분기를 통제합니다.
  * 구글 스프레드시트 단일 소스 원칙을 엄격히 준수합니다.
  */
 
 /**
- * 구글 스프레드시트에 식별자 검증 요청을 보내는 함수 (JSONP 또는 CORS 처리 대응)
+ * 구글 스프레드시트에 식별자 검증 요청을 보내는 함수
  * @param {string} studentId 
  * @returns {Promise<object|null>}
  */
 async function verifyUserWithGoogleSheet(studentId) {
   // [Comment Policy: 클라이언트 현지 날짜 파라미터 전달]
-  // 로그인 및 서버 시차 보정을 위해 브라우저의 현지 날짜(YYYY-MM-DD)를 파라미터로 함께 전송합니다.
   const today = new Date();
   const year = today.getFullYear();
   const month = String(today.getMonth() + 1).padStart(2, '0');
@@ -22,7 +21,7 @@ async function verifyUserWithGoogleSheet(studentId) {
   const requestUrl = `${GOOGLE_SCRIPT_URL}?id=${encodeURIComponent(studentId)}&clientDate=${localDateStr}&_=${Date.now()}`;
 
   try {
-    showConnectionLoading(); // 구글 서버 통신 중 뱃지 로딩 시작
+    showConnectionLoading();
     const response = await fetch(requestUrl);
     if (!response.ok) {
       throw new Error(`HTTP Error: ${response.status}`);
@@ -42,19 +41,56 @@ async function verifyUserWithGoogleSheet(studentId) {
     updateConnectionStatus(false);
     throw error;
   } finally {
-    hideConnectionLoading(); // 통신 완료 후 로딩 해제
+    hideConnectionLoading();
   }
   return null;
 }
 
 /**
+ * [신규] 구글 스프레드시트에서 유효한 단어장 탭 목록을 비동기 조회하여 온보딩 드롭다운을 갱신합니다.
+ * @param {string} defaultLevel 
+ */
+async function populateWordbookOptions(defaultLevel) {
+  const levelSelect = document.getElementById("onboarding-level-select");
+  if (!levelSelect) return;
+
+  if (GOOGLE_SCRIPT_URL) {
+    try {
+      const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getWordbookList&_=${Date.now()}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.success && Array.isArray(data.wordbooks) && data.wordbooks.length > 0) {
+          levelSelect.innerHTML = "";
+          data.wordbooks.forEach(wb => {
+            const opt = document.createElement("option");
+            opt.value = wb;
+            opt.textContent = wb;
+            if (wb === defaultLevel) {
+              opt.selected = true;
+            }
+            levelSelect.appendChild(opt);
+          });
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn("단어장 목록 동적 조회 실패. 기본 옵션 유지:", err);
+    }
+  }
+
+  // 폴백: 기본값 선택
+  if (defaultLevel) {
+    levelSelect.value = defaultLevel;
+  }
+}
+
+/**
  * 로그인 성공 시 화면을 환영 페이지로 전환하는 함수
- * 최초 로그인 학생의 경우 90일 학습 경로 일괄 등록 절차를 수행합니다.
+ * [개편] 최초 로그인 학생의 경우 '학습시작일 및 단어장 설정' 온보딩 카드로 먼저 진입합니다.
  * @param {object} user 
  */
 async function showWelcomeScreen(user) {
   // [Comment Policy: 선생님 역할 로그인 세션 분기]
-  // 로그인한 사용자의 권한이 'teacher'일 경우, 학생용 메인 메뉴 대신 선생님 전용 어드민 대시보드를 노출합니다.
   if (user.role === "teacher") {
     initTeacherDashboard();
 
@@ -69,54 +105,101 @@ async function showWelcomeScreen(user) {
     return;
   }
 
-  // 최초 로그인인 경우 90일치 벌크 등록 수행
+  // [Comment Policy: 최초 로그인 시 '학습시작일 및 단어장 설정' 전용 온보딩 카드 활성화]
   if (user.isFirstLogin) {
-    const overlay = document.getElementById("bulk-register-overlay");
-    if (overlay) {
-      overlay.classList.remove("hidden");
-      overlay.classList.add("active");
-    }
+    loginSection.classList.add("hidden");
+    loginSection.classList.remove("active");
 
-    // 백엔드 벌크 생성 요청
-    let registerSuccess = false;
-    if (GOOGLE_SCRIPT_URL) {
-      registerSuccess = await registerPlannerWithGoogleSheet(user.id, user.level);
-    }
+    const startDateSection = document.getElementById("start-date-section");
+    if (startDateSection) {
+      startDateSection.classList.remove("hidden");
+      startDateSection.classList.add("active");
 
-    if (overlay) {
-      overlay.classList.remove("active");
-      overlay.classList.add("hidden");
-    }
+      // 시작일 선택 달력 초기화
+      initStartDatePicker();
 
-    if (!registerSuccess) {
-      showError("학습 일정을 생성하지 못했습니다. 관리자에게 문의해 주세요.");
-      return;
-    }
+      // [신규] 구글 시트의 단어장 목록 동적 로드 및 기본 레벨 선택
+      populateWordbookOptions(user.level || "단어장-초급");
 
-    // 최초 로그인 처리 완료로 상태 변경
-    user.isFirstLogin = false;
-    sessionStorage.setItem("active_user", JSON.stringify(user));
+      // 시작일 및 단어장 확정 버튼 바인딩
+      const btnConfirmStart = document.getElementById("btn-confirm-start-date");
+      if (btnConfirmStart) {
+        btnConfirmStart.onclick = async () => {
+          btnConfirmStart.disabled = true;
+
+          // 드롭다운에서 선택된 단어장(레벨) 읽기
+          const levelSelect = document.getElementById("onboarding-level-select");
+          const chosenLevel = (levelSelect && levelSelect.value) ? levelSelect.value : (user.level || "단어장-초급");
+
+          const overlay = document.getElementById("bulk-register-overlay");
+          if (overlay) {
+            overlay.classList.remove("hidden");
+            overlay.classList.add("active");
+          }
+
+          // 선택된 시작일(onboardingSelectedDate) 및 단어장(chosenLevel) 기준으로 90일 벌크 생성
+          const registerSuccess = await registerPlannerWithGoogleSheet(user.id, chosenLevel, onboardingSelectedDate);
+
+          if (overlay) {
+            overlay.classList.remove("active");
+            overlay.classList.add("hidden");
+          }
+
+          btnConfirmStart.disabled = false;
+
+          if (!registerSuccess) {
+            showError("학습 일정을 생성하지 못했습니다. 관리자에게 문의해 주세요.");
+            return;
+          }
+
+          // 온보딩 완료 처리 및 선택된 레벨 반영
+          user.level = chosenLevel;
+          user.isFirstLogin = false;
+          sessionStorage.setItem("active_user", JSON.stringify(user));
+
+          // [Comment Policy: 온보딩에서 선택한 단어장 레벨로 단어 데이터 강제 리셋 및 재로드 준비]
+          if (typeof isWordsLoaded !== "undefined") isWordsLoaded = false;
+          if (typeof loadedWordbookLevel !== "undefined") loadedWordbookLevel = "";
+          if (typeof wordDatabase !== "undefined") wordDatabase = [];
+
+          // 시작일 카드 숨김 후 메인 웰컴 화면 진입
+          startDateSection.classList.remove("active");
+          startDateSection.classList.add("hidden");
+          enterMainWelcomeScreen(user);
+        };
+      }
+    }
+    return;
   }
 
-  // [Comment Policy: 로그인한 학생의 이름 다중 바인딩 처리]
+  // 기존 학생: 바로 메인 웰컴 화면 진입
+  enterMainWelcomeScreen(user);
+}
+
+/**
+ * 메인 웰컴 및 달력 대시보드 진입 헬퍼 함수
+ * @param {object} user 
+ */
+function enterMainWelcomeScreen(user) {
+  // 로그인한 학생의 이름 바인딩
   if (userDisplayId1) userDisplayId1.textContent = user.name;
   if (userDisplayId2) userDisplayId2.textContent = user.name;
 
-  // [Comment Policy: 로그인 시 준비물 체크박스 초기화 처리]
+  // 준비물 체크박스 초기화
   const chkNotebook = document.getElementById("chk-notebook");
   const chkPen = document.getElementById("chk-pen");
   if (chkNotebook) chkNotebook.checked = false;
   if (chkPen) chkPen.checked = false;
 
-  // 유저 권한에 따라 웰컴 배지 스타일링 분기 처리
+  // 배지 설정
   userRoleBadge.className = "user-type-badge";
   userRoleBadge.textContent = "학생";
   userRoleBadge.classList.add("student");
 
-  // 로그인 성공 즉시 플래너 시스템 및 단어장 백그라운드 로드 시작
+  // 플래너 시스템 및 단어장 로드
   initPlannerSystem(user.id);
 
-  // 섹션 전환 애니메이션 클래스 토글
+  // 섹션 전환
   loginSection.classList.add("hidden");
   loginSection.classList.remove("active");
   welcomeSection.classList.add("active");
@@ -127,17 +210,12 @@ async function showWelcomeScreen(user) {
  * 최초 로그인 시 구글 시트에 90일 학습 일정을 벌크 생성하도록 백엔드에 요청합니다.
  * @param {string} studentId 
  * @param {string} level 
+ * @param {string} selectedStartDate (YYYY-MM-DD)
  * @returns {Promise<boolean>}
  */
-async function registerPlannerWithGoogleSheet(studentId, level) {
-  // [Comment Policy: 클라이언트 현지 날짜 파라미터 전달]
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
-  const localDateStr = `${year}-${month}-${day}`;
-
-  const requestUrl = `${GOOGLE_SCRIPT_URL}?action=registerPlanner&id=${encodeURIComponent(studentId)}&level=${encodeURIComponent(level)}&clientDate=${localDateStr}&_=${Date.now()}`;
+async function registerPlannerWithGoogleSheet(studentId, level, selectedStartDate) {
+  const startDateStr = selectedStartDate || getLocalDateString(new Date());
+  const requestUrl = `${GOOGLE_SCRIPT_URL}?action=registerPlanner&id=${encodeURIComponent(studentId)}&level=${encodeURIComponent(level)}&startDate=${encodeURIComponent(startDateStr)}&_=${Date.now()}`;
   try {
     showConnectionLoading();
     const response = await fetch(requestUrl);
