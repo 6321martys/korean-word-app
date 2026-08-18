@@ -1,6 +1,7 @@
 /**
  * [Comment Policy: 사용자 식별 및 로그인 인증 모듈 (auth.js)]
  * 학생/선생님 계정 정보 매칭 및 구글 스프레드시트 서버와의 API를 통한 90일 최초 일정 생성을 통제합니다.
+ * 구글 스프레드시트 단일 소스 원칙을 엄격히 준수합니다.
  */
 
 /**
@@ -10,7 +11,7 @@
  */
 async function verifyUserWithGoogleSheet(studentId) {
   // [Comment Policy: 클라이언트 현지 날짜 파라미터 전달]
-  // 주말(토, 일) 로그인 및 서버 시차 보정을 위해 브라우저의 현지 날짜(YYYY-MM-DD)를 파라미터로 함께 전송합니다.
+  // 로그인 및 서버 시차 보정을 위해 브라우저의 현지 날짜(YYYY-MM-DD)를 파라미터로 함께 전송합니다.
   const today = new Date();
   const year = today.getFullYear();
   const month = String(today.getMonth() + 1).padStart(2, '0');
@@ -29,7 +30,7 @@ async function verifyUserWithGoogleSheet(studentId) {
 
     const result = await response.json();
     if (result && result.success) {
-      updateConnectionStatus(true); // [Comment Policy: 구글 연동 뱃지 상태 업데이트]
+      updateConnectionStatus(true);
       return {
         name: result.name || studentId,
         role: result.role || "student",
@@ -38,7 +39,7 @@ async function verifyUserWithGoogleSheet(studentId) {
       };
     }
   } catch (error) {
-    updateConnectionStatus(false); // [Comment Policy: 구글 연동 실패 상태 업데이트]
+    updateConnectionStatus(false);
     throw error;
   } finally {
     hideConnectionLoading(); // 통신 완료 후 로딩 해제
@@ -80,10 +81,6 @@ async function showWelcomeScreen(user) {
     let registerSuccess = false;
     if (GOOGLE_SCRIPT_URL) {
       registerSuccess = await registerPlannerWithGoogleSheet(user.id, user.level);
-    } else {
-      // 로컬 모드 폴백 (로컬 스토리지에 벌크 상태 적재 모의 처리)
-      await delay(1500); // 1.5초 연출 대기
-      registerSuccess = true;
     }
 
     if (overlay) {
@@ -98,28 +95,25 @@ async function showWelcomeScreen(user) {
 
     // 최초 로그인 처리 완료로 상태 변경
     user.isFirstLogin = false;
-    // [Comment Policy: 자동 로그인 세션 sessionStorage로 변경] 브라우저 종료 시 자동 로그아웃되도록 세션 스토리지 사용
     sessionStorage.setItem("active_user", JSON.stringify(user));
   }
 
   // [Comment Policy: 로그인한 학생의 이름 다중 바인딩 처리]
-  // 신규 가이드 메시지 템플릿에 맞추어 두 군데의 이름 영역에 사용자의 이름을 동일하게 주입합니다.
   if (userDisplayId1) userDisplayId1.textContent = user.name;
   if (userDisplayId2) userDisplayId2.textContent = user.name;
 
   // [Comment Policy: 로그인 시 준비물 체크박스 초기화 처리]
-  // 사용자의 명시적인 요구사항(로그인할 때마다 체크 초기화)에 맞추어 체크박스 상태를 리셋합니다.
   const chkNotebook = document.getElementById("chk-notebook");
   const chkPen = document.getElementById("chk-pen");
   if (chkNotebook) chkNotebook.checked = false;
   if (chkPen) chkPen.checked = false;
 
   // 유저 권한에 따라 웰컴 배지 스타일링 분기 처리
-  userRoleBadge.className = "user-type-badge"; // 클래스 리셋
+  userRoleBadge.className = "user-type-badge";
   userRoleBadge.textContent = "학생";
   userRoleBadge.classList.add("student");
 
-  // [신규] 로그인 성공 즉시 플래너 시스템 및 단어장 백그라운드 로드 시작
+  // 로그인 성공 즉시 플래너 시스템 및 단어장 백그라운드 로드 시작
   initPlannerSystem(user.id);
 
   // 섹션 전환 애니메이션 클래스 토글
@@ -137,7 +131,6 @@ async function showWelcomeScreen(user) {
  */
 async function registerPlannerWithGoogleSheet(studentId, level) {
   // [Comment Policy: 클라이언트 현지 날짜 파라미터 전달]
-  // 플래너 생성 시 서버 시차에 영향을 받지 않고 주말 차단을 적용하기 위해 브라우저의 현지 날짜를 백엔드에 보냅니다.
   const today = new Date();
   const year = today.getFullYear();
   const month = String(today.getMonth() + 1).padStart(2, '0');

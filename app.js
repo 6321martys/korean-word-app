@@ -5,19 +5,8 @@
  * ==========================================================================
  */
 
-// [중요 설정] 구글 스프레드시트 웹 앱(GAS) 배포 후 생성된 URL을 여기에 넣으세요.
-// 이 변수가 비어있는 경우에는 로컬 Mock 데이터 기반으로 로그인 테스트가 진행됩니다.
+// [중요 설정] 구글 스프레드시트 웹 앱(GAS) 배포 후 생성된 URL
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz0mmFTjqYQs8Irzpnqq1S6PFyvFHt4gUO_YCAL0iGItXL-d7br2yWp17Z9fPfSvxjI/exec";
-
-// [Comment Policy: Mock 사용자 데이터베이스 수정]
-// 로그인 다국어 지원 정책 수정(한국어 제외, 영어 추가)에 맞춰 우즈벡어 학생 데이터인 '2026-test3'을 '아지즈 (영어)'로 변경하여,
-// 로그인 이후 단어 노출 시 영어 번역 데이터를 검증하기 수월하도록 설정합니다.
-const MOCK_USER_DB = {
-  "2026-test1": { name: "김민준 (중국어)", role: "student" },
-  "2026-test2": { name: "흐엉 (베트남어)", role: "student" },
-  "2026-test3": { name: "아지즈 (영어)", role: "student" },
-  "teacher-admin": { name: "선생님 (관리자)", role: "teacher" }
-};
 
 // 핵심 학습 상태 전역 변수
 let wordDatabase = [];         // 전체 단어장 목록 저장 캐시
@@ -1407,6 +1396,7 @@ function renderCompletionScreen() {
     completionSection.classList.remove("warning-score");
   }
 
+  // [Comment Policy: 정답률 80% 기준 학습 완료 분기]
   if (accuracyPercent >= 90) {
     // 90 ~ 100%
     if (completionIcon) completionIcon.textContent = "🏆";
@@ -1416,28 +1406,20 @@ function renderCompletionScreen() {
     }
     if (btnGoMenu) btnGoMenu.disabled = false;
   } else if (accuracyPercent >= 80) {
-    // 80 ~ 89%
+    // 80 ~ 89% (학습 완료 인정)
     if (completionIcon) completionIcon.textContent = "✨";
-    if (completionTitle) completionTitle.textContent = "안타깝습니다.<br>다시 할까요? 그만 할까요?";
+    if (completionTitle) completionTitle.textContent = "오늘 단어 학습 완료!";
     if (completionMsg) {
-      completionMsg.innerHTML = "복습을 원하시면 '학습 다시하기'를,<br>완료하려면 '메인 메뉴로'를 누르세요.";
-    }
-    if (btnGoMenu) btnGoMenu.disabled = false;
-  } else if (accuracyPercent >= 70) {
-    // 70 ~ 79%
-    if (completionIcon) completionIcon.textContent = "💪";
-    if (completionTitle) completionTitle.textContent = "안타깝습니다.<br>다시 해야 합니다.";
-    if (completionMsg) {
-      completionMsg.innerHTML = "목표 정답률(80% 이상)에 도달하지 못했습니다.";
+      completionMsg.innerHTML = "잘하셨습니다! 목표 정답률(80% 이상)을 달성하여 오늘 학습을 완료했습니다.";
     }
     if (btnGoMenu) btnGoMenu.disabled = false;
   } else {
-    // 70% 미만 (< 70%)
+    // 80% 미만 (< 80% - 미완료 / 재도전 강제)
     if (completionSection) completionSection.classList.add("warning-score");
     if (completionIcon) completionIcon.textContent = "⚠️";
     if (completionTitle) completionTitle.textContent = "처음부터 다시 해야 합니다.";
     if (completionMsg) {
-      completionMsg.innerHTML = "정답률이 70% 미만입니다.";
+      completionMsg.innerHTML = "정답률이 80% 미만입니다.<br>단어를 더 확실히 암기하기 위해 처음부터 다시 학습을 완료해야 합니다.";
     }
     // '메인 메뉴로' 버튼 비활성화 (다시하기만 강제)
     if (btnGoMenu) {
@@ -1457,7 +1439,7 @@ function renderCompletionScreen() {
 }
 
 /**
- * 학습을 완료한 회차 세션의 진척도를 서버와 로컬에 저장합니다.
+ * 학습을 완료한 회차 세션의 진척도를 구글 스프레드시트 서버와 메모리 상태에 반영합니다.
  * @param {string} dayLabel
  * @param {number} session
  */
@@ -1485,48 +1467,31 @@ async function recordSessionProgress(dayLabel, session) {
       }
     }
 
-    // 2. 로컬 모드 또는 구글 API 에러 대비 로컬 스토리지 동기화 (오프라인 가동 보장)
-    const localKey = `planner_session_${activeUser.id}`;
-    let localData = localStorage.getItem(localKey);
-
-    if (localData) {
-      const parsed = JSON.parse(localData);
-      const targetRecord = parsed.words.find(w => w.dayLabel === dayLabel && w.session === session);
+    // 2. 메모리 상의 plannerState 실시간 갱신 (할당일자 기준 지각/완료 판정)
+    if (plannerState && plannerState.words) {
+      const targetRecord = plannerState.words.find(w => w.dayLabel === dayLabel && w.session === session);
 
       if (targetRecord) {
-        // 이 Day의 전체 3회차 종료일(마감일) 찾기
-        const dayEndRecord = parsed.words.find(w => w.dayLabel === dayLabel && w.session === 3);
-        const dayEndStr = dayEndRecord ? dayEndRecord.endDate : targetRecord.endDate;
-
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        const dayEndDate = parseLocalDate(dayEndStr);
-        dayEndDate.setHours(0, 0, 0, 0);
+        const assignDate = parseLocalDate(targetRecord.startDate);
+        assignDate.setHours(0, 0, 0, 0);
 
-        const isLate = today.getTime() > dayEndDate.getTime();
+        const isLate = today.getTime() > assignDate.getTime();
 
-        if (isLate) {
-          // 기한이 만료된 지각 복습 완료 시: 최초출석을 찍지 않고 '지각' 보존
-          targetRecord.status = "지각";
-        } else {
-          // 정상 완료 시: 최초출석을 기록하고 '학습 완료' 상태로 전환
-          targetRecord.attendanceDate = new Date().toLocaleString();
-          targetRecord.status = "학습 완료";
-        }
-
-        localStorage.setItem(localKey, JSON.stringify(parsed));
-
-        // 메모리 상의 plannerState 도 실시간 갱신
-        plannerState = parsed;
-
-        if (!GOOGLE_SCRIPT_URL) {
-          success = true;
+        // [Comment Policy: 지각 상태 회차 사후 학습 시 지각 유지 (방안 A)]
+        if (targetRecord.status !== "학습 완료") {
+          if (isLate) {
+            targetRecord.status = "지각";
+          } else {
+            targetRecord.status = "학습 완료";
+          }
         }
       }
     }
 
     if (!success) {
-      console.warn("진도 동기화 실패. 로컬에 백업되었습니다.");
+      console.warn("구글 시트 진도 동기화 요청 실패.");
     }
   } catch (error) {
     console.error("진도 전송 실패:", error);
@@ -1549,7 +1514,7 @@ async function initPlannerSystem(studentId) {
   // 1. 단어 데이터베이스가 준비되지 않았다면 백그라운드 로드 수행
   await loadWordDatabase();
 
-  // 2. 구글 API 또는 로컬 가짜 데이터에서 학생 플래너 세션 조회
+  // 2. 구글 스프레드시트에서 학생 플래너 세션 조회
   await loadPlannerState(studentId);
 
   if (globalLoader) {
@@ -1581,22 +1546,9 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         let authResult = null;
 
-        // 구글 연동 중일 때
+        // 구글 스프레드시트 단일 인증
         if (GOOGLE_SCRIPT_URL) {
           authResult = await verifyUserWithGoogleSheet(studentId);
-        } else {
-          // 로컬 Mock 모드 기동
-          await delay(800); // 0.8초 딜레이
-          if (MOCK_USER_DB[studentId]) {
-            const mock = MOCK_USER_DB[studentId];
-            authResult = {
-              name: mock.name,
-              role: mock.role,
-              level: (studentId === "2026-test2") ? "단어장-중급" : "단어장-초급", // 베트남 학생 중급 고정
-              isFirstLogin: !localStorage.getItem(`planner_session_${studentId}`)
-            };
-            updateConnectionStatus(false);
-          }
         }
 
         if (authResult) {
@@ -1605,10 +1557,8 @@ document.addEventListener("DOMContentLoaded", () => {
           authResult.id = studentId;
 
           // 로그인 세션 보존
-          // [Comment Policy: active_user 보관소를 sessionStorage로 변경]
           sessionStorage.setItem("active_user", JSON.stringify(authResult));
           sessionStorage.setItem("last_logged_in_id", studentId); // 자동완성용 백업
-          // [Comment Policy: 로그인 성공 즉시 세션 시작/마지막 활동 시간을 로컬스토리지에 저장]
           localStorage.setItem("session_last_active", Date.now().toString());
 
           // 대시보드 또는 웰컴 화면 출력
@@ -1688,8 +1638,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // [Comment Policy: 미니게임 건너뛰기 디버그 단축키 연동]
   // Ctrl 키를 누른 채 비활성화된 '다음' 버튼(또는 .minigame-badge)을 클릭하면
-  // 해당 문항을 즉시 오답(스킵) 처리하고 다음 문항/게임으로 자동 직행합니다.
-  // button이 disabled 상태여도 캡처링(capture: true) 단계에서 안전하게 가로채어 실행합니다.
+  // 해당 문항을 즉시 '정답' 처리하고 다음 문항/게임으로 자동 직행합니다.
   document.addEventListener("pointerdown", (e) => {
     if (!e.ctrlKey) return;
 
@@ -1699,33 +1648,42 @@ document.addEventListener("DOMContentLoaded", () => {
     if (targetNextBtn || targetBadge) {
       e.preventDefault();
       e.stopPropagation();
-      console.log("[디버그 모드] Ctrl + '다음' 버튼 클릭 감지 - 현재 문항 오답 처리 및 즉시 스킵");
+      console.log("[디버그 모드] Ctrl + 클릭 감지 - 현재 문항 정답 처리 및 즉시 스킵");
 
       if (minigame1Section && minigame1Section.classList.contains("active")) {
-        // 1번 미니게임 (카드 매칭):
+        // 1번 미니게임 (카드 매칭): 남은 매칭 문항 전체 정답 처리 후 다음 단계로
+        const remaining = Math.max(0, (miniGame1Words.length || 9) - currentMiniGame1Index);
+        accuracyTracker.firstTryCorrect += remaining;
+        currentMiniGame1Index = miniGame1Words.length || 9;
         if (btnMinigame1Next) {
           btnMinigame1Next.disabled = false;
           btnMinigame1Next.click();
         }
       } else if (minigame2Section && minigame2Section.classList.contains("active")) {
-        // 2번 미니게임 (사지선다 10문제):
-        accuracyTracker.currentQuestionFailed = true;
+        // 2번 미니게임 (사지선다): 정답 카운트 누적
+        if (!accuracyTracker.currentQuestionFailed) {
+          accuracyTracker.firstTryCorrect++;
+        }
         isMiniGame2CurrentAnswered = true;
         if (btnMinigame2Next) {
           btnMinigame2Next.disabled = false;
           btnMinigame2Next.click();
         }
       } else if (minigame3Section && minigame3Section.classList.contains("active")) {
-        // 3번 미니게임 (빈칸 타이핑 10문제):
-        accuracyTracker.currentQuestionFailed = true;
+        // 3번 미니게임 (빈칸 타이핑): 정답 카운트 누적
+        if (!accuracyTracker.currentQuestionFailed) {
+          accuracyTracker.firstTryCorrect++;
+        }
         isMiniGame3Answered = true;
         if (btnMinigame3Next) {
           btnMinigame3Next.disabled = false;
           btnMinigame3Next.click();
         }
       } else if (minigame4Section && minigame4Section.classList.contains("active")) {
-        // 4번 미니게임 (듣고 사지선다 10문제):
-        accuracyTracker.currentQuestionFailed = true;
+        // 4번 미니게임 (듣고 사지선다): 정답 카운트 누적
+        if (!accuracyTracker.currentQuestionFailed) {
+          accuracyTracker.firstTryCorrect++;
+        }
         isMiniGame4Answered = true;
         if (btnMinigame4Next) {
           btnMinigame4Next.disabled = false;
@@ -1986,8 +1944,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const correct = accuracyTracker.firstTryCorrect;
         const accuracyPercent = Math.min(100, Math.max(0, Math.round((correct / total) * 100)));
 
-        // 70% 이상 달성 시 세션 진도 및 출석 정상 저장
-        if (accuracyPercent >= 70) {
+        // [Comment Policy: 정답률 80% 이상 달성 시 세션 진도 및 출석 정상 저장]
+        if (accuracyPercent >= 80) {
           const globalLoader = document.getElementById("global-loading-overlay");
           if (globalLoader) {
             globalLoader.classList.remove("hidden");
