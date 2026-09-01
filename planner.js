@@ -8,8 +8,9 @@
 let plannerState = null;       // 학생 플래너 세션 정보 객체
 let currentSelectedDay = "";   // 현재 선택된 학습 일차 (예: "Day 1")
 let currentSelectedSession = 1;// 현재 선택된 학습 회차 (1, 2, 3)
-let calendarYear = 2026;       // 달력 활성 년도
-let calendarMonth = 6;         // 달력 활성 월 (0: 1월, 6: 7월)
+const initToday = new Date();
+let calendarYear = initToday.getFullYear();   // 달력 활성 년도 (오늘 날짜 기본값)
+let calendarMonth = initToday.getMonth();     // 달력 활성 월 (0: 1월, 오늘 날짜 기본값)
 
 /**
  * 윈도우 시간대 오차(Timezone Offset)를 배제하고 로컬 시간 객체를 구하는 파서 헬퍼
@@ -50,7 +51,8 @@ async function loadPlannerState(studentId) {
     if (GOOGLE_SCRIPT_URL) {
       // 1. [구글 스프레드시트 연동] 플래너 세션 조회 API 요청
       const requestUrl = `${GOOGLE_SCRIPT_URL}?action=getPlannerState&id=${encodeURIComponent(studentId)}&_=${Date.now()}`;
-      const response = await fetch(requestUrl);
+      const fetchFn = typeof fetchWithRetry === "function" ? fetchWithRetry : fetch;
+      const response = await fetchFn(requestUrl);
       if (response.ok) {
         const result = await response.json();
         if (result && result.success) {
@@ -104,14 +106,10 @@ async function loadPlannerState(studentId) {
     // 전역 상태에 바인딩
     plannerState = state;
 
-    // 가장 첫 번째 회차의 시작일을 기준으로 달력의 활성화 월 설정
+    // [Comment Policy: 시작일 및 종료일 정보 보관 (달력은 오늘 날짜 기준 렌더링 유지)]
     if (plannerState.words && plannerState.words.length > 0) {
       plannerState.startDate = plannerState.words[0].startDate;
       plannerState.endDate = plannerState.words[plannerState.words.length - 1].endDate;
-
-      const baseDate = parseLocalDate(plannerState.startDate);
-      calendarYear = baseDate.getFullYear();
-      calendarMonth = baseDate.getMonth();
     }
 
     // 2. 플래너 달력 렌더링 및 상태 반영

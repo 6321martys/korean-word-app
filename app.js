@@ -6,7 +6,8 @@
  */
 
 // [중요 설정] 구글 스프레드시트 웹 앱(GAS) 배포 후 생성된 URL
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz0mmFTjqYQs8Irzpnqq1S6PFyvFHt4gUO_YCAL0iGItXL-d7br2yWp17Z9fPfSvxjI/exec";
+var GOOGLE_SCRIPT_URL = window.GOOGLE_SCRIPT_URL || "https://script.google.com/macros/s/AKfycbz0mmFTjqYQs8Irzpnqq1S6PFyvFHt4gUO_YCAL0iGItXL-d7br2yWp17Z9fPfSvxjI/exec";
+window.GOOGLE_SCRIPT_URL = GOOGLE_SCRIPT_URL;
 
 // 핵심 학습 상태 전역 변수
 let wordDatabase = [];         // 전체 단어장 목록 저장 캐시
@@ -183,7 +184,8 @@ async function loadWordDatabase(targetLevel) {
     // 구글 API 지원 시
     if (GOOGLE_SCRIPT_URL) {
       const requestUrl = `${GOOGLE_SCRIPT_URL}?action=getWords&level=${encodeURIComponent(level)}&_=${Date.now()}`;
-      const response = await fetch(requestUrl);
+      const fetchFn = typeof fetchWithRetry === "function" ? fetchWithRetry : fetch;
+      const response = await fetchFn(requestUrl);
       if (response.ok) {
         const result = await response.json();
         if (result && result.success && Array.isArray(result.words)) {
@@ -197,31 +199,14 @@ async function loadWordDatabase(targetLevel) {
       }
     }
 
-    // 실패 시 로컬 CSV 폴백 (초급 또는 중급 파일 분기 시도)
-    if (words.length === 0) {
-      const isIntermediate = level.includes("중급");
-      const csvPath = isIntermediate ? "단어장/단어장-중급.csv" : "단어장/단어장-초급.csv";
-
-      try {
-        const localCsvResponse = await fetch(csvPath);
-        if (localCsvResponse.ok) {
-          const csvText = await localCsvResponse.text();
-          words = parseLocalCsv(csvText);
-        }
-      } catch (err) {
-        // 단어장 단일 파일 폴백
-        const fallbackResponse = await fetch("단어장/단어장.csv");
-        if (fallbackResponse.ok) {
-          const csvText = await fallbackResponse.text();
-          words = parseLocalCsv(csvText);
-        }
-      }
+    if (words.length > 0) {
+      wordDatabase = words;
+      loadedWordbookLevel = level;
+      isWordsLoaded = true;
+      console.log(`[Database] 단어 데이터 확보 완료: ${wordDatabase.length}개 (${level})`);
+    } else {
+      console.warn(`[Database] 단어 데이터를 불러오지 못했습니다. (${level})`);
     }
-
-    wordDatabase = words;
-    loadedWordbookLevel = level;
-    isWordsLoaded = true;
-    console.log(`[Database] 단어 데이터 확보 완료: ${wordDatabase.length}개 (${level})`);
   } catch (error) {
     console.error("[Database] 단어 데이터 로드 오류:", error);
     updateConnectionStatus(false);
@@ -230,56 +215,7 @@ async function loadWordDatabase(targetLevel) {
   }
 }
 
-/**
- * 로컬 CSV 텍스트를 파싱하여 객체 배열로 정제하는 헬퍼 함수
- * 쉼표(,) 및 큰따옴표("")의 감싸기 텍스트(예: "nhà, chuyên gia")를 정확히 처리
- * @param {string} text 
- * @returns {Array<object>}
- */
-function parseLocalCsv(text) {
-  const lines = text.split(/\r?\n/);
-  const result = [];
 
-  // 헤더가 있는 1행을 제외하고 2행부터 파싱
-  for (let i = 1; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (!line) continue;
-
-    const row = [];
-    let inQuotes = false;
-    let currentVal = '';
-
-    for (let j = 0; j < line.length; j++) {
-      const char = line[j];
-      if (char === '"') {
-        inQuotes = !inQuotes;
-      } else if (char === ',' && !inQuotes) {
-        row.push(currentVal.trim());
-        currentVal = '';
-      } else {
-        currentVal += char;
-      }
-    }
-    row.push(currentVal.trim());
-
-    if (row.length >= 7) {
-      // 30단어마다 1일차씩 동적 매핑 (Day 1 ~ Day 30)
-      const dayIndex = Math.floor((result.length) / 30) + 1;
-      result.push({
-        dayLabel: `Day ${dayIndex}`,
-        level: row[0],
-        word: row[1],
-        guide: row[2] || "",
-        pos: row[3] || "",
-        vi: row[4],
-        zh: row[5],
-        en: row[6],
-        note: row[7] || ''
-      });
-    }
-  }
-  return result;
-}
 
 /**
  * 특정 일차(예: "Day 1")의 특정 회차(1, 2, 3)에 배정된 10단어 학습을 가동합니다.
@@ -1409,7 +1345,7 @@ function renderCompletionScreen() {
   if (accuracyPercent >= 90) {
     // 90 ~ 100%
     if (completionIcon) completionIcon.textContent = "🏆";
-    if (completionTitle) completionTitle.textContent = "오늘 단어 학습 성공!!";
+    if (completionTitle) completionTitle.textContent = "오늘 단어 학습 OK!!";
     if (completionMsg) {
       completionMsg.innerHTML = "축하합니다! 훌륭한 성적으로 오늘의 10개 단어를 완벽하게 마스터했습니다.";
     }
@@ -1428,7 +1364,7 @@ function renderCompletionScreen() {
     if (completionIcon) completionIcon.textContent = "⚠️";
     if (completionTitle) completionTitle.textContent = "처음부터 다시 해야 합니다.";
     if (completionMsg) {
-      completionMsg.innerHTML = "정답률이 80% 미만입니다.<br>단어를 더 확실히 암기하기 위해 처음부터 다시 학습을 완료해야 합니다.";
+      completionMsg.innerHTML = "정답률이 80% 미만입니다. 단어를 더 확실히 암기하기 위해 처음부터 다시 학습을 완료해야 합니다.";
     }
     // '메인 메뉴로' 버튼 비활성화 (다시하기만 강제)
     if (btnGoMenu) {
@@ -1448,11 +1384,15 @@ function renderCompletionScreen() {
 }
 
 /**
- * 학습을 완료한 회차 세션의 진척도를 구글 스프레드시트 서버와 메모리 상태에 반영합니다.
- * @param {string} dayLabel
- * @param {number} session
+ * [Comment Policy: 학습 세션 진도 및 미니게임 점수 누적 기록 동기화]
+ * 학습을 완료한 회차 세션의 진척도 및 미니게임 점수(예: 39문제 중 맞힌 개수)를
+ * 구글 스프레드시트 '학습기록' 시트의 '점수기록'(E열)에 콤마(,) 구분자로 차곡차곡 누적 저장합니다.
+ * @param {string} dayLabel - Day 라벨 (예: "Day 1")
+ * @param {number} session - 회차 번호 (예: 1)
+ * @param {number} [score] - 미니게임에서 맞힌 문제 수 (예: 21, 38, 24 등)
+ * @param {boolean} [isPassed=true] - 80% 이상 합격 여부 (지각 여부와 무관하게 점수는 항상 누적 기록)
  */
-async function recordSessionProgress(dayLabel, session) {
+async function recordSessionProgress(dayLabel, session, score, isPassed = true) {
   // [Comment Policy: active_user 보관소를 sessionStorage로 변경]
   const activeUser = JSON.parse(sessionStorage.getItem("active_user"));
   if (!activeUser) return;
@@ -1464,9 +1404,14 @@ async function recordSessionProgress(dayLabel, session) {
     let success = false;
 
     if (GOOGLE_SCRIPT_URL) {
-      // 1. 구글 스프레드시트 세션 진도 전송 API 요청
-      const requestUrl = `${GOOGLE_SCRIPT_URL}?action=submitSessionProgress&id=${encodeURIComponent(activeUser.id)}&dayLabel=${encodeURIComponent(dayLabel)}&session=${session}&_=${Date.now()}`;
-      const response = await fetch(requestUrl);
+      // 1. 구글 스프레드시트 세션 진도 및 점수기록 전송 API 요청
+      let requestUrl = `${GOOGLE_SCRIPT_URL}?action=submitSessionProgress&id=${encodeURIComponent(activeUser.id)}&dayLabel=${encodeURIComponent(dayLabel)}&session=${session}&_=${Date.now()}`;
+      if (score !== undefined && score !== null) {
+        requestUrl += `&score=${encodeURIComponent(score)}&passed=${isPassed ? "true" : "false"}`;
+      }
+
+      const fetchFn = typeof fetchWithRetry === "function" ? fetchWithRetry : fetch;
+      const response = await fetchFn(requestUrl);
       if (response.ok) {
         const result = await response.json();
         if (result && result.success) {
@@ -1476,11 +1421,17 @@ async function recordSessionProgress(dayLabel, session) {
       }
     }
 
-    // 2. 메모리 상의 plannerState 실시간 갱신 (할당일자 기준 지각/완료 판정)
+    // 2. 메모리 상의 plannerState 실시간 갱신 (점수 누적 및 할당일자 기준 지각/완료 판정)
     if (plannerState && plannerState.words) {
       const targetRecord = plannerState.words.find(w => w.dayLabel === dayLabel && w.session === session);
 
       if (targetRecord) {
+        // 미니게임 점수기록 메모리 갱신 (예: "21" -> "21,38")
+        if (score !== undefined && score !== null) {
+          const oldScore = targetRecord.scoreRecord ? String(targetRecord.scoreRecord).trim() : "";
+          targetRecord.scoreRecord = oldScore ? (oldScore + "," + score) : String(score);
+        }
+
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         const assignDate = parseLocalDate(targetRecord.startDate);
@@ -1488,8 +1439,8 @@ async function recordSessionProgress(dayLabel, session) {
 
         const isLate = today.getTime() > assignDate.getTime();
 
-        // [Comment Policy: 지각 상태 회차 사후 학습 시 지각 유지 (방안 A)]
-        if (targetRecord.status !== "학습 완료") {
+        // 80% 이상 통과 시에만 완료/지각 출석 상태 확정
+        if (isPassed && targetRecord.status !== "학습 완료") {
           if (isLate) {
             targetRecord.status = "지각";
           } else {
@@ -1511,24 +1462,42 @@ async function recordSessionProgress(dayLabel, session) {
 
 /**
  * 로그인 직후 학습 플래너 시스템 및 단어 데이터 백그라운드 다운로드 구동
+ * [최적화] 로그인 1회 번들링을 통해 이미 메모리에 단어장과 플래너가 로드되어 있다면
+ * 추가 구글 서버 네트워크 호출을 0회로 생략하고 즉시 0.01초 만에 달력 UI를 렌더링합니다.
  * @param {string} studentId 
  */
 async function initPlannerSystem(studentId) {
+  const hasWords = isWordsLoaded && wordDatabase && wordDatabase.length > 0;
+  const hasPlanner = plannerState && plannerState.words && plannerState.words.length > 0;
+
+  // 1. 이미 로그인 번들로 단어장과 플래너 데이터가 완비된 경우 네트워크 요청 완전 생략!
+  if (hasWords && hasPlanner) {
+    console.log("[Bootstrap] 이미 단어장과 플래너 데이터가 준비되어 있어 추가 네트워크 호출을 생략하고 즉시 렌더링합니다.");
+    updatePlannerUI();
+    return;
+  }
+
   const globalLoader = document.getElementById("global-loading-overlay");
   if (globalLoader) {
     globalLoader.classList.remove("hidden");
     globalLoader.classList.add("active");
   }
 
-  // 1. 단어 데이터베이스가 준비되지 않았다면 백그라운드 로드 수행
-  await loadWordDatabase();
+  try {
+    // 2. 단어 데이터베이스가 비어있는 경우에만 개별 다운로드
+    if (!hasWords) {
+      await loadWordDatabase();
+    }
 
-  // 2. 구글 스프레드시트에서 학생 플래너 세션 조회
-  await loadPlannerState(studentId);
-
-  if (globalLoader) {
-    globalLoader.classList.remove("active");
-    globalLoader.classList.add("hidden");
+    // 3. 플래너 세션 정보가 비어있는 경우에만 개별 조회
+    if (!hasPlanner) {
+      await loadPlannerState(studentId);
+    }
+  } finally {
+    if (globalLoader) {
+      globalLoader.classList.remove("active");
+      globalLoader.classList.add("hidden");
+    }
   }
 }
 
@@ -1969,21 +1938,21 @@ document.addEventListener("DOMContentLoaded", () => {
         const total = accuracyTracker.totalQuestions || 39;
         const correct = accuracyTracker.firstTryCorrect;
         const accuracyPercent = Math.min(100, Math.max(0, Math.round((correct / total) * 100)));
+        const isPassed = accuracyPercent >= 80;
 
-        // [Comment Policy: 정답률 80% 이상 달성 시 세션 진도 및 출석 정상 저장]
-        if (accuracyPercent >= 80) {
-          const globalLoader = document.getElementById("global-loading-overlay");
-          if (globalLoader) {
-            globalLoader.classList.remove("hidden");
-            globalLoader.classList.add("active");
-          }
+        // [Comment Policy: 지각 여부 및 합격 여부와 상관없이 미니게임 완료 시 점수 항상 누적 기록]
+        const globalLoader = document.getElementById("global-loading-overlay");
+        if (globalLoader) {
+          globalLoader.classList.remove("hidden");
+          globalLoader.classList.add("active");
+        }
 
-          await recordSessionProgress(currentSelectedDay, currentSelectedSession);
+        // 구글 시트에 점수(correct) 및 80% 통과 상태(isPassed) 전송
+        await recordSessionProgress(currentSelectedDay, currentSelectedSession, correct, isPassed);
 
-          if (globalLoader) {
-            globalLoader.classList.remove("active");
-            globalLoader.classList.add("hidden");
-          }
+        if (globalLoader) {
+          globalLoader.classList.remove("active");
+          globalLoader.classList.add("hidden");
         }
 
         // 정답률 기반 완료 화면 렌더링 (메시지 분기 및 버튼 제어)

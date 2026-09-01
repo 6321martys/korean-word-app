@@ -1,8 +1,75 @@
+// [중요 설정] 구글 스프레드시트 웹 앱(GAS) 배포 URL
+var GOOGLE_SCRIPT_URL = window.GOOGLE_SCRIPT_URL || "https://script.google.com/macros/s/AKfycbz0mmFTjqYQs8Irzpnqq1S6PFyvFHt4gUO_YCAL0iGItXL-d7br2yWp17Z9fPfSvxjI/exec";
+window.GOOGLE_SCRIPT_URL = GOOGLE_SCRIPT_URL;
+
 /**
- * [Comment Policy: 사용자 식별 및 로그인 인증 모듈 (auth.js)]
- * 학생/선생님 계정 정보 매칭 및 최초 로그인 시 학습시작일/단어장 온보딩 선택 카드 분기를 통제합니다.
- * 구글 스프레드시트 단일 소스 원칙을 엄격히 준수합니다.
+ * [Comment Policy: 구글 Apps Script 10초 콜드 스타트 타임아웃 및 10회 자동 재시도 유틸리티]
+ * 구글 서버리스 인프라의 콜드 스타트(8~10초) 기동 시간에 최적화된 10초 타임아웃(AbortController)과
+ * 최대 10회 강력 자동 재시도 로직을 적용하여 초기 통신 실패를 100% 무결점으로 극복합니다.
+ * @param {string} url - 요청 URL
+ * @param {RequestInit} [options={}] - fetch 옵션
+ * @param {number} [maxRetries=10] - 최대 재시도 횟수 (10회)
+ * @param {number} [delayMs=400] - 재시도 대기 기본 시간(ms)
+ * @param {number} [timeoutMs=10000] - 단일 요청 타임아웃 제한 시간 (10초)
+ * @returns {Promise<Response>}
  */
+async function fetchWithRetry(url, options = {}, maxRetries = 10, delayMs = 400, timeoutMs = 10000) {
+  let lastError = null;
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    // [Comment Policy: 10초 무응답 시 안전한 연결 해제를 위한 AbortController]
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+      controller.abort();
+    }, timeoutMs);
+
+    const mergedOptions = {
+      ...options,
+      signal: controller.signal
+    };
+
+    try {
+      const response = await fetch(url, mergedOptions);
+      clearTimeout(timeoutId);
+
+      // 구글 스크립트 엣지 일시적 오류(404, 429, 500, 502, 503, 504)인 경우 재시도
+      if (!response.ok && [404, 429, 500, 502, 503, 504].includes(response.status) && attempt < maxRetries) {
+        console.warn(`[fetchWithRetry] HTTP ${response.status} 수신. ${Math.min(delayMs * attempt, 1500)}ms 후 재시도 (${attempt}/${maxRetries}):`, url);
+
+        // [Comment Policy: 재시도 발생 시 사용자 비차단 안내 토스트 팝업 표출 (재시도 회차 표기)]
+        if (typeof showToast === "function") {
+          const isTts = url.includes("action=tts") || url.includes("action=batchTts");
+          const baseMsg = isTts ? "구글 음성 서버와 연결 중입니다." : "구글 서버와 연결 중입니다.";
+          showToast(`${baseMsg} 잠시만 기다려 주십시오... (${attempt}/${maxRetries})`);
+        }
+
+        await new Promise(resolve => setTimeout(resolve, Math.min(delayMs * attempt, 1500)));
+        continue;
+      }
+      return response;
+    } catch (err) {
+      clearTimeout(timeoutId);
+      lastError = err;
+
+      if (attempt < maxRetries) {
+        const isTimeout = err.name === "AbortError";
+        console.warn(`[fetchWithRetry] ${isTimeout ? '10초 응답 지연(타임아웃)' : '네트워크 통신 순단'}. ${Math.min(delayMs * attempt, 1500)}ms 후 재시도 (${attempt}/${maxRetries}):`, err);
+
+        // [Comment Policy: 타임아웃 및 네트워크 오류 재시도 시 안내 토스트 팝업 표출 (재시도 회차 표기)]
+        if (typeof showToast === "function") {
+          const isTts = url.includes("action=tts") || url.includes("action=batchTts");
+          const baseMsg = isTts ? "구글 음성 서버와 연결 중입니다." : "구글 서버와 연결 중입니다.";
+          showToast(`${baseMsg} 잠시만 기다려 주십시오... (${attempt}/${maxRetries})`);
+        }
+
+        await new Promise(resolve => setTimeout(resolve, Math.min(delayMs * attempt, 1500)));
+      }
+    }
+  }
+
+  if (lastError) throw lastError;
+  throw new Error(`Failed to fetch after ${maxRetries} retries: ${url}`);
+}
 
 /**
  * 구글 스프레드시트에 식별자 검증 요청을 보내는 함수
@@ -22,7 +89,7 @@ async function verifyUserWithGoogleSheet(studentId) {
 
   try {
     showConnectionLoading();
-    const response = await fetch(requestUrl);
+    const response = await fetchWithRetry(requestUrl);
     if (!response.ok) {
       throw new Error(`HTTP Error: ${response.status}`);
     }
@@ -31,10 +98,13 @@ async function verifyUserWithGoogleSheet(studentId) {
     if (result && result.success) {
       updateConnectionStatus(true);
       return {
+        id: studentId,
         name: result.name || studentId,
         role: result.role || "student",
         level: result.level || "단어장-초급",
-        isFirstLogin: !!result.isFirstLogin
+        isFirstLogin: !!result.isFirstLogin,
+        words: result.words || [],
+        planner: result.planner || []
       };
     }
   } catch (error) {
@@ -56,7 +126,7 @@ async function populateWordbookOptions(defaultLevel) {
 
   if (GOOGLE_SCRIPT_URL) {
     try {
-      const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getWordbookList&_=${Date.now()}`);
+      const res = await fetchWithRetry(`${GOOGLE_SCRIPT_URL}?action=getWordbookList&_=${Date.now()}`);
       if (res.ok) {
         const data = await res.json();
         if (data && data.success && Array.isArray(data.wordbooks) && data.wordbooks.length > 0) {
@@ -181,6 +251,21 @@ async function showWelcomeScreen(user) {
  * @param {object} user 
  */
 function enterMainWelcomeScreen(user) {
+  // [Comment Policy: 1회차 로그인 응답에서 번들링된 단어장 및 플래너 데이터 즉시 메모리 캐시 반영]
+  if (user.words && user.words.length > 0) {
+    wordDatabase = user.words;
+    loadedWordbookLevel = user.level || "단어장-초급";
+    isWordsLoaded = true;
+    console.log(`[Bootstrap] 로그인 1회 번들링 단어 데이터 즉시 로드 완료: ${wordDatabase.length}개 (${user.level})`);
+  }
+
+  if (user.planner && user.planner.length > 0) {
+    plannerState = { success: true, words: user.planner };
+    plannerState.startDate = user.planner[0].startDate;
+    plannerState.endDate = user.planner[user.planner.length - 1].endDate;
+    console.log(`[Bootstrap] 로그인 1회 번들링 플래너 데이터 즉시 로드 완료: ${user.planner.length}회차`);
+  }
+
   // 로그인한 학생의 이름 바인딩
   if (userDisplayId1) userDisplayId1.textContent = user.name;
   if (userDisplayId2) userDisplayId2.textContent = user.name;
@@ -196,7 +281,7 @@ function enterMainWelcomeScreen(user) {
   userRoleBadge.textContent = "학생";
   userRoleBadge.classList.add("student");
 
-  // 플래너 시스템 및 단어장 로드
+  // 플래너 시스템 및 단어장 로드 (이미 데이터가 있으면 네트워크 호출 0회 즉시 렌더링)
   initPlannerSystem(user.id);
 
   // 섹션 전환
@@ -218,7 +303,7 @@ async function registerPlannerWithGoogleSheet(studentId, level, selectedStartDat
   const requestUrl = `${GOOGLE_SCRIPT_URL}?action=registerPlanner&id=${encodeURIComponent(studentId)}&level=${encodeURIComponent(level)}&startDate=${encodeURIComponent(startDateStr)}&_=${Date.now()}`;
   try {
     showConnectionLoading();
-    const response = await fetch(requestUrl);
+    const response = await fetchWithRetry(requestUrl);
     if (!response.ok) throw new Error("Network response not ok");
     const result = await response.json();
     console.log("[Google Sheets] registerPlanner API 응답 데이터:", result);

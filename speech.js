@@ -15,25 +15,29 @@ let activeAudio = null;             // 현재 재생 중인 Audio 객체 인스�
 let preloadedAudioCache = {};        // 단어 텍스트 -> Audio 객체 매핑 메모리 캐시
 let speechTimeoutIds = [];          // 타이머 관리 큐
 
+let isAudioBusy = false;            // 음성 요청 및 재생 중 연타 방지 전역 락 플래그
+
 /**
- * [Comment Policy: 스피커 버튼 재생 상태 활성/비활성화 제어 헬퍼]
- * 음성 재생 도중 사용자의 연속 연타(음원 섞임)를 방지하기 위해
- * 재생 진행 동안 스피커 버튼을 비활성화하고 차단 마우스 커서를 표현합니다.
+ * [Comment Policy: 모든 스피커 버튼 재생 상태 활성/비활성화 제어 헬퍼]
+ * 음성 통신(fetchWithRetry) 또는 오디오 재생 진행 동안
+ * 메인 단어 스피커(#btn-speak), 미니게임 스피커(#minigame4-speak-btn), 퀴즈 오디오 버튼(.quiz-audio-btn, .btn-speak) 등
+ * 화면 상의 모든 스피커 버튼을 일괄 비활성화하고 차단 마우스 커서를 적용하여 연타를 원천 차단합니다.
  */
 function setSpeakButtonActive(isActive) {
-  const btnSpeak = document.getElementById("btn-speak");
-  if (!btnSpeak) return;
-  if (isActive) {
-    btnSpeak.disabled = false;
-    btnSpeak.style.opacity = "1";
-    btnSpeak.style.cursor = "pointer";
-    btnSpeak.style.pointerEvents = "auto";
-  } else {
-    btnSpeak.disabled = true;
-    btnSpeak.style.opacity = "0.4";
-    btnSpeak.style.cursor = "not-allowed";
-    btnSpeak.style.pointerEvents = "none";
-  }
+  const speakButtons = document.querySelectorAll("#btn-speak, #minigame4-speak-btn, .btn-speak, .quiz-audio-btn");
+  speakButtons.forEach(btn => {
+    if (isActive) {
+      btn.disabled = false;
+      btn.style.opacity = "1";
+      btn.style.cursor = "pointer";
+      btn.style.pointerEvents = "auto";
+    } else {
+      btn.disabled = true;
+      btn.style.opacity = "0.4";
+      btn.style.cursor = "not-allowed";
+      btn.style.pointerEvents = "none";
+    }
+  });
 }
 
 /**
@@ -60,25 +64,34 @@ function resetSpeechSynthesis() {
     speechTimeoutIds.forEach(id => clearTimeout(id));
     speechTimeoutIds = [];
   }
-  setSpeakButtonActive(true); // 버튼 재생 락 해제
-  const btnSpeak = document.getElementById("btn-speak");
-  if (btnSpeak) {
-    btnSpeak.classList.remove("fallback-active");
-  }
+
+  isAudioBusy = false; // 락 해제
+  setSpeakButtonActive(true); // 모든 스피커 버튼 활성화
+  const speakButtons = document.querySelectorAll("#btn-speak, #minigame4-speak-btn, .btn-speak, .quiz-audio-btn");
+  speakButtons.forEach(btn => btn.classList.remove("fallback-active"));
 }
 
 /**
  * [Comment Policy: 구글 고품질 TTS 음성 재생 함수]
  * 프리로드 캐시에 저장된 고품질 구글 오디오를 즉시 재생하며,
  * 캐시가 없을 경우 Apps Script 백엔드 프록시를 호출하여 실시간으로 받아와 재생합니다.
+ * 재생 완료 또는 통신/타임아웃 로직이 완전히 끝날 때까지 모든 스피커 버튼을 완벽히 잠급니다.
  * @param {string} wordText - 재생할 단어 문자열
  */
 async function speakWord(wordText) {
-  resetSpeechSynthesis(); // 진행 중인 소리 리셋
+  // 이미 다른 음성 통신 또는 재생이 진행 중이면 추가 클릭 차단
+  if (isAudioBusy) {
+    console.warn("[TTS] 이미 음성 요청 또는 재생이 진행 중입니다. 연타가 차단되었습니다.");
+    return;
+  }
+
   if (!wordText) return;
 
   const cleanedText = cleanWord(wordText);
   if (!cleanedText) return;
+
+  isAudioBusy = true; // 락 가동
+  setSpeakButtonActive(false); // 모든 스피커 버튼 비활성화 (마우스 커서 차단)
 
   // 1. 프리로드 캐시에 이미 오디오가 준비되어 있는 경우 (지연 시간 0초 즉시 재생)
   if (preloadedAudioCache[cleanedText]) {
@@ -86,15 +99,16 @@ async function speakWord(wordText) {
       const audio = preloadedAudioCache[cleanedText];
       activeAudio = audio;
       activeAudio.currentTime = 0;
-      setSpeakButtonActive(false); // 연타 방지 락
 
       activeAudio.onended = () => {
+        isAudioBusy = false;
         setSpeakButtonActive(true);
         activeAudio = null;
       };
 
       activeAudio.onerror = (err) => {
         console.warn("[TTS] 캐시 오디오 재생 실패:", err);
+        isAudioBusy = false;
         setSpeakButtonActive(true);
         activeAudio = null;
         showToast("음성 재생 중 오류가 발생했습니다.");
@@ -104,18 +118,19 @@ async function speakWord(wordText) {
       return;
     } catch (playErr) {
       console.warn("[TTS] 캐시 오디오 자동재생 예외:", playErr);
+      isAudioBusy = false;
       setSpeakButtonActive(true);
       return;
     }
   }
 
-  // 2. 캐시가 없는 단어의 경우, Apps Script 프록시 API(action=tts)를 비동기로 호출
-  setSpeakButtonActive(false); // 로딩 중 버튼 락
+  // 2. 캐시가 없는 단어의 경우, Apps Script 프록시 API(action=tts)를 비동기로 호출 (10회 재시도/타임아웃 끝날 때까지 락 유지)
   if (typeof showConnectionLoading === "function") showConnectionLoading();
 
   try {
     const url = `${TTS_SCRIPT_URL}?action=tts&q=${encodeURIComponent(cleanedText)}`;
-    const response = await fetch(url);
+    const fetchFn = typeof fetchWithRetry === "function" ? fetchWithRetry : fetch;
+    const response = await fetchFn(url);
     const result = await response.json();
 
     if (result && result.success && result.audio) {
@@ -124,11 +139,13 @@ async function speakWord(wordText) {
       activeAudio = audio;
       
       activeAudio.onended = () => {
+        isAudioBusy = false;
         setSpeakButtonActive(true);
         activeAudio = null;
       };
 
       activeAudio.onerror = () => {
+        isAudioBusy = false;
         setSpeakButtonActive(true);
         activeAudio = null;
         showToast("음성 재생에 실패했습니다.");
@@ -137,11 +154,13 @@ async function speakWord(wordText) {
       await activeAudio.play();
     } else {
       console.warn("[TTS] 백엔드 음원 수신 실패:", result);
+      isAudioBusy = false;
       setSpeakButtonActive(true);
       showToast("구글 음성 서버와 연결에 실패했습니다.");
     }
   } catch (netErr) {
     console.error("[TTS] 음성 API 통신 에러:", netErr);
+    isAudioBusy = false;
     setSpeakButtonActive(true);
     showToast("음성 서버 연결 중 네트워크 오류가 발생했습니다.");
   } finally {
@@ -187,7 +206,8 @@ async function preloadSessionAudios(words) {
   try {
     const wordsParam = encodeURIComponent(wordsToFetch.join(","));
     const url = `${TTS_SCRIPT_URL}?action=batchTts&words=${wordsParam}`;
-    const response = await fetch(url);
+    const fetchFn = typeof fetchWithRetry === "function" ? fetchWithRetry : fetch;
+    const response = await fetchFn(url);
     const result = await response.json();
 
     if (result && result.success && result.audios) {
@@ -274,3 +294,4 @@ function showToast(message) {
     }, 300);
   }, 3000);
 }
+window.showToast = showToast;

@@ -8,7 +8,7 @@
 // 어드민 제어 전역 변수
 let adminHeaders = ["ID", "Name", "Role", "LastLogin", "학습시작일", "레벨"];
 let pickerYear = 2026;
-let pickerMonth = 6;
+let pickerMonth = 8;
 
 /**
  * [Comment Policy: 선생님 대시보드 코어 초기화]
@@ -24,7 +24,8 @@ async function initTeacherDashboard() {
     if (GOOGLE_SCRIPT_URL) {
       const requestUrl = `${GOOGLE_SCRIPT_URL}?action=getAllStudents&_=${Date.now()}`;
       try {
-        const response = await fetch(requestUrl);
+        const fetchFn = typeof fetchWithRetry === "function" ? fetchWithRetry : fetch;
+        const response = await fetchFn(requestUrl);
         if (response.ok) {
           const result = await response.json();
           if (result && result.success && Array.isArray(result.students)) {
@@ -70,8 +71,16 @@ async function initTeacherDashboard() {
  */
 function bindAdminFilters() {
   const searchInput = document.getElementById("search-student");
-  const langSelect = document.getElementById("filter-lang");
-  const lateCheck = document.getElementById("filter-late");
+  const langSelect = document.getElementById("filter-language");
+  const lateCheck = document.getElementById("toggle-late");
+  const btnLogout = document.getElementById("btn-teacher-logout");
+
+  if (btnLogout) {
+    btnLogout.onclick = () => {
+      sessionStorage.removeItem("active_user");
+      location.reload();
+    };
+  }
 
   if (!searchInput || !langSelect || !lateCheck) return;
 
@@ -107,48 +116,48 @@ function bindAdminFilters() {
  * @param {Array} students 
  */
 function renderStudentTable(students) {
-  const tbody = document.getElementById("teacher-student-list");
-  const countBadge = document.getElementById("total-student-count");
+  const tbody = document.getElementById("student-list-body");
   if (!tbody) return;
 
-  if (countBadge) countBadge.textContent = `${students.length}명`;
   tbody.innerHTML = "";
 
-  if (students.length === 0) {
+  if (!students || students.length === 0) {
     tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--color-text-secondary); padding: 30px;">조회된 학생 데이터가 없습니다.</td></tr>`;
     return;
   }
 
   students.forEach((s) => {
     const tr = document.createElement("tr");
+    tr.style.borderBottom = "1px solid rgba(255, 255, 255, 0.06)";
+    tr.style.transition = "background var(--transition-fast)";
 
     // 지각 여부 뱃지
     const lateBadge = s.isLate
-      ? `<span class="badge-status-late">지각 감지</span>`
-      : `<span class="badge-status-normal">정상</span>`;
+      ? `<span class="badge-status-late" style="background: rgba(235, 77, 75, 0.15); color: #ff7675; padding: 4px 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 600;">지각 감지</span>`
+      : `<span class="badge-status-normal" style="background: rgba(0, 184, 148, 0.15); color: #55efc4; padding: 4px 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 600;">정상</span>`;
 
     // 진도 계산 (90회차 기준 프로그레스 바)
     const completedNum = s.completedDays || 0;
     const pct = Math.min(100, Math.round((completedNum / 90) * 100));
 
     tr.innerHTML = `
-      <td style="font-weight: 600;">${s.id}</td>
-      <td>${s.name || "-"}</td>
-      <td><span class="badge-level">${s.level || "단어장-초급"}</span></td>
-      <td>${s.startDate || "-"}</td>
-      <td>
+      <td style="padding: 14px; font-weight: 700; color: var(--color-text-primary);">${s.id}</td>
+      <td style="padding: 14px; color: var(--color-text-primary);">${s.name || "-"}</td>
+      <td style="padding: 14px;"><span class="badge-level" style="background: rgba(108, 92, 231, 0.15); color: #a29bfe; padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 600;">${s.level || "단어장-초급"}</span></td>
+      <td style="padding: 14px; color: var(--color-text-secondary); font-size: 0.88rem;">${s.startDate || "-"}</td>
+      <td style="padding: 14px;">
         <div style="display: flex; align-items: center; gap: 8px;">
-          <div style="flex: 1; height: 6px; background: var(--color-surface-hover); border-radius: 3px; overflow: hidden; min-width: 60px;">
-            <div style="width: ${pct}%; height: 100%; background: var(--color-success); border-radius: 3px;"></div>
+          <div style="flex: 1; height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; overflow: hidden; min-width: 60px;">
+            <div style="width: ${pct}%; height: 100%; background: var(--color-primary); border-radius: 3px;"></div>
           </div>
           <span style="font-size: 0.8rem; font-weight: 600; color: var(--color-text-primary); white-space: nowrap;">${completedNum}/90</span>
         </div>
       </td>
-      <td>${lateBadge}</td>
-      <td>
+      <td style="padding: 14px;">${lateBadge}</td>
+      <td style="padding: 14px;">
         <div style="display: flex; gap: 6px;">
-          <button class="btn-table-action btn-detail" title="출석 세부 조회">상세</button>
-          <button class="btn-table-action btn-edit" title="학습시작일/레벨 수정">수정</button>
+          <button class="btn-table-action btn-detail" style="background: rgba(255,255,255,0.06); border: 1px solid var(--color-border); color: var(--color-text-primary); padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer;" title="출석 세부 조회">상세</button>
+          <button class="btn-table-action btn-edit" style="background: var(--color-primary); border: none; color: white; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer;" title="학습시작일/레벨 수정">수정</button>
         </div>
       </td>
     `;
@@ -181,20 +190,18 @@ function renderStudentTable(students) {
  */
 async function openStudentDetailModal(student) {
   const modal = document.getElementById("student-modal");
-  const modalName = document.getElementById("modal-student-name");
   const modalId = document.getElementById("modal-student-id");
-  const modalProgress = document.getElementById("modal-student-progress");
-  const modalStart = document.getElementById("modal-student-start");
-  const logScroll = document.getElementById("modal-session-logs");
+  const modalLang = document.getElementById("modal-student-lang");
+  const logScroll = document.querySelector(".word-log-container") || document.getElementById("modal-session-logs");
 
-  if (!modal || !modalName || !logScroll) return;
+  if (!modal || !modalId) return;
 
-  modalName.textContent = student.name || student.id;
-  modalId.textContent = student.id;
-  modalProgress.textContent = `${student.completedDays || 0} / 90회차 완료`;
-  modalStart.textContent = student.startDate || "-";
+  modalId.textContent = `학번: ${student.id} (${student.name || ""})`;
+  if (modalLang) modalLang.textContent = `레벨: ${student.level || "단어장-초급"} | 시작일: ${student.startDate || "-"}`;
 
-  logScroll.innerHTML = `<div style="text-align: center; color: var(--color-text-secondary); padding: 20px;">학습 세션 데이터를 불러오는 중...</div>`;
+  if (logScroll) {
+    logScroll.innerHTML = `<div style="text-align: center; color: var(--color-text-secondary); padding: 20px;">학습 세션 데이터를 불러오는 중...</div>`;
+  }
 
   modal.classList.remove("hidden");
   void modal.offsetWidth;
@@ -204,7 +211,8 @@ async function openStudentDetailModal(student) {
   try {
     let records = [];
     if (GOOGLE_SCRIPT_URL) {
-      const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getPlannerState&id=${encodeURIComponent(student.id)}&_=${Date.now()}`);
+      const fetchFn = typeof fetchWithRetry === "function" ? fetchWithRetry : fetch;
+      const res = await fetchFn(`${GOOGLE_SCRIPT_URL}?action=getPlannerState&id=${encodeURIComponent(student.id)}&_=${Date.now()}`);
       if (res.ok) {
         const data = await res.json();
         if (data && data.success && Array.isArray(data.words)) {
@@ -213,40 +221,56 @@ async function openStudentDetailModal(student) {
       }
     }
 
-    logScroll.innerHTML = "";
+    if (logScroll) {
+      logScroll.innerHTML = "";
 
-    if (records.length === 0) {
-      logScroll.innerHTML = `<div style="text-align: center; color: var(--color-text-secondary); padding: 20px;">생성된 학습 기록이 없습니다.</div>`;
-      return;
-    }
-
-    records.forEach(w => {
-      const item = document.createElement("div");
-      item.className = "session-log-item";
-
-      let statusClass = "status-ready";
-      let statusTxt = "학습 전";
-      if (w.status === "학습 완료") {
-        statusClass = "status-completed";
-        statusTxt = "학습 완료";
-      } else if (w.status === "지각") {
-        statusClass = "status-late";
-        statusTxt = "지각";
+      if (records.length === 0) {
+        logScroll.innerHTML = `<div style="text-align: center; color: var(--color-text-secondary); padding: 20px;">생성된 학습 기록이 없습니다.</div>`;
+        return;
       }
 
-      item.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <span class="word-log-day">${w.dayLabel} (${w.session}회차)</span>
-          <span class="word-log-range" style="font-size: 0.75rem; color: var(--color-text-secondary);">(${w.startDate})</span>
-          <span class="log-status-badge ${statusClass}">${statusTxt}</span>
-        </div>
-      `;
-      logScroll.appendChild(item);
-    });
+      records.forEach(w => {
+        const item = document.createElement("div");
+        item.className = "session-log-item";
+        item.style.padding = "10px 14px";
+        item.style.marginBottom = "8px";
+        item.style.background = "rgba(255, 255, 255, 0.02)";
+        item.style.borderRadius = "10px";
+        item.style.border = "1px solid var(--color-border)";
+
+        let statusClass = "status-ready";
+        let statusTxt = "학습 전";
+        if (w.status === "학습 완료") {
+          statusClass = "status-completed";
+          statusTxt = "학습 완료";
+        } else if (w.status === "지각") {
+          statusClass = "status-late";
+          statusTxt = "지각";
+        }
+
+        const scoreBadge = w.scoreRecord
+          ? `<span style="font-size: 0.75rem; background: rgba(108, 92, 231, 0.15); color: #a29bfe; padding: 2px 6px; border-radius: 4px; font-weight: 600; margin-left: 4px;">점수: ${w.scoreRecord}</span>`
+          : "";
+
+        item.innerHTML = `
+          <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+              <span style="font-weight: 600; color: var(--color-text-primary); font-size: 0.9rem;">${w.dayLabel} (${w.session}회차)</span>
+              <span style="font-size: 0.75rem; color: var(--color-text-secondary);">(${w.startDate})</span>
+              ${scoreBadge}
+            </div>
+            <span class="log-status-badge ${statusClass}" style="font-size: 0.8rem; font-weight: 600; padding: 3px 8px; border-radius: 6px;">${statusTxt}</span>
+          </div>
+        `;
+        logScroll.appendChild(item);
+      });
+    }
 
   } catch (err) {
     console.error("세션 상세 조회 실패:", err);
-    logScroll.innerHTML = `<div style="text-align: center; color: var(--color-danger); padding: 20px;">학습 기록을 불러오는 중 오류가 발생했습니다.</div>`;
+    if (logScroll) {
+      logScroll.innerHTML = `<div style="text-align: center; color: var(--color-danger); padding: 20px;">학습 기록을 불러오는 중 오류가 발생했습니다.</div>`;
+    }
   }
 }
 
@@ -270,22 +294,23 @@ function openAdminEditModal(student) {
   const modal = document.getElementById("admin-edit-modal");
   const editId = document.getElementById("edit-student-id");
   const editName = document.getElementById("edit-student-name");
-  const editDateInput = document.getElementById("edit-start-date-input");
-  const editLevelSelect = document.getElementById("edit-level-select");
+  const editStartDate = document.getElementById("edit-student-startdate");
+  const editLevel = document.getElementById("edit-student-level");
 
-  if (!modal || !editId || !editDateInput) return;
+  if (!modal || !editId) return;
 
   editId.value = student.id;
-  editName.textContent = student.name || student.id;
-  editDateInput.value = student.startDate !== "-" ? student.startDate : getLocalDateString(new Date());
-  if (editLevelSelect) {
-    editLevelSelect.value = student.level || "단어장-초급";
-  }
+  if (editName) editName.value = student.name || student.id;
+  if (editStartDate) editStartDate.value = student.startDate !== "-" ? student.startDate : "2026-09-01";
+  if (editLevel) editLevel.value = student.level || "단어장-초급";
 
   // 달력 피커 초기화
-  const baseD = parseLocalDate(editDateInput.value);
-  pickerYear = baseD.getFullYear();
-  pickerMonth = baseD.getMonth();
+  const dateVal = editStartDate ? editStartDate.value : "2026-09-01";
+  const parts = dateVal.split("-");
+  if (parts.length === 3) {
+    pickerYear = parseInt(parts[0]) || 2026;
+    pickerMonth = (parseInt(parts[1]) - 1) || 8;
+  }
   renderPickerGrid();
 
   modal.classList.remove("hidden");
@@ -309,12 +334,12 @@ function closeAdminEditModal() {
  * 날짜 선택기(Calendar Picker) 렌더링 함수
  */
 function renderPickerGrid() {
-  const pickerGrid = document.getElementById("picker-calendar-grid");
-  const pickerTitle = document.getElementById("picker-title");
-  const editDateInput = document.getElementById("edit-start-date-input");
-  if (!pickerGrid || !pickerTitle) return;
+  const pickerGrid = document.getElementById("picker-calendar-grid") || document.getElementById("admin-picker-calendar-grid");
+  const pickerTitle = document.getElementById("picker-calendar-title") || document.getElementById("admin-picker-title") || document.getElementById("picker-title");
+  const editDateInput = document.getElementById("edit-student-startdate");
+  if (!pickerGrid) return;
 
-  pickerTitle.textContent = `${pickerYear}년 ${pickerMonth + 1}월`;
+  if (pickerTitle) pickerTitle.textContent = `${pickerYear}년 ${pickerMonth + 1}월`;
   pickerGrid.innerHTML = "";
 
   const firstDayIndex = new Date(pickerYear, pickerMonth, 1).getDay();
@@ -334,25 +359,35 @@ function renderPickerGrid() {
     cell.style.minHeight = "36px";
     cell.style.padding = "4px";
     cell.style.cursor = "pointer";
+    cell.style.display = "flex";
+    cell.style.alignItems = "center";
+    cell.style.justifyContent = "center";
+    cell.style.borderRadius = "8px";
 
-    const numSpan = document.createElement("span");
-    numSpan.className = "day-number";
-    numSpan.style.fontSize = "0.8rem";
-    numSpan.textContent = d;
-    cell.appendChild(numSpan);
+    const monthStr = String(pickerMonth + 1).padStart(2, "0");
+    const dayStr = String(d).padStart(2, "0");
+    const dateStr = `${pickerYear}-${monthStr}-${dayStr}`;
 
-    const fullD = new Date(pickerYear, pickerMonth, d);
-    const dateStr = getLocalDateString(fullD);
+    cell.textContent = d;
 
     if (dateStr === selectedDateStr) {
       cell.classList.add("today");
       cell.style.borderColor = "var(--color-primary)";
-      cell.style.background = "rgba(108, 92, 231, 0.2)";
+      cell.style.background = "var(--color-primary)";
+      cell.style.color = "white";
+      cell.style.fontWeight = "700";
     }
 
     cell.onclick = () => {
       if (editDateInput) {
         editDateInput.value = dateStr;
+      }
+      const datePickerModal = document.getElementById("admin-date-picker-modal");
+      if (datePickerModal) {
+        datePickerModal.classList.remove("active");
+        setTimeout(() => {
+          datePickerModal.classList.add("hidden");
+        }, 150);
       }
       renderPickerGrid();
     };
@@ -370,12 +405,38 @@ function bindAdminEditEvents() {
   const btnCancelEdit = document.getElementById("btn-cancel-edit");
   const formEdit = document.getElementById("admin-edit-form");
 
+  const btnOpenDatePicker = document.getElementById("btn-open-datepicker");
+  const datePickerModal = document.getElementById("admin-date-picker-modal");
+  const btnCloseDatePicker = document.getElementById("btn-close-datepicker");
+
   const btnPickerPrev = document.getElementById("btn-picker-prev");
   const btnPickerNext = document.getElementById("btn-picker-next");
 
   if (btnCloseModal) btnCloseModal.onclick = closeStudentModal;
   if (btnCloseEditModal) btnCloseEditModal.onclick = closeAdminEditModal;
   if (btnCancelEdit) btnCancelEdit.onclick = closeAdminEditModal;
+
+  if (btnOpenDatePicker && datePickerModal) {
+    btnOpenDatePicker.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      datePickerModal.classList.remove("hidden");
+      void datePickerModal.offsetWidth;
+      datePickerModal.classList.add("active");
+      renderPickerGrid();
+    };
+  }
+
+  if (btnCloseDatePicker && datePickerModal) {
+    btnCloseDatePicker.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      datePickerModal.classList.remove("active");
+      setTimeout(() => {
+        datePickerModal.classList.add("hidden");
+      }, 150);
+    };
+  }
 
   if (btnPickerPrev) {
     btnPickerPrev.onclick = () => {
@@ -404,8 +465,8 @@ function bindAdminEditEvents() {
       e.preventDefault();
 
       const targetId = document.getElementById("edit-student-id").value;
-      const newStartDate = document.getElementById("edit-start-date-input").value;
-      const newLevel = document.getElementById("edit-level-select").value;
+      const newStartDate = document.getElementById("edit-student-startdate").value;
+      const newLevel = document.getElementById("edit-student-level").value;
 
       if (!targetId || !newStartDate || !newLevel) {
         alert("모든 필수 항목을 입력해 주세요.");
@@ -429,7 +490,8 @@ function bindAdminEditEvents() {
 
         if (GOOGLE_SCRIPT_URL) {
           const requestUrl = `${GOOGLE_SCRIPT_URL}?action=updateStudentInfo&id=${encodeURIComponent(targetId)}&newStartDate=${encodeURIComponent(newStartDate)}&newLevel=${encodeURIComponent(newLevel)}&_=${Date.now()}`;
-          const response = await fetch(requestUrl);
+          const fetchFn = typeof fetchWithRetry === "function" ? fetchWithRetry : fetch;
+          const response = await fetchFn(requestUrl);
           if (response.ok) {
             const result = await response.json();
             if (result && result.success) {
