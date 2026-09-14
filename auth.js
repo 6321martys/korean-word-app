@@ -300,7 +300,8 @@ function enterMainWelcomeScreen(user) {
  */
 async function registerPlannerWithGoogleSheet(studentId, level, selectedStartDate) {
   const startDateStr = selectedStartDate || getLocalDateString(new Date());
-  const requestUrl = `${GOOGLE_SCRIPT_URL}?action=registerPlanner&id=${encodeURIComponent(studentId)}&level=${encodeURIComponent(level)}&startDate=${encodeURIComponent(startDateStr)}&_=${Date.now()}`;
+  // [Comment Policy: 호출 주체(trigger=onboarding) 파라미터 전달하여 백엔드 감사 로그에 명확히 기록]
+  const requestUrl = `${GOOGLE_SCRIPT_URL}?action=registerPlanner&id=${encodeURIComponent(studentId)}&level=${encodeURIComponent(level)}&startDate=${encodeURIComponent(startDateStr)}&trigger=onboarding&_=${Date.now()}`;
   try {
     showConnectionLoading();
     const response = await fetchWithRetry(requestUrl);

@@ -63,42 +63,11 @@ async function loadPlannerState(studentId) {
       }
     }
 
-    // [이중 안전장치] 구글 연동은 성공했으나 학습기록(words)이 비어있는 경우 즉시 90일 일정을 신규 생성합니다.
-    if (state && state.success && (!state.words || state.words.length === 0)) {
-      console.warn("학습 기록이 비어있어 90일 일정을 새로 구성합니다.");
-      const activeUser = JSON.parse(sessionStorage.getItem("active_user"));
-      const level = (activeUser && activeUser.level) ? activeUser.level : "단어장-초급";
-
-      const globalLoader = document.getElementById("global-loading-overlay");
-      if (globalLoader) {
-        globalLoader.classList.remove("active");
-        globalLoader.classList.add("hidden");
-      }
-
-      const overlay = document.getElementById("bulk-register-overlay");
-      if (overlay) {
-        overlay.classList.remove("hidden");
-        overlay.classList.add("active");
-      }
-
-      const registerSuccess = await registerPlannerWithGoogleSheet(studentId, level);
-
-      if (overlay) {
-        overlay.classList.remove("active");
-        overlay.classList.add("hidden");
-      }
-
-      if (registerSuccess) {
-        if (globalLoader) {
-          globalLoader.classList.remove("hidden");
-          globalLoader.classList.add("active");
-        }
-        return loadPlannerState(studentId);
-      }
-    }
-
-    if (!state || !state.success) {
-      showError("구글 스프레드시트에서 학습 일정을 불러오지 못했습니다. 네트워크 연결 및 서버 주소를 확인해 주세요.");
+    // [안전 설계: 기존 학생의 학습 기록 임의 덮어쓰기 원천 차단]
+    // 통신 순단 등으로 일시적으로 학습 기록(words)이 누락되었거나 조회가 실패한 경우,
+    // 임의로 일정을 오늘 날짜로 재등록하지 않고 기존 데이터를 보호하며 사용자에게 새로고침을 안내합니다.
+    if (!state || !state.success || !state.words || state.words.length === 0) {
+      showError("학습 일정을 불러오지 못했습니다. 네트워크 상태를 확인하시거나 페이지를 새로고침해 주세요.");
       updateConnectionStatus(false);
       return;
     }
