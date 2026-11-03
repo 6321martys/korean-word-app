@@ -1,6 +1,9 @@
-// [중요 설정] 구글 스프레드시트 웹 앱(GAS) 배포 URL
-var GOOGLE_SCRIPT_URL = window.GOOGLE_SCRIPT_URL || "https://script.google.com/macros/s/AKfycbz0mmFTjqYQs8Irzpnqq1S6PFyvFHt4gUO_YCAL0iGItXL-d7br2yWp17Z9fPfSvxjI/exec";
-window.GOOGLE_SCRIPT_URL = GOOGLE_SCRIPT_URL;
+/**
+ * ==========================================================================
+ * 학생 및 선생님 인증 / 온보딩 모듈 (auth.js)
+ * ==========================================================================
+ * 메인 데이터베이스(Supabase)와 0.1초 고속 통신하여 로그인을 수행합니다.
+ */
 
 /**
  * [Comment Policy: 구글 Apps Script 10초 콜드 스타트 타임아웃 및 10회 자동 재시도 유틸리티]
@@ -72,60 +75,24 @@ async function fetchWithRetry(url, options = {}, maxRetries = 10, delayMs = 400,
 }
 
 /**
- * 구글 스프레드시트 또는 Supabase DB에 식별자 검증 요청을 보내는 함수
+ * Supabase DB에 사용자 인증 검증을 요청하는 함수
  * @param {string} studentId 
  * @returns {Promise<object|null>}
  */
 async function verifyUserWithGoogleSheet(studentId) {
-  // [Comment Policy: Supabase 고속 DB 우선 연동]
-  // Supabase 클라이언트 모듈이 활성화되어 있으면 0.1초 즉시 검증을 수행합니다.
+  // [Comment Policy: Supabase 고속 DB 단독 연동]
+  // 구글 시트와의 DB 연결을 100% 차단하고 오직 Supabase만 조회하여 무결성을 보장합니다.
   if (typeof verifyUserWithSupabase === "function") {
     try {
       const sbResult = await verifyUserWithSupabase(studentId);
       if (sbResult) {
-        console.log("[Auth] Supabase 검증 성공:", sbResult);
+        console.log("[Auth] Supabase 로그인 인증 성공:", sbResult);
         return sbResult;
       }
     } catch (sbErr) {
-      console.warn("[Auth] Supabase 검증 실패, 구글 시트 폴백 시도:", sbErr);
+      console.error("[Auth] Supabase 로그인 검증 오류:", sbErr);
+      throw sbErr;
     }
-  }
-
-  // [Comment Policy: 클라이언트 현지 날짜 파라미터 전달]
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
-  const localDateStr = `${year}-${month}-${day}`;
-
-  // 캐시 방지를 위한 타임스탬프 파라미터 포함하여 요청 전송
-  const requestUrl = `${GOOGLE_SCRIPT_URL}?id=${encodeURIComponent(studentId)}&clientDate=${localDateStr}&_=${Date.now()}`;
-
-  try {
-    showConnectionLoading();
-    const response = await fetchWithRetry(requestUrl);
-    if (!response.ok) {
-      throw new Error(`HTTP Error: ${response.status}`);
-    }
-
-    const result = await response.json();
-    if (result && result.success) {
-      updateConnectionStatus(true);
-      return {
-        id: studentId,
-        name: result.name || studentId,
-        role: result.role || "student",
-        level: result.level || "단어장-초급",
-        isFirstLogin: !!result.isFirstLogin,
-        words: result.words || [],
-        planner: result.planner || []
-      };
-    }
-  } catch (error) {
-    updateConnectionStatus(false);
-    throw error;
-  } finally {
-    hideConnectionLoading();
   }
   return null;
 }
@@ -154,31 +121,6 @@ async function populateWordbookOptions(defaultLevel) {
     return;
   }
 
-  if (GOOGLE_SCRIPT_URL) {
-    try {
-      const res = await fetchWithRetry(`${GOOGLE_SCRIPT_URL}?action=getWordbookList&_=${Date.now()}`);
-      if (res.ok) {
-        const data = await res.json();
-        if (data && data.success && Array.isArray(data.wordbooks) && data.wordbooks.length > 0) {
-          levelSelect.innerHTML = "";
-          data.wordbooks.forEach(wb => {
-            const opt = document.createElement("option");
-            opt.value = wb;
-            opt.textContent = wb;
-            if (wb === defaultLevel) {
-              opt.selected = true;
-            }
-            levelSelect.appendChild(opt);
-          });
-          return;
-        }
-      }
-    } catch (err) {
-      console.warn("단어장 목록 동적 조회 실패. 기본 옵션 유지:", err);
-    }
-  }
-
-  // 폴백: 기본값 선택
   if (defaultLevel) {
     levelSelect.value = defaultLevel;
   }
@@ -329,7 +271,7 @@ function enterMainWelcomeScreen(user) {
  * @returns {Promise<boolean>}
  */
 async function registerPlannerWithGoogleSheet(studentId, level, selectedStartDate) {
-  // [Comment Policy: Supabase 고속 DB 우선 연동]
+  // [Comment Policy: Supabase 고속 DB 단독 연동]
   if (typeof registerPlannerWithSupabase === "function") {
     try {
       const sbSuccess = await registerPlannerWithSupabase(studentId, level, selectedStartDate);
@@ -338,26 +280,11 @@ async function registerPlannerWithGoogleSheet(studentId, level, selectedStartDat
         return true;
       }
     } catch (sbErr) {
-      console.warn("[Auth] Supabase 플래너 등록 오류, 구글 시트 폴백 시도:", sbErr);
+      console.error("[Auth] Supabase 플래너 등록 오류:", sbErr);
+      return false;
     }
   }
-
-  const startDateStr = selectedStartDate || getLocalDateString(new Date());
-  // [Comment Policy: 호출 주체(trigger=onboarding) 파라미터 전달하여 백엔드 감사 로그에 명확히 기록]
-  const requestUrl = `${GOOGLE_SCRIPT_URL}?action=registerPlanner&id=${encodeURIComponent(studentId)}&level=${encodeURIComponent(level)}&startDate=${encodeURIComponent(startDateStr)}&trigger=onboarding&_=${Date.now()}`;
-  try {
-    showConnectionLoading();
-    const response = await fetchWithRetry(requestUrl);
-    if (!response.ok) throw new Error("Network response not ok");
-    const result = await response.json();
-    console.log("[Google Sheets] registerPlanner API 응답 데이터:", result);
-    return !!(result && result.success);
-  } catch (error) {
-    console.error("일괄 등록 요청 오류:", error);
-    return false;
-  } finally {
-    hideConnectionLoading();
-  }
+  return false;
 }
 
 /**

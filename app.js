@@ -5,10 +5,6 @@
  * ==========================================================================
  */
 
-// [중요 설정] 구글 스프레드시트 웹 앱(GAS) 배포 후 생성된 URL
-var GOOGLE_SCRIPT_URL = window.GOOGLE_SCRIPT_URL || "https://script.google.com/macros/s/AKfycbz0mmFTjqYQs8Irzpnqq1S6PFyvFHt4gUO_YCAL0iGItXL-d7br2yWp17Z9fPfSvxjI/exec";
-window.GOOGLE_SCRIPT_URL = GOOGLE_SCRIPT_URL;
-
 // 핵심 학습 상태 전역 변수
 let wordDatabase = [];         // 전체 단어장 목록 저장 캐시
 let loadedWordbookLevel = "";  // 현재 메모리에 로드된 단어장 레벨 (예: "단어장-초급", "단어장-중급")
@@ -176,7 +172,7 @@ async function loadWordDatabase(targetLevel) {
     return;
   }
 
-  // [Comment Policy: 깃허브 배포 정적 단어장 우선 로드 (네트워크 통신 0회, 0ms 즉시 반영)]
+  // [Comment Policy: 정적 단어장 데이터 단독 로드 (네트워크 통신 0회, 0ms 즉시 반영)]
   if (window.LOCAL_WORDBOOKS && window.LOCAL_WORDBOOKS[level] && window.LOCAL_WORDBOOKS[level].length > 0) {
     wordDatabase = window.LOCAL_WORDBOOKS[level];
     loadedWordbookLevel = level;
@@ -186,43 +182,7 @@ async function loadWordDatabase(targetLevel) {
     return;
   }
 
-  let isGoogleFetch = !!GOOGLE_SCRIPT_URL;
-
-  try {
-    if (isGoogleFetch) showConnectionLoading();
-    let words = [];
-    // 구글 API 지원 시
-    if (GOOGLE_SCRIPT_URL) {
-      const requestUrl = `${GOOGLE_SCRIPT_URL}?action=getWords&level=${encodeURIComponent(level)}&_=${Date.now()}`;
-      const fetchFn = typeof fetchWithRetry === "function" ? fetchWithRetry : fetch;
-      const response = await fetchFn(requestUrl);
-      if (response.ok) {
-        const result = await response.json();
-        if (result && result.success && Array.isArray(result.words)) {
-          words = result.words;
-          updateConnectionStatus(true);
-        } else {
-          updateConnectionStatus(false);
-        }
-      } else {
-        updateConnectionStatus(false);
-      }
-    }
-
-    if (words.length > 0) {
-      wordDatabase = words;
-      loadedWordbookLevel = level;
-      isWordsLoaded = true;
-      console.log(`[Database] 단어 데이터 확보 완료: ${wordDatabase.length}개 (${level})`);
-    } else {
-      console.warn(`[Database] 단어 데이터를 불러오지 못했습니다. (${level})`);
-    }
-  } catch (error) {
-    console.error("[Database] 단어 데이터 로드 오류:", error);
-    updateConnectionStatus(false);
-  } finally {
-    if (isGoogleFetch) hideConnectionLoading();
-  }
+  console.warn(`[Database] 단어 데이터를 찾을 수 없습니다: ${level}`);
 }
 
 
@@ -1418,13 +1378,10 @@ async function recordSessionProgress(dayLabel, session, score, isPassed = true) 
   const activeUser = JSON.parse(sessionStorage.getItem("active_user"));
   if (!activeUser) return;
 
-  let isGoogleFetch = !!GOOGLE_SCRIPT_URL;
-
   try {
-    if (isGoogleFetch) showConnectionLoading();
     let success = false;
 
-    // [Comment Policy: Supabase 고속 DB 우선 연동 (Upsert로 행 덮어쓰기 및 잘림 원천 차단)]
+    // [Comment Policy: Supabase 고속 DB 단독 연동 (Upsert로 행 덮어쓰기 및 잘림 원천 차단)]
     if (typeof submitSessionProgressToSupabase === "function") {
       let finalScore = score;
       let calculatedStatus = "학습 완료";
@@ -1448,22 +1405,6 @@ async function recordSessionProgress(dayLabel, session, score, isPassed = true) 
       if (sbSuccess) {
         success = true;
         if (typeof updateConnectionStatus === "function") updateConnectionStatus(true);
-      }
-    } else if (GOOGLE_SCRIPT_URL) {
-      // 1. 구글 스프레드시트 세션 진도 및 점수기록 전송 API 요청
-      let requestUrl = `${GOOGLE_SCRIPT_URL}?action=submitSessionProgress&id=${encodeURIComponent(activeUser.id)}&dayLabel=${encodeURIComponent(dayLabel)}&session=${session}&_=${Date.now()}`;
-      if (score !== undefined && score !== null) {
-        requestUrl += `&score=${encodeURIComponent(score)}&passed=${isPassed ? "true" : "false"}`;
-      }
-
-      const fetchFn = typeof fetchWithRetry === "function" ? fetchWithRetry : fetch;
-      const response = await fetchFn(requestUrl);
-      if (response.ok) {
-        const result = await response.json();
-        if (result && result.success) {
-          success = true;
-          updateConnectionStatus(true);
-        }
       }
     }
 
@@ -1497,12 +1438,10 @@ async function recordSessionProgress(dayLabel, session, score, isPassed = true) 
     }
 
     if (!success) {
-      console.warn("구글 시트 진도 동기화 요청 실패.");
+      console.warn("진도 동기화 요청 실패.");
     }
   } catch (error) {
     console.error("진도 전송 실패:", error);
-  } finally {
-    if (isGoogleFetch) hideConnectionLoading();
   }
 }
 
@@ -1568,12 +1507,8 @@ document.addEventListener("DOMContentLoaded", () => {
       setLoadingState(true); // 검증 로딩 가동
 
       try {
-        let authResult = null;
-
-        // 구글 스프레드시트 단일 인증
-        if (GOOGLE_SCRIPT_URL) {
-          authResult = await verifyUserWithGoogleSheet(studentId);
-        }
+        // [Comment Policy: Supabase DB 단독 인증 검증]
+        const authResult = await verifyUserWithGoogleSheet(studentId);
 
         if (authResult) {
           // 모국어 강제 선택 주입

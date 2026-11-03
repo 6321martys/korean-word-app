@@ -43,7 +43,7 @@ function getLocalDateString(date) {
  * @param {string} studentId
  */
 async function loadPlannerState(studentId) {
-  // [Comment Policy: Supabase 고속 DB 우선 연동]
+  // [Comment Policy: Supabase 고속 DB 단독 연동]
   if (typeof getPlannerStateFromSupabase === "function") {
     try {
       const sbState = await getPlannerStateFromSupabase(studentId);
@@ -55,58 +55,12 @@ async function loadPlannerState(studentId) {
         return;
       }
     } catch (sbErr) {
-      console.warn("[Planner] Supabase 플래너 조회 실패, 구글 시트 폴백 시도:", sbErr);
+      console.error("[Planner] Supabase 플래너 조회 오류:", sbErr);
     }
   }
 
-  let isGoogleFetch = !!GOOGLE_SCRIPT_URL;
-  try {
-    if (isGoogleFetch) showConnectionLoading();
-    let state = null;
-
-    if (GOOGLE_SCRIPT_URL) {
-      // 1. [구글 스프레드시트 연동] 플래너 세션 조회 API 요청
-      const requestUrl = `${GOOGLE_SCRIPT_URL}?action=getPlannerState&id=${encodeURIComponent(studentId)}&_=${Date.now()}`;
-      const fetchFn = typeof fetchWithRetry === "function" ? fetchWithRetry : fetch;
-      const response = await fetchFn(requestUrl);
-      if (response.ok) {
-        const result = await response.json();
-        if (result && result.success) {
-          state = result;
-          console.log("[Google Sheets] 플래너 상태 로드 성공:", state);
-          updateConnectionStatus(true);
-        }
-      }
-    }
-
-    // [안전 설계: 기존 학생의 학습 기록 임의 덮어쓰기 원천 차단]
-    // 통신 순단 등으로 일시적으로 학습 기록(words)이 누락되었거나 조회가 실패한 경우,
-    // 임의로 일정을 오늘 날짜로 재등록하지 않고 기존 데이터를 보호하며 사용자에게 새로고침을 안내합니다.
-    if (!state || !state.success || !state.words || state.words.length === 0) {
-      showError("학습 일정을 불러오지 못했습니다. 네트워크 상태를 확인하시거나 페이지를 새로고침해 주세요.");
-      updateConnectionStatus(false);
-      return;
-    }
-
-    // 전역 상태에 바인딩
-    plannerState = state;
-
-    // [Comment Policy: 시작일 및 종료일 정보 보관 (달력은 오늘 날짜 기준 렌더링 유지)]
-    if (plannerState.words && plannerState.words.length > 0) {
-      plannerState.startDate = plannerState.words[0].startDate;
-      plannerState.endDate = plannerState.words[plannerState.words.length - 1].endDate;
-    }
-
-    // 2. 플래너 달력 렌더링 및 상태 반영
-    updatePlannerUI();
-
-  } catch (error) {
-    console.error("플래너 상태 초기화 실패:", error);
-    showError("학습 일정을 불러오는 중 통신 오류가 발생했습니다.");
-    updateConnectionStatus(false);
-  } finally {
-    if (isGoogleFetch) hideConnectionLoading();
-  }
+  showError("학습 일정을 불러오지 못했습니다. 네트워크 상태를 확인하시거나 페이지를 새로고침해 주세요.");
+  if (typeof updateConnectionStatus === "function") updateConnectionStatus(false);
 }
 
 /**

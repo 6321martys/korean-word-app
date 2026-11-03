@@ -5,10 +5,9 @@
  * 10단어 일괄 프리로드 캐싱을 통해 재생 지연(0초) 및 연타 락을 안전하게 관리합니다.
  */
 
-// 구글 Apps Script 백엔드 URL (app.js에 정의된 전역 변수를 우선 사용하며, 폴백 URL 제공)
-const TTS_SCRIPT_URL = typeof GOOGLE_SCRIPT_URL !== "undefined" 
-  ? GOOGLE_SCRIPT_URL 
-  : "https://script.google.com/macros/s/AKfycbz0mmFTjqYQs8Irzpnqq1S6PFyvFHt4gUO_YCAL0iGItXL-d7br2yWp17Z9fPfSvxjI/exec";
+// [Comment Policy: 한국어 고품질 TTS 음원 중계 서버 URL]
+// 데이터베이스와 완전히 분리되어 오직 음성 재생(action=tts/batchTts) 전용으로 안전하게 운용됩니다.
+const TTS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz0mmFTjqYQs8Irzpnqq1S6PFyvFHt4gUO_YCAL0iGItXL-d7br2yWp17Z9fPfSvxjI/exec";
 
 // [Comment Policy: 재생 상태 및 오디오 캐시 전역 저장소]
 let activeAudio = null;             // 현재 재생 중인 Audio 객체 인스턴스

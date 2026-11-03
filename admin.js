@@ -15,7 +15,7 @@ let pickerMonth = 8;
  * 학생 데이터 조회, 필터 조작 리스너 바인딩, 그리고 동적 표 출력을 총괄 제어합니다.
  */
 async function initTeacherDashboard() {
-  // [Comment Policy: Supabase 고속 DB 우선 연동]
+  // [Comment Policy: Supabase 고속 DB 단독 연동]
   if (typeof getAllStudentsFromSupabase === "function") {
     try {
       const sbResult = await getAllStudentsFromSupabase();
@@ -30,58 +30,13 @@ async function initTeacherDashboard() {
         return;
       }
     } catch (sbErr) {
-      console.warn("[Admin] Supabase 학생 목록 조회 실패, 구글 시트 폴백 시도:", sbErr);
+      console.error("[Admin] Supabase 학생 목록 조회 오류:", sbErr);
     }
   }
 
-  let isGoogleFetch = !!GOOGLE_SCRIPT_URL;
-  try {
-    if (isGoogleFetch) showConnectionLoading();
-    let students = null;
-
-    // 1. 구글 연동 중이라면 API 조회 시도
-    if (GOOGLE_SCRIPT_URL) {
-      const requestUrl = `${GOOGLE_SCRIPT_URL}?action=getAllStudents&_=${Date.now()}`;
-      try {
-        const fetchFn = typeof fetchWithRetry === "function" ? fetchWithRetry : fetch;
-        const response = await fetchFn(requestUrl);
-        if (response.ok) {
-          const result = await response.json();
-          if (result && result.success && Array.isArray(result.students)) {
-            students = result.students;
-            adminHeaders = result.headers || ["ID", "Name", "Role", "LastLogin", "학습시작일", "레벨"];
-            updateConnectionStatus(true);
-          }
-        }
-      } catch (err) {
-        console.warn("구글 API 호출 실패:", err);
-      }
-    }
-
-    if (!students) {
-      allStudentsData = [];
-      updateConnectionStatus(false);
-      renderStudentTable([]);
-      return;
-    }
-
-    allStudentsData = students;
-
-    // 2. 필터링 및 검색 이벤트 바인딩
-    bindAdminFilters();
-
-    // 3. 테이블 그리기
-    renderStudentTable(allStudentsData);
-
-    // 4. 신규 관리 기능 이벤트 리스너 바인딩 (최초 1회 등록)
-    bindAdminEditEvents();
-
-  } catch (error) {
-    console.error("선생님 대시보드 로딩 중 오류:", error);
-    updateConnectionStatus(false);
-  } finally {
-    if (isGoogleFetch) hideConnectionLoading();
-  }
+  allStudentsData = [];
+  if (typeof updateConnectionStatus === "function") updateConnectionStatus(false);
+  renderStudentTable([]);
 }
 
 /**
@@ -226,17 +181,13 @@ async function openStudentDetailModal(student) {
   void modal.offsetWidth;
   modal.classList.add("active");
 
-  // 구글 시트에서 학생의 90일치 세부 상태 로드
+  // Supabase에서 학생의 90일치 세부 상태 로드
   try {
     let records = [];
-    if (GOOGLE_SCRIPT_URL) {
-      const fetchFn = typeof fetchWithRetry === "function" ? fetchWithRetry : fetch;
-      const res = await fetchFn(`${GOOGLE_SCRIPT_URL}?action=getPlannerState&id=${encodeURIComponent(student.id)}&_=${Date.now()}`);
-      if (res.ok) {
-        const data = await res.json();
-        if (data && data.success && Array.isArray(data.words)) {
-          records = data.words;
-        }
+    if (typeof getPlannerStateFromSupabase === "function") {
+      const state = await getPlannerStateFromSupabase(student.id);
+      if (state && state.success && Array.isArray(state.words)) {
+        records = state.words;
       }
     }
 
@@ -502,27 +453,15 @@ function bindAdminEditEvents() {
         globalLoader.classList.add("active");
       }
 
-      let isGoogleFetch = !!GOOGLE_SCRIPT_URL;
       try {
-        if (isGoogleFetch) showConnectionLoading();
         let success = false;
 
-        // [Comment Policy: Supabase 고속 DB 우선 연동]
+        // [Comment Policy: Supabase 고속 DB 단독 연동]
         if (typeof updateStudentInfoInSupabase === "function") {
           try {
             success = await updateStudentInfoInSupabase(targetId, newStartDate, newLevel);
           } catch (sbErr) {
-            console.warn("[Admin] Supabase 학생 정보 수정 실패, 구글 시트 폴백 시도:", sbErr);
-          }
-        } else if (GOOGLE_SCRIPT_URL) {
-          const requestUrl = `${GOOGLE_SCRIPT_URL}?action=updateStudentInfo&id=${encodeURIComponent(targetId)}&newStartDate=${encodeURIComponent(newStartDate)}&newLevel=${encodeURIComponent(newLevel)}&_=${Date.now()}`;
-          const fetchFn = typeof fetchWithRetry === "function" ? fetchWithRetry : fetch;
-          const response = await fetchFn(requestUrl);
-          if (response.ok) {
-            const result = await response.json();
-            if (result && result.success) {
-              success = true;
-            }
+            console.error("[Admin] Supabase 학생 정보 수정 오류:", sbErr);
           }
         }
 
@@ -538,7 +477,6 @@ function bindAdminEditEvents() {
         console.error("수정 API 통신 오류:", err);
         alert("서버 연결 실패로 수정을 완료하지 못했습니다.");
       } finally {
-        if (isGoogleFetch) hideConnectionLoading();
         if (globalLoader) {
           globalLoader.classList.remove("active");
           globalLoader.classList.add("hidden");
