@@ -2052,7 +2052,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!versionTextEl) return;
 
     try {
-      const baseVersion = versionTextEl.textContent.trim().split(" ")[0] || "v1.0.29";
+      const baseVersion = versionTextEl.textContent.trim().split(" ")[0] || "v1.0.36";
       const modDate = new Date(document.lastModified);
       if (!isNaN(modDate.getTime())) {
         const month = String(modDate.getMonth() + 1).padStart(2, '0');

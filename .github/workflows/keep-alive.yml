@@ -1,0 +1,53 @@
+name: Supabase Keep-Alive
+
+# 실행 주기: 매주 화요일, 금요일 한국시간 오전 9시 (UTC 00:00)
+# 7일 미사용 시 잠드는 Supabase를 주 2회 자동으로 깨워 방학 기간에도 영구 활성 상태를 유지합니다.
+on:
+  schedule:
+    - cron: '0 0 * * 2,5'
+  workflow_dispatch: # GitHub 웹 화면에서 'Run workflow' 버튼으로 즉시 수동 실행 가능
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Keep-Alive Ping and Record Audit Log
+        run: |
+          echo "======================================================="
+          echo "Sending keep-alive ping to Supabase Database..."
+          echo "======================================================="
+          
+          # Supabase system_logs 테이블에 정기 점검 감사 로그 기록 (프로젝트 영구 활성화)
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "https://jeltiyvadmxodbnszpvd.supabase.co/rest/v1/system_logs" \
+            -H "apikey: sb_publishable_jPGfbmryssBYPKlUPONX-w_EgWXtg1_" \
+            -H "Authorization: Bearer sb_publishable_jPGfbmryssBYPKlUPONX-w_EgWXtg1_" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: return=minimal" \
+            -d '{
+              "student_id": "SYSTEM",
+              "name": "GitHub Actions",
+              "action_type": "자동핑_상태점검",
+              "trigger": "keep-alive",
+              "details": "방학 중 휴면 방지 정기 핑 신호 정상 기록 (프로젝트 활성 유지)",
+              "completed_sessions": "-",
+              "client_info": "cron-worker"
+            }')
+
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | head -n -1)
+
+          echo "HTTP Response Code: $HTTP_CODE"
+
+          if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
+            echo "======================================================="
+            echo "✅ Supabase Keep-Alive Ping Successfully Recorded!"
+            echo "Log saved to 'system_logs' table."
+            echo "======================================================="
+          else
+            echo "======================================================="
+            echo "❌ Keep-Alive Ping Failed with Status $HTTP_CODE"
+            echo "Error details: $BODY"
+            echo "======================================================="
+            exit 1
+          fi
+
