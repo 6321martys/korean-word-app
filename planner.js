@@ -43,6 +43,22 @@ function getLocalDateString(date) {
  * @param {string} studentId
  */
 async function loadPlannerState(studentId) {
+  // [Comment Policy: Supabase 고속 DB 우선 연동]
+  if (typeof getPlannerStateFromSupabase === "function") {
+    try {
+      const sbState = await getPlannerStateFromSupabase(studentId);
+      if (sbState && sbState.success && sbState.words && sbState.words.length > 0) {
+        plannerState = sbState;
+        updatePlannerUI();
+        if (typeof updateConnectionStatus === "function") updateConnectionStatus(true);
+        console.log("[Supabase] 플래너 상태 로드 완료:", plannerState);
+        return;
+      }
+    } catch (sbErr) {
+      console.warn("[Planner] Supabase 플래너 조회 실패, 구글 시트 폴백 시도:", sbErr);
+    }
+  }
+
   let isGoogleFetch = !!GOOGLE_SCRIPT_URL;
   try {
     if (isGoogleFetch) showConnectionLoading();

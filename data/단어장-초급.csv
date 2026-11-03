@@ -1,0 +1,901 @@
+일차,어휘,품사,베트남어,중국어,영어
+Day 1,가족,명사,gia đình,家庭,family
+Day 1,남자,명사,đàn ông,男人,man
+Day 1,동생,명사,em (trai/gái),弟弟/妹妹,younger sibling
+Day 1,부모님,명사,bố mẹ,父母,parents
+Day 1,아버지,명사,bố,父亲,father
+Day 1,어머니,명사,mẹ,母亲,mother
+Day 1,오빠,명사,anh trai (nữ gọi),哥哥,older brother (for female)
+Day 1,여자,명사,phụ nữ,女人,woman
+Day 1,할머니,명사,bà,奶奶/外婆,grandmother
+Day 1,할아버지,명사,ông,爷爷/外公,grandfather
+Day 1,고향,명사,quê hương,家乡,hometown
+Day 1,소개,명사,giới thiệu,介绍,introduction
+Day 1,생일,명사,sinh nhật,生日,birthday
+Day 1,이름,명사,tên,名字,name
+Day 1,직업,명사,nghề nghiệp,职业,job
+Day 1,주소,명사,địa chỉ,地址,address
+Day 1,나라,명사,quốc gia,国家,country
+Day 1,일본,명사,Nhật Bản,日本,Japan
+Day 1,중국,명사,Trung Quốc,日本,China
+Day 1,한국,명사,Hàn Quốc,韩国,Republic of Korea
+Day 1,멋있다,형용사,ngầu/đẹp,帅/酷,nice/cool
+Day 1,예쁘다,형용사,xinh đẹp,漂亮,pretty
+Day 1,있다,형용사,có,有,to be/exist
+Day 1,없다,형용사,không có,没有,to not be
+Day 1,조용하다,형용사,yên tĩnh,安静,silent
+Day 1,살다,동사,sống,生活,live
+Day 1,싫어하다,동사,ghét,讨厌,dislike
+Day 1,알다,동사,biết,知道,know
+Day 1,잘하다,동사,làm tốt,做得好,do well
+Day 1,좋아하다,동사,thích,喜欢,like
+Day 2,자식,명사,con cái,子女,child
+Day 2,형제,명사,anh em,兄弟,brother/siblings
+Day 2,부부,명사,vợ chồng,夫妇,(married) couple
+Day 2,신랑,명사,chú rể,新郎,groom
+Day 2,신부,명사,cô dâu,新娘,bride
+Day 2,남녀,명사,nam và nữ,男女,man and woman
+Day 2,어른,명사,người lớn,大人,adult
+Day 2,꿈,명사,giấc mơ,梦想,dream
+Day 2,능력,명사,năng lực,能力,ability
+Day 2,모습,명사,hình dáng,样子,figure/appearance
+Day 2,목소리,명사,giọng nói,声音,voice
+Day 2,버릇,명사,thói quen,习惯,habit
+Day 2,자기소개,명사,giới thiệu bản thân,自我介绍,self-introduction
+Day 2,신분증,명사,chứng minh thư,身份证,identification
+Day 2,성격,명사,tính cách,性格,character
+Day 2,게으르다,형용사,lười biếng,懒惰,lazy
+Day 2,귀엽다,형용사,dễ thương,可爱,cute
+Day 2,급하다,형용사,vội vàng/nóng vội,急躁,rash
+Day 2,날씬하다,형용사,thon thả,苗条,slim
+Day 2,똑똑하다,형용사,thông minh,聪明,smart
+Day 2,뚱뚱하다,형용사,béo,胖,fat
+Day 2,부지런하다,형용사,chăm chỉ,勤奋,diligent
+Day 2,비슷하다,형용사,giống,相似,similar (to)
+Day 2,어리다,형용사,trẻ,年幼,young
+Day 2,잘생기다,형용사,đẹp trai,帅,handsome
+Day 2,젊다,형용사,trẻ,年轻,young
+Day 2,착하다,형용사,tốt bụng,善良,good/nice
+Day 2,늙다,"형용사, 동사",già,变老,be old
+Day 2,태어나다,동사,sinh ra,出生,be born
+Day 2,찌다,동사,tăng cân,发胖,gain weight
+Day 3,거실,명사,phòng khách,客厅,living room
+Day 3,기숙사,명사,ký túc xá,宿舍,dormitory
+Day 3,방,명사,phòng,房间,room
+Day 3,아파트,명사,căn hộ chung cư,公寓,apartment
+Day 3,하숙집,명사,nhà trọ,寄宿公寓,boarding house
+Day 3,가구,명사,đồ nội thất,家具,furniture
+Day 3,화장실,명사,nhà vệ sinh,卫生间,bathroom
+Day 3,생활,명사,cuộc sống,生活,"life, living"
+Day 3,가게,명사,cửa hàng,商店,"shop, store"
+Day 3,물건,명사,đồ vật,东西,"thing, stuff"
+Day 3,공원,명사,công viên,公园,park
+Day 3,노래방,명사,phòng karaoke,练歌房,karaoke
+Day 3,식당,명사,nhà hàng,餐厅,restaurant
+Day 3,편의점,명사,cửa hàng tiện lợi,便利店,convenience store
+Day 3,수영장,명사,hồ bơi,游泳池,swimming pool
+Day 3,사무실,명사,văn phòng,办公室,office
+Day 3,커피숍,명사,quán cà phê,咖啡店,coffee shop
+Day 3,호텔,명사,khách sạn,酒店,hotel
+Day 3,회사,명사,công ty,公司,company
+Day 3,깨끗하다,형용사,sạch sẽ,干净,clean
+Day 3,낮다,형용사,thấp,低,low
+Day 3,높다,형용사,cao,高,high
+Day 3,작다,형용사,nhỏ,小,"small, short"
+Day 3,크다,형용사,"to, lớn",大,"big, tall"
+Day 3,가다,동사,đi,去,go
+Day 3,쉬다,동사,nghỉ ngơi,休息,rest
+Day 3,마시다,동사,uống,喝,drink
+Day 3,만나다,동사,gặp,见面,meet
+Day 3,오다,동사,đến,来,come
+Day 3,읽다,동사,đọc,读,read
+Day 4,강,명사,sông,河,river
+Day 4,섬,명사,đảo,岛,island
+Day 4,도시,명사,thành phố,城市,city
+Day 4,주차장,명사,bãi đỗ xe,停车场,parking lot
+Day 4,정원,명사,vườn,花园,garden
+Day 4,시내,명사,trung tâm thành phố,市区,downtown
+Day 4,지하,명사,tầng hầm,地下,basement
+Day 4,호수,명사,hồ,湖,lake
+Day 4,벽,명사,tường,墙,wall
+Day 4,서랍,명사,ngăn kéo,抽屉,drawer
+Day 4,옷장,명사,tủ quần áo,衣柜,wardrobe
+Day 4,마을,명사,làng,村庄,village
+Day 4,공장,명사,nhà máy,工厂,factory
+Day 4,꽃집,명사,cửa hàng hoa,花店,flower shop
+Day 4,레스토랑,명사,nhà hàng,餐厅,restaurant
+Day 4,마트,명사,siêu thị,超市,mart
+Day 4,학원,명사,trung tâm luyện thi,补习班,cram school
+Day 4,방송국,명사,đài truyền hình,广播电视台,broadcasting station
+Day 4,빵집,명사,tiệm bánh,面包店,bakery
+Day 4,술집,명사,quán rượu,酒吧,bar
+Day 4,세탁소,명사,tiệm giặt ủi,洗衣店,laundry
+Day 4,카페,명사,quán cà phê,咖啡厅,cafe
+Day 4,더럽다,형용사,bẩn,脏,dirty
+Day 4,밝다,형용사,sáng,亮,bright
+Day 4,어둡다,형용사,tối,暗,dark
+Day 4,시끄럽다,형용사,ồn ào,吵闹,noisy
+Day 4,내려가다,동사,đi xuống,下去,go down
+Day 4,내려오다,동사,xuống đây,下来,come down
+Day 4,떠들다,동사,làm ồn,吵闹,make noise
+Day 4,팔리다,동사,được bán,被卖出,be sold
+Day 5,가방,명사,"túi, cặp",包,bag
+Day 5,그릇,명사,"bát, tô","碗,容器","bowl, container"
+Day 5,병,명사,"chai, lọ",瓶子,bottle
+Day 5,불,명사,"đèn, lửa","灯,火",light
+Day 5,식사,명사,bữa ăn,用餐,meal
+Day 5,안경,명사,kính mắt,眼镜,glasses
+Day 5,에어컨,명사,máy lạnh,空调,air conditioner
+Day 5,열쇠,명사,chìa khóa,钥匙,key
+Day 5,우산,명사,"ô, dù",雨伞,umbrella
+Day 5,인터넷,명사,Internet,网络,the Internet
+Day 5,인형,명사,búp bê,玩偶,doll
+Day 5,전화,명사,cuộc gọi điện thoại,电话,phone call
+Day 5,전화번호,명사,số điện thoại,电话号码,phone number
+Day 5,지갑,명사,ví,钱包,wallet
+Day 5,창문,명사,cửa sổ,窗户,window
+Day 5,청소,명사,dọn dẹp,打扫,cleaning
+Day 5,침대,명사,giường,床,bed
+Day 5,컴퓨터,명사,máy tính,电脑,computer
+Day 5,컵,명사,"cốc, ly",杯子,cup
+Day 5,텔레비전,명사,tivi,电视,television
+Day 5,가볍다,형용사,nhẹ,轻,light
+Day 5,무겁다,형용사,nặng,重,heavy
+Day 5,힘들다,형용사,"khó khăn, mệt","累,难",hard
+Day 5,걸다,동사,"treo, gọi điện","挂,打电话","hang, call"
+Day 5,앉다,동사,ngồi,坐,sit
+Day 5,끄다,동사,tắt,关,turn off
+Day 5,닫다,동사,đóng,关闭,close
+Day 5,쓰다,동사,"viết, đội/đeo","写,戴","write, wear"
+Day 5,열다,동사,mở,打开,open
+Day 5,켜다,동사,bật,打开(开启),turn on
+Day 6,달력,명사,lịch,日历,calendar
+Day 6,비누,명사,xà phòng,肥皂,soap
+Day 6,빨래,명사,giặt giũ,洗衣服,laundry
+Day 6,설거지,명사,rửa chén,洗碗,dish-washing
+Day 6,세탁,명사,giặt,洗涤,wash
+Day 6,수건,명사,khăn tắm,毛巾,towel
+Day 6,쓰레기,명사,rác,垃圾,waste
+Day 6,양치질,명사,đánh răng,刷牙,brushing teeth
+Day 6,잡지,명사,tạp chí,杂志,magazine
+Day 6,정리,명사,sắp xếp,整理,arrangement
+Day 6,짐,명사,hành lý,行李,"luggage, load"
+Day 6,집안일,명사,việc nhà,家务,housework
+Day 6,옷걸이,명사,móc áo,衣架,hanger
+Day 6,유리,명사,"kính, thủy tinh",玻璃,glass
+Day 6,이불,명사,chăn,被子,blanket
+Day 6,이사,명사,chuyển nhà,搬家,move
+Day 6,이삿짐,명사,đồ chuyển nhà,搬家行李,moving items
+Day 6,휴대폰,명사,điện thoại di động,手机,mobile phone
+Day 6,고치다,동사,sửa,修理,fix
+Day 6,깨다,동사,làm vỡ,打破,break
+Day 6,꺼내다,동사,lấy ra,拿出,take out
+Day 6,놓다,동사,đặt,放,put
+Day 6,버리다,동사,vứt bỏ,扔掉,throw away
+Day 6,싣다,동사,chất lên,装载,load
+Day 6,싸다,동사,đóng gói,打包,pack (up)
+Day 6,쌓다,동사,chất đống,堆积,pile (up)
+Day 6,잃어버리다,동사,làm mất,丢失,lose
+Day 6,줍다,동사,nhặt lên,捡起,pick up
+Day 6,(가득) 차다,동사,"đầy, chật",装满,"bulge, be full"
+Day 6,풀다,동사,"tháo ra, mở ra",拆开,unpack
+Day 7,공부,명사,học tập,学习,study
+Day 7,공책,명사,vở,笔记本,notebook
+Day 7,단어,명사,từ vựng,单词,word
+Day 7,대학생,명사,sinh viên đại học,大学生,university student
+Day 7,방학,명사,kỳ nghỉ,假期,vacation
+Day 7,볼펜,명사,bút bi,圆珠笔,ballpoint pen
+Day 7,사전,명사,từ điển,词典,dictionary
+Day 7,선생님,명사,giáo viên,老师,teacher
+Day 7,수업,명사,buổi học,课程,class
+Day 7,숙제,명사,bài tập về nhà,作业,homework
+Day 7,시험,명사,kỳ thi,考试,exam
+Day 7,연습,명사,luyện tập,练习,practice
+Day 7,연필,명사,bút chì,铅笔,pencil
+Day 7,외국어,명사,ngoại ngữ,外语,foreign language
+Day 7,의자,명사,ghế,椅子,chair
+Day 7,책,명사,sách,书,book
+Day 7,책상,명사,bàn học,书桌,desk
+Day 7,칠판,명사,bảng đen,黑板,blackboard
+Day 7,학생,명사,học sinh,学生,student
+Day 7,학생증,명사,thẻ sinh viên,学生证,student ID
+Day 7,운동장,명사,sân vận động,操场,schoolyard
+Day 7,학교,명사,trường học,学校,school
+Day 7,교실,명사,lớp học,教室,classroom
+Day 7,도서관,명사,thư viện,图书馆,library
+Day 7,쉽다,형용사,dễ,容易,easy
+Day 7,바쁘다,형용사,bận,忙,busy
+Day 7,어렵다,형용사,khó,难,difficult
+Day 7,가르치다,동사,dạy,教,teach
+Day 7,다녀오다,동사,đi rồi về,去了又回来,go and come back
+Day 7,배우다,동사,học,学,learn
+Day 8,결석,명사,vắng mặt,缺席,absence
+Day 8,교과서,명사,sách giáo khoa,教科书,textbook
+Day 8,금지,명사,cấm,禁止,prohibition
+Day 8,기회,명사,cơ hội,机会,opportunity
+Day 8,남학생,명사,nam sinh,男学生,male student
+Day 8,내용,명사,nội dung,内容,content(s)
+Day 8,메모,명사,ghi chú,便条,note
+Day 8,문제,명사,"câu hỏi, vấn đề",问题,question
+Day 8,복습,명사,ôn tập,复习,review
+Day 8,성적,명사,điểm số,成绩,grade
+Day 8,시간표,명사,thời khóa biểu,时间表,schedule
+Day 8,안내문,명사,thông báo,通知,notice
+Day 8,언어,명사,ngôn ngữ,语言,language
+Day 8,여학생,명사,nữ sinh,女学生,female student
+Day 8,점수,명사,điểm số,分数,grade
+Day 8,학기,명사,học kỳ,学期,semester
+Day 8,학년,명사,năm học,学年,school year
+Day 8,간단하다,형용사,đơn giản,简单,simple
+Day 8,복잡하다,형용사,phức tạp,复杂,complicated
+Day 8,졸리다,형용사,buồn ngủ,困,feel sleepy
+Day 8,훌륭하다,형용사,xuất sắc,优秀,excellent
+Day 8,결석하다,동사,vắng mặt,缺席,be absent from
+Day 8,끝내다,동사,"kết thúc, hoàn thành",结束,finish
+Day 8,마치다,동사,kết thúc,结束,end
+Day 8,바라다,동사,mong muốn,希望,wish
+Day 8,받아쓰다,동사,viết chính tả,听写,take dictation
+Day 8,알리다,동사,thông báo,通知,inform
+Day 8,외우다,동사,học thuộc lòng,背诵,memorize
+Day 8,졸다,동사,ngủ gật,打瞌睡,doze (off)
+Day 8,출석하다,동사,"tham dự, có mặt",出席,attend
+Day 9,구두,명사,giày da,皮鞋,shoes
+Day 9,모자,명사,mũ,帽子,hat
+Day 9,물건,명사,đồ vật,东西,stuff
+Day 9,바지,명사,quần,裤子,pants
+Day 9,쇼핑,명사,mua sắm,购物,shopping
+Day 9,신발,명사,giày,鞋,shoes
+Day 9,시장,명사,chợ,市场,market
+Day 9,슈퍼마켓,명사,siêu thị,超市,supermarket
+Day 9,백화점,명사,trung tâm thương mại,百货商店,department store
+Day 9,서점,명사,hiệu sách,书店,bookstore
+Day 9,옷,명사,quần áo,衣服,clothes
+Day 9,종업원,명사,nhân viên,"员工,服务员",employee
+Day 9,주인,명사,chủ,"老板,主人",owner
+Day 9,직원,명사,nhân viên,职员,employee
+Day 9,치마,명사,váy,裙子,skirt
+Day 9,티셔츠,명사,áo thun,T恤,T-shirt
+Day 9,한복,명사,hanbok (trang phục Hàn Quốc),韩服,hanbok
+Day 9,운동화,명사,giày thể thao,运动鞋,sneakers
+Day 9,비싸다,형용사,đắt,贵,expensive
+Day 9,싸다,형용사,rẻ,便宜,cheap
+Day 9,많다,형용사,nhiều,多,a lot of
+Day 9,적다,형용사,ít,少,few
+Day 9,고르다,동사,chọn,选择,choose
+Day 9,바꾸다,동사,thay đổi,"换,改变",change
+Day 9,사다,동사,mua,买,buy
+Day 9,신다,동사,đi (giày),穿(鞋),put on (shoes)
+Day 9,입다,동사,mặc,穿(衣服),put on (clothes)
+Day 9,찾다,동사,tìm,找,find
+Day 9,팔다,동사,bán,卖,sell
+Day 9,쓰다,동사,đội (mũ),戴(帽子),put on (hat)
+Day 10,광고,명사,quảng cáo,广告,advertisement
+Day 10,무료,명사,miễn phí,免费,free
+Day 10,생선,명사,cá,鱼,fish
+Day 10,채소,명사,rau củ,蔬菜,vegetable
+Day 10,계산,명사,thanh toán,"结账,计算",payment
+Day 10,넥타이,명사,cà vạt,领带,tie
+Day 10,목도리,명사,khăn quàng cổ,围巾,muffler
+Day 10,반바지,명사,quần đùi,短裤,shorts
+Day 10,반지,명사,nhẫn,戒指,ring
+Day 10,사이즈,명사,kích cỡ,尺寸,size
+Day 10,속옷,명사,đồ lót,内衣,underwear
+Day 10,양말,명사,"tất, vớ",袜子,socks
+Day 10,양복,명사,vest,西装,suit
+Day 10,운동복,명사,đồ thể thao,运动服,sportswear
+Day 10,원피스,명사,váy liền,连衣裙,dress
+Day 10,유행,명사,xu hướng,流行,trend
+Day 10,장갑,명사,găng tay,手套,gloves
+Day 10,청바지,명사,quần jean,牛仔裤,jeans
+Day 10,냉장고,명사,tủ lạnh,冰箱,refrigerator
+Day 10,세탁기,명사,máy giặt,洗衣机,washing machine
+Day 10,장난감,명사,đồ chơi,玩具,toy
+Day 10,알맞다,형용사,phù hợp,合适,suitable
+Day 10,진하다,형용사,đậm,"深,浓",dark
+Day 10,부드럽다,형용사,mềm mại,柔软,soft
+Day 10,얇다,형용사,mỏng,薄,thin
+Day 10,짧다,형용사,ngắn,短,short
+Day 10,화려하다,형용사,lộng lẫy,华丽,fancy
+Day 10,갈아입다,동사,thay quần áo,换衣服,change (one's clothes)
+Day 10,어울리다,동사,"hợp, phù hợp","合适,搭配",go well
+Day 10,차다,동사,đeo (đồng hồ),戴(手表),wear (a watch)
+Day 11,고기,명사,thịt,肉,meat
+Day 11,과일,명사,trái cây,水果,fruit
+Day 11,김밥,명사,gimbap (cơm cuộn rong biển),紫菜包饭,gimbap
+Day 11,맛,명사,vị,味道,taste
+Day 11,물,명사,nước,水,water
+Day 11,메뉴,명사,thực đơn,菜单,menu
+Day 11,불고기,명사,bulgogi (thịt nướng),烤肉,bulgogi
+Day 11,비빔밥,명사,bibimbap (cơm trộn),拌饭,bibimbap
+Day 11,빵,명사,bánh mì,面包,bread
+Day 11,술,명사,rượu,酒,alcohol
+Day 11,아이스크림,명사,kem,冰淇淋,ice cream
+Day 11,우유,명사,sữa,牛奶,milk
+Day 11,음료수,명사,đồ uống,饮料,drink
+Day 11,음식,명사,thức ăn,食物,food
+Day 11,주스,명사,nước ép,果汁,juice
+Day 11,초콜릿,명사,sô cô la,巧克力,chocolate
+Day 11,커피,명사,cà phê,咖啡,coffee
+Day 11,케이크,명사,bánh kem,蛋糕,cake
+Day 11,고프다,형용사,đói,饿,hungry
+Day 11,달다,형용사,ngọt,甜,sweet
+Day 11,맛없다,형용사,không ngon,不好吃,not delicious
+Day 11,맛있다,형용사,ngon,好吃,delicious
+Day 11,맵다,형용사,cay,辣,spicy
+Day 11,시다,형용사,chua,酸,sour
+Day 11,싫다,형용사,"ghét, không thích",讨厌,"hateful, unappealing"
+Day 11,싱겁다,형용사,nhạt,淡,bland
+Day 11,짜다,형용사,mặn,咸,salty
+Day 11,넣다,동사,cho vào,放入,put
+Day 11,만들다,동사,làm,制作,make
+Day 11,먹다,동사,ăn,吃,eat
+Day 12,국,명사,canh,汤,soup
+Day 12,반찬,명사,món ăn kèm,小菜,side dish
+Day 12,배달,명사,giao hàng,"外卖,配送",delivery
+Day 12,볶음밥,명사,cơm chiên,炒饭,fried rice
+Day 12,분식,명사,đồ ăn vặt Hàn Quốc,韩式小吃,Korean snack food
+Day 12,삼겹살,명사,thịt ba chỉ nướng,五花肉,samgyeopsal
+Day 12,식빵,명사,bánh mì sandwich,面包,bread
+Day 12,양식,명사,món Tây,西式料理,western food
+Day 12,음료,명사,đồ uống,饮料,drink
+Day 12,일식,명사,món Nhật,日式料理,Japanese food
+Day 12,주문,명사,"đặt hàng, gọi món","点餐,订购",order
+Day 12,찌개,명사,món hầm (jjigae),汤锅,stew
+Day 12,차,명사,trà,茶,tea
+Day 12,택배,명사,dịch vụ giao hàng,快递,parcel service
+Day 12,튀김,명사,đồ chiên,炸物,fried food
+Day 12,포장,명사,"đóng gói, mang về",打包,"packing, to-go"
+Day 12,피자,명사,pizza,比萨,pizza
+Day 12,한식,명사,món Hàn,韩式料理,Korean food
+Day 12,햄버거,명사,hamburger,汉堡,hamburger
+Day 12,뜨겁다,형용사,nóng,热,hot
+Day 12,배부르다,형용사,no bụng,饱,full
+Day 12,충분하다,형용사,đủ,"充分,足够",sufficient
+Day 12,끓다,동사,sôi,煮沸,boil
+Day 12,굽다,동사,nướng,烤,grill
+Day 12,볶다,동사,xào,炒,stir-fry
+Day 12,썰다,동사,"cắt, thái",切,"cut, chop"
+Day 12,씹다,동사,nhai,咀嚼,bite
+Day 12,익다,동사,chín,熟,be done (cooked)
+Day 12,찌다,동사,hấp,蒸,steam
+Day 12,튀기다,동사,chiên,炸,fry
+Day 13,우체국,명사,bưu điện,邮局,post office
+Day 13,우표,명사,tem,邮票,stamp
+Day 13,우체통,명사,hộp thư,邮筒,postbox
+Day 13,우편,명사,thư từ,邮件,mail
+Day 13,우편함,명사,hộp thư,信箱,mail box
+Day 13,소포,명사,bưu kiện,包裹,package
+Day 13,편지,명사,thư,信,letter
+Day 13,주민 센터,명사,trung tâm dân cư,居民中心,community service center
+Day 13,시청,명사,tòa thị chính,市政厅,city hall
+Day 13,공무원,명사,công chức,公务员,civil servant
+Day 13,비자,명사,visa,签证,visa
+Day 13,은행,명사,ngân hàng,银行,bank
+Day 13,은행원,명사,nhân viên ngân hàng,银行职员,bank clerk
+Day 13,계좌 번호,명사,số tài khoản,账号,account number
+Day 13,통장,명사,sổ ngân hàng,存折,bankbook
+Day 13,카드,명사,thẻ tín dụng,信用卡,credit card
+Day 13,입금,명사,nạp tiền,存款,deposit
+Day 13,출금,명사,rút tiền,取款,withdrawal
+Day 13,환전,명사,đổi tiền,兑换货币,exchange
+Day 13,번호표,명사,phiếu số thứ tự,号码牌,number tag
+Day 13,병원,명사,bệnh viện,医院,hospital
+Day 13,의사,명사,bác sĩ,医生,doctor
+Day 13,간호사,명사,y tá,护士,nurse
+Day 13,약국,명사,hiệu thuốc,药店,pharmacy
+Day 13,약사,명사,dược sĩ,药剂师,pharmacist
+Day 13,약,명사,thuốc,药,medicine
+Day 13,알약,명사,viên thuốc,药丸,pill
+Day 13,물약,명사,thuốc nước,药水,liquid medicine
+Day 13,아프다,형용사,"đau, ốm","疼,不舒服",sick
+Day 13,보내다,동사,gửi,"寄,发送",send
+Day 14,등기,명사,thư bảo đảm,挂号信,registered mail
+Day 14,봉투,명사,phong bì,信封,envelope
+Day 14,엽서,명사,bưu thiếp,明信片,postcard
+Day 14,우편물,명사,thư từ,邮件,mail
+Day 14,내과,명사,khoa nội,内科,internal medicine
+Day 14,소아과,명사,khoa nhi,儿科,pediatrics
+Day 14,안과,명사,khoa mắt,眼科,ophthalmology
+Day 14,외과,명사,khoa ngoại,外科,surgery
+Day 14,이비인후과,명사,khoa tai mũi họng,耳鼻喉科,otolaryngology
+Day 14,정형외과,명사,khoa chỉnh hình,骨科,orthopedics
+Day 14,치과,명사,khoa răng,牙科,dentistry
+Day 14,수술,명사,phẫu thuật,手术,operation
+Day 14,입원,명사,nhập viện,住院,hospitalization
+Day 14,응급실,명사,phòng cấp cứu,急诊室,emergency room
+Day 14,진통제,명사,thuốc giảm đau,止痛药,painkiller
+Day 14,소화제,명사,thuốc tiêu hóa,消化药,digestive medicine
+Day 14,해열제,명사,thuốc hạ sốt,退烧药,fever reducer
+Day 14,진단서,명사,giấy chứng nhận y tế,诊断书,medical certificate
+Day 14,병원비,명사,viện phí,医药费,hospital bills
+Day 14,심하다,형용사,nghiêm trọng,严重,severe
+Day 14,약하다,형용사,yếu,弱,weak
+Day 14,튼튼하다,형용사,"khỏe mạnh, chắc chắn","结实,健壮",strong
+Day 14,편찮다,형용사,không khỏe,身体不适,unwell
+Day 14,부치다,동사,gửi,邮寄,send
+Day 14,붙이다,동사,"dán, đính","贴,附上",attach
+Day 14,전하다,동사,"truyền đạt, gửi",传达,deliver
+Day 14,낫다,동사,khỏi bệnh,痊愈,recover
+Day 14,넘어지다,동사,ngã,摔倒,fall down (over)
+Day 14,다치다,동사,bị thương,受伤,get hurt
+Day 14,죽다,동사,chết,死,die
+Day 15,가요,명사,nhạc pop,歌曲(流行歌),pop song
+Day 15,게임,명사,trò chơi,游戏,game
+Day 15,그림,명사,tranh vẽ,画,drawing
+Day 15,극장,명사,rạp hát,剧场,theater
+Day 15,글,명사,bài viết,"文章,写作",writing
+Day 15,노래,명사,bài hát,歌,song
+Day 15,농구,명사,bóng rổ,篮球,basketball
+Day 15,뉴스,명사,tin tức,新闻,news
+Day 15,드라마,명사,phim truyền hình,电视剧,drama
+Day 15,등산,명사,leo núi,登山,hiking
+Day 15,문화,명사,văn hóa,文化,culture
+Day 15,사진,명사,ảnh,照片,photo
+Day 15,산책,명사,đi dạo,散步,walk
+Day 15,수영,명사,bơi lội,游泳,swimming
+Day 15,스키,명사,trượt tuyết,滑雪,skiing
+Day 15,신문,명사,báo,报纸,newspaper
+Day 15,야구,명사,bóng chày,棒球,baseball
+Day 15,연극,명사,kịch,话剧,play
+Day 15,영화,명사,phim,电影,movie
+Day 15,영화관,명사,rạp chiếu phim,电影院,theater
+Day 15,요리,명사,nấu ăn,烹饪,cooking
+Day 15,운동,명사,tập thể dục,运动,exercise
+Day 15,운전,명사,lái xe,开车,driving
+Day 15,음악,명사,âm nhạc,音乐,music
+Day 15,축구,명사,bóng đá,足球,soccer
+Day 15,춤,명사,nhảy múa,舞蹈,dance
+Day 15,취미,명사,sở thích,爱好,hobby
+Day 15,테니스,명사,quần vợt,网球,tennis
+Day 15,카메라,명사,máy ảnh,相机,camera
+Day 15,콘서트,명사,buổi hòa nhạc,演唱会,concert
+Day 16,경기,명사,trận đấu,比赛,game
+Day 16,공휴일,명사,ngày lễ,公休日,holiday
+Day 16,기타,명사,đàn ghi ta,吉他,guitar
+Day 16,낚시,명사,câu cá,钓鱼,fishing
+Day 16,낮잠,명사,ngủ trưa,午睡,nap
+Day 16,놀이,명사,trò chơi,游戏,"play, game"
+Day 16,달리기,명사,chạy bộ,跑步,running
+Day 16,대회,명사,cuộc thi,大赛,competition
+Day 16,데이트,명사,hẹn hò,约会,date
+Day 16,독서,명사,đọc sách,读书,reading
+Day 16,만화,명사,truyện tranh,漫画,"comics, cartoon"
+Day 16,매표소,명사,quầy vé,售票处,ticket office
+Day 16,명절,명사,ngày lễ truyền thống,传统节日,traditional holiday
+Day 16,미술관,명사,bảo tàng mỹ thuật,美术馆,art museum
+Day 16,소풍,명사,dã ngoại,郊游,picnic
+Day 16,스트레스,명사,căng thẳng,压力,stress
+Day 16,스포츠,명사,thể thao,体育,sports
+Day 16,악기,명사,nhạc cụ,乐器,musical instrument
+Day 16,예술,명사,nghệ thuật,艺术,art
+Day 16,올림픽,명사,Thế vận hội,奥运会,the Olympics
+Day 16,입장권,명사,vé vào cửa,入场券,ticket
+Day 16,크리스마스,명사,Giáng sinh,圣诞节,Christmas
+Day 16,체육관,명사,nhà thi đấu,体育馆,gym
+Day 16,심심하다,형용사,buồn chán,无聊,bored
+Day 16,뛰어가다,동사,chạy đến,跑去,dash
+Day 16,보여 주다,동사,cho xem,给...看,show
+Day 16,이기다,동사,thắng,赢,win
+Day 16,(잠)자다,동사,ngủ,睡觉,sleep
+Day 16,지다,동사,thua,输,lose
+Day 16,차다,동사,đá,踢,kick
+Day 17,감사,명사,lòng biết ơn,感谢,gratitude
+Day 17,답장,명사,thư trả lời,回信,reply
+Day 17,대답,명사,câu trả lời,回答,answer
+Day 17,대화,명사,hội thoại,对话,conversation
+Day 17,말,명사,lời nói,话,word
+Day 17,말씀,명사,lời nói (kính ngữ),话(敬语),word (honorific)
+Day 17,부탁,명사,nhờ vả,"请求,拜托",request
+Day 17,생각,명사,suy nghĩ,想法,thought
+Day 17,선물,명사,quà tặng,礼物,present
+Day 17,손님,명사,khách,客人,guest
+Day 17,실례,명사,sự thất lễ,失礼,discourtesy
+Day 17,약속,명사,"lời hứa, hẹn",约定,promise
+Day 17,이야기,명사,câu chuyện,"故事,谈话",story
+Day 17,이유,명사,lý do,理由,reason
+Day 17,질문,명사,câu hỏi,提问,question
+Day 17,초대,명사,lời mời,邀请,invitation
+Day 17,축하,명사,chúc mừng,祝贺,celebration
+Day 17,친구,명사,bạn bè,朋友,friend
+Day 17,친절,명사,sự tử tế,亲切,kindness
+Day 17,카드,명사,"thẻ, thiệp",卡片,card
+Day 17,파티,명사,tiệc,派对,party
+Day 17,회의,명사,cuộc họp,会议,meeting
+Day 17,친하다,형용사,thân thiết,"亲近,亲密",close
+Day 17,기다리다,동사,chờ đợi,等待,wait
+Day 17,도와주다,동사,giúp đỡ,帮助,assist
+Day 17,돕다,동사,giúp,帮助,help
+Day 17,드리다,동사,"kính biếu, tặng",给(敬语),give (honorific)
+Day 17,받다,동사,nhận,"得到,收到",get
+Day 17,사귀다,동사,"hẹn hò, giao du",交往,go out with
+Day 17,주다,동사,"cho, tặng",给,give
+Day 18,거절,명사,từ chối,拒绝,refusal
+Day 18,거짓말,명사,lời nói dối,谎言,lie
+Day 18,결혼,명사,kết hôn,结婚,marriage
+Day 18,결혼식,명사,lễ cưới,婚礼,wedding
+Day 18,고민,명사,"lo lắng, băn khoăn",烦恼,worry
+Day 18,관계,명사,mối quan hệ,关系,relationship
+Day 18,관심,명사,sự quan tâm,"关心,兴趣",interest
+Day 18,농담,명사,lời đùa,玩笑,joke
+Day 18,도움,명사,sự giúp đỡ,帮助,help
+Day 18,메시지,명사,tin nhắn,信息,message
+Day 18,모임,명사,buổi họp mặt,聚会,gathering
+Day 18,비밀,명사,bí mật,秘密,secret
+Day 18,소식,명사,tin tức,消息,news
+Day 18,연락,명사,liên lạc,联系,contact
+Day 18,직장,명사,nơi làm việc,职场,workplace
+Day 18,집들이,명사,tiệc tân gia,乔迁宴,housewarming party
+Day 18,초대장,명사,thiệp mời,请帖,invitation
+Day 18,그립다,형용사,nhớ,想念,miss
+Day 18,소중하다,형용사,quý giá,珍贵,precious
+Day 18,기억나다,동사,nhớ ra,想起来,remember
+Day 18,가져가다,동사,mang đi,拿走,take
+Day 18,가져오다,동사,mang đến,拿来,bring
+Day 18,남기다,동사,để lại,留下,leave
+Day 18,돌려주다,동사,trả lại,归还,return
+Day 18,모이다,동사,tụ họp,聚集,gather
+Day 18,물어보다,동사,hỏi thử,询问,ask
+Day 18,싸우다,동사,"cãi nhau, đánh nhau","吵架,打架",fight
+Day 18,찾아가다,동사,đến thăm,"去找,拜访",go to (visit)
+Day 18,찾아오다,동사,đến thăm,"来找,来访",come to (visit)
+Day 18,헤어지다,동사,chia tay,分手,break up
+Day 19,가슴,명사,ngực,胸,chest
+Day 19,감기,명사,cảm cúm,感冒,cold
+Day 19,감기약,명사,thuốc cảm,感冒药,cold medicine
+Day 19,건강,명사,sức khỏe,健康,health
+Day 19,귀,명사,tai,耳朵,ear(s)
+Day 19,눈,명사,mắt,眼睛,eye(s)
+Day 19,다리,명사,chân,腿,leg
+Day 19,다이어트,명사,ăn kiêng,减肥,diet
+Day 19,담배,명사,thuốc lá,香烟,cigarette
+Day 19,두통,명사,đau đầu,头痛,headache
+Day 19,두통약,명사,thuốc đau đầu,头痛药,headache pill
+Day 19,등,명사,lưng,背,back
+Day 19,머리,명사,đầu,头,head
+Day 19,머리카락,명사,tóc,头发,hair
+Day 19,목,명사,cổ,脖子,neck
+Day 19,몸,명사,cơ thể,身体,body
+Day 19,발,명사,bàn chân,脚,foot
+Day 19,배,명사,bụng,肚子,stomach
+Day 19,병,명사,bệnh,疾病,disease
+Day 19,살,명사,thịt (da thịt),肉,flesh
+Day 19,손,명사,tay,手,hand
+Day 19,어깨,명사,vai,肩膀,shoulder
+Day 19,얼굴,명사,mặt,脸,face
+Day 19,오른손,명사,tay phải,右手,right hand
+Day 19,왼손,명사,tay trái,左手,left hand
+Day 19,입,명사,miệng,嘴,mouth
+Day 19,코,명사,mũi,鼻子,nose
+Day 19,키,명사,chiều cao,身高,height
+Day 19,피곤,명사,sự mệt mỏi,疲劳,tiredness
+Day 19,허리,명사,eo,腰,waist
+Day 20,고개,명사,"đầu, cổ","头,脖颈",head
+Day 20,기침,명사,ho,咳嗽,cough
+Day 20,무릎,명사,đầu gối,膝盖,knee
+Day 20,목욕,명사,tắm,洗澡,bath
+Day 20,발가락,명사,ngón chân,脚趾,toe
+Day 20,발바닥,명사,lòng bàn chân,脚底,sole
+Day 20,배탈,명사,đau bụng,肚子疼(腹泻),stomachache
+Day 20,병문안,명사,thăm bệnh,探病,visit to a sick person
+Day 20,사고,명사,tai nạn,事故,accident
+Day 20,상처,명사,vết thương,伤口,injury
+Day 20,손가락,명사,ngón tay,手指,finger
+Day 20,손바닥,명사,lòng bàn tay,手掌,palm
+Day 20,손발,명사,tay chân,手脚,hands and feet
+Day 20,엉덩이,명사,mông,臀部,buttocks
+Day 20,이(빨),명사,răng,牙齿,tooth
+Day 20,이마,명사,trán,额头,forehead
+Day 20,입술,명사,môi,嘴唇,lips
+Day 20,재채기,명사,hắt hơi,打喷嚏,sneeze
+Day 20,주사,명사,tiêm,打针,injection
+Day 20,치료,명사,điều trị,治疗,treatment
+Day 20,콧물,명사,nước mũi,鼻涕,runny nose
+Day 20,퇴원,명사,xuất viện,出院,discharge (from the hospital)
+Day 20,피부,명사,da,皮肤,skin
+Day 20,혀,명사,lưỡi,舌头,tongue
+Day 20,환자,명사,bệnh nhân,患者,patient
+Day 20,가늘다,형용사,"mảnh, mỏng",细,thin
+Day 20,굵다,형용사,"to, dày",粗,thick
+Day 20,닦다,동사,"lau, đánh","擦,刷",clean
+Day 20,넘어지다,동사,ngã,摔倒,fall down
+Day 20,바르다(약),동사,"bôi, thoa",涂抹,apply
+Day 21,가을,명사,mùa thu,秋天,fall
+Day 21,겨울,명사,mùa đông,冬天,winter
+Day 21,계절,명사,mùa,季节,season
+Day 21,꽃,명사,hoa,花,flower
+Day 21,구름,명사,mây,云,cloud
+Day 21,나무,명사,cây,树,tree
+Day 21,날씨,명사,thời tiết,天气,weather
+Day 21,눈,명사,tuyết,雪,snow
+Day 21,눈사람,명사,người tuyết,雪人,snowman
+Day 21,바람,명사,gió,风,wind
+Day 21,봄,명사,mùa xuân,春天,spring
+Day 21,비,명사,mưa,雨,rain
+Day 21,사계절,명사,bốn mùa,四季,four seasons
+Day 21,소나기,명사,mưa rào,阵雨,shower
+Day 21,여름,명사,mùa hè,夏天,summer
+Day 21,일기예보,명사,dự báo thời tiết,天气预报,weather forecast
+Day 21,장마,명사,mùa mưa,梅雨季,rainy season
+Day 21,첫눈,명사,tuyết đầu mùa,初雪,the first snow
+Day 21,나쁘다,형용사,"xấu, tệ","坏,不好",bad
+Day 21,덥다,형용사,nóng,热,hot
+Day 21,따뜻하다,형용사,ấm áp,暖和,warm
+Day 21,맑다,형용사,"trong, quang đãng",晴朗,clear
+Day 21,시원하다,형용사,mát mẻ,凉爽,cool
+Day 21,좋다,형용사,tốt,好,good
+Day 21,춥다,형용사,lạnh,冷,chilly
+Day 21,흐리다,형용사,âm u,阴,cloudy
+Day 21,내리다,동사,rơi (mưa/tuyết),下(雨/雪),"rain, snow"
+Day 21,불다,동사,thổi,吹,blow
+Day 21,오다,동사,"rơi, đến",下(雨/雪),"rain, snow"
+Day 21,지나다,동사,trôi qua,过去,pass
+Day 22,가을철,명사,mùa thu,秋季,autumn season
+Day 22,겨울철,명사,mùa đông,冬季,winter season
+Day 22,기온,명사,nhiệt độ,气温,temperature
+Day 22,단풍,명사,lá phong mùa thu,"枫叶,红叶",fall foliage
+Day 22,땀,명사,mồ hôi,汗,sweat
+Day 22,무더위,명사,nắng nóng gay gắt,酷暑,heat wave
+Day 22,봄철,명사,mùa xuân,春季,spring season
+Day 22,안개,명사,sương mù,雾,fog
+Day 22,얼음,명사,đá,冰,ice
+Day 22,여름철,명사,mùa hè,夏季,summer season
+Day 22,영상,명사,trên 0 độ,零上,above zero
+Day 22,영하,명사,dưới 0 độ,零下,below zero
+Day 22,온도,명사,nhiệt độ,温度,temperature
+Day 22,장마철,명사,mùa mưa,梅雨季节,monsoon season
+Day 22,태풍,명사,bão,台风,typhoon
+Day 22,폭설,명사,tuyết lớn,暴雪,heavy snow
+Day 22,폭우,명사,mưa lớn,暴雨,heavy rain
+Day 22,햇빛,명사,ánh nắng,阳光,sunlight
+Day 22,햇살,명사,tia nắng,阳光,sunshine
+Day 22,낮다,형용사,thấp,低,low
+Day 22,높다,형용사,cao,高,high
+Day 22,선선하다,형용사,mát mẻ (se lạnh),凉爽,cool
+Day 22,쌀쌀하다,형용사,se lạnh,微冷,chilly
+Day 22,차갑다,형용사,lạnh,冷,cold
+Day 22,차다,형용사,lạnh buốt,冰冷,icy
+Day 22,그치다,동사,ngừng,停止,stop
+Day 22,끼다,동사,có (sương mù),起(雾),"cloud, fog forms"
+Day 22,미끄러지다,동사,trượt,滑倒,slip
+Day 22,얼다,동사,đóng băng,结冰,freeze
+Day 22,젖다,동사,ướt,湿,get wet
+Day 23,경치,명사,phong cảnh,风景,scenery
+Day 23,계획,명사,kế hoạch,计划,plan
+Day 23,국내,명사,trong nước,国内,domestic
+Day 23,기차표,명사,vé tàu,火车票,train ticket
+Day 23,도착,명사,đến nơi,到达,arrival
+Day 23,바다,명사,biển,海,sea
+Day 23,별,명사,ngôi sao,星星,star
+Day 23,비행기표,명사,vé máy bay,机票,air ticket
+Day 23,산,명사,núi,山,mountain
+Day 23,안내,명사,hướng dẫn,"指南,向导",guidance
+Day 23,여권,명사,hộ chiếu,护照,passport
+Day 23,여기저기,명사,khắp nơi,到处,here and there
+Day 23,여행,명사,du lịch,旅行,travel
+Day 23,여행사,명사,công ty du lịch,旅行社,travel agency
+Day 23,외국,명사,nước ngoài,外国,foreign
+Day 23,자연,명사,thiên nhiên,自然,nature
+Day 23,준비,명사,chuẩn bị,准备,preparation
+Day 23,지도,명사,bản đồ,地图,map
+Day 23,표,명사,vé,票,ticket
+Day 23,하늘,명사,bầu trời,天空,sky
+Day 23,해외,명사,"nước ngoài, hải ngoại",海外,overseas
+Day 23,휴가,명사,kỳ nghỉ phép,休假,leave
+Day 23,깊다,형용사,sâu,深,deep
+Day 23,아름답다,형용사,đẹp,美丽,beautiful
+Day 23,특별하다,형용사,đặc biệt,特别,special
+Day 23,한가하다,형용사,rảnh rỗi,闲暇,free
+Day 23,돌아가다,동사,quay về,回去,go back
+Day 23,돌아오다,동사,quay lại,回来,come back
+Day 23,들다,동사,tốn (chi phí),花费,cost
+Day 23,세우다,동사,lập (kế hoạch),制定(计划),make a plan
+Day 24,결정,명사,quyết định,决定,decision
+Day 24,경험,명사,kinh nghiệm,经验,experience
+Day 24,관광객,명사,khách du lịch,游客,tourist
+Day 24,관광지,명사,địa điểm du lịch,旅游景点,tourist attraction
+Day 24,기념품,명사,quà lưu niệm,纪念品,souvenir
+Day 24,동양,명사,phương Đông,东方,the East
+Day 24,바닷가,명사,bờ biển,海边,beach
+Day 24,배낭,명사,ba lô,背包,backpack
+Day 24,서양,명사,phương Tây,西方,the West
+Day 24,세계,명사,thế giới,世界,the world
+Day 24,세상,명사,thế gian,世上,the world
+Day 24,숲,명사,rừng,森林,forest
+Day 24,신혼여행,명사,tuần trăng mật,蜜月旅行,honeymoon
+Day 24,안내판,명사,bảng thông báo,指示牌,notice board
+Day 24,여행지,명사,điểm đến du lịch,旅游目的地,travel destination
+Day 24,예약,명사,đặt chỗ,预约,reservation
+Day 24,자유,명사,tự do,自由,freedom
+Day 24,취소,명사,hủy bỏ,取消,cancellation
+Day 24,파도,명사,sóng biển,海浪,wave
+Day 24,풍경,명사,phong cảnh,风景,landscape
+Day 24,해수욕장,명사,bãi biển,海水浴场,beach
+Day 24,해외여행,명사,du lịch nước ngoài,海外旅行,overseas trip
+Day 24,익숙하다,형용사,quen thuộc,熟悉,familiar
+Day 24,데려가다,동사,dẫn đi,带走,take
+Day 24,데려오다,동사,dẫn đến,带来,bring
+Day 24,떠나다,동사,rời đi,离开,leave
+Day 24,생각나다,동사,"nghĩ đến, nhớ ra",想起,occur (come to mind)
+Day 24,서두르다,동사,vội vàng,赶紧,hurry
+Day 24,움직이다,동사,di chuyển,移动,move
+Day 24,잊다,동사,quên,忘记,forget
+Day 25,공항,명사,sân bay,机场,airport
+Day 25,교통,명사,giao thông,交通,traffic
+Day 25,기차,명사,tàu hỏa,火车,train
+Day 25,길,명사,đường,路,street
+Day 25,뒤,명사,phía sau,后面,back
+Day 25,배,명사,"tàu, thuyền",船,"ship, boat"
+Day 25,버스,명사,xe buýt,巴士,bus
+Day 25,비행기,명사,máy bay,飞机,plane
+Day 25,아래,명사,phía dưới,下面,the bottom
+Day 25,앞,명사,phía trước,前面,the front
+Day 25,역,명사,ga,车站,station
+Day 25,옆,명사,bên cạnh,旁边,side
+Day 25,오른쪽,명사,bên phải,右边,the right
+Day 25,왼쪽,명사,bên trái,左边,the left
+Day 25,위,명사,phía trên,上面,top
+Day 25,자동차,명사,ô tô,汽车,car
+Day 25,자전거,명사,xe đạp,自行车,bicycle
+Day 25,정류장,명사,trạm xe buýt,车站(公交),bus stop
+Day 25,지하철,명사,tàu điện ngầm,地铁,subway
+Day 25,지하철역,명사,ga tàu điện ngầm,地铁站,subway station
+Day 25,출발,명사,khởi hành,出发,departure
+Day 25,택시,명사,taxi,出租车,taxi
+Day 25,터미널,명사,bến xe,客运站,terminal
+Day 25,가깝다,형용사,gần,近,close
+Day 25,멀다,형용사,xa,远,far
+Day 25,빠르다,형용사,nhanh,快,fast
+Day 25,갈아타다,동사,chuyển xe,换乘,transfer
+Day 25,나가다,동사,đi ra,出去,go out
+Day 25,묻다,동사,hỏi,问,ask
+Day 25,타다,동사,đi (phương tiện),乘坐,ride
+Day 26,거리,명사,khoảng cách,距离,distance
+Day 26,계단,명사,cầu thang,楼梯,stairs
+Day 26,고속버스,명사,xe buýt cao tốc,高速巴士,express bus
+Day 26,교통사고,명사,tai nạn giao thông,交通事故,car accident
+Day 26,기차역,명사,ga tàu hỏa,火车站,train station
+Day 26,남쪽,명사,phía nam,南边,south
+Day 26,다리,명사,cầu,桥,bridge
+Day 26,도로,명사,đường,道路,road
+Day 26,동쪽,명사,phía đông,东边,east
+Day 26,뒤쪽,명사,phía sau,后面,back
+Day 26,바깥쪽,명사,phía ngoài,外面,outside
+Day 26,방향,명사,hướng,方向,direction
+Day 26,배,명사,"tàu, thuyền",船,ship
+Day 26,북쪽,명사,phía bắc,北边,north
+Day 26,사거리,명사,ngã tư,十字路口,intersection
+Day 26,삼거리,명사,ngã ba,三岔路口,three-way intersection
+Day 26,서쪽,명사,phía tây,西边,west
+Day 26,신호,명사,tín hiệu,信号,signal
+Day 26,신호등,명사,đèn giao thông,红绿灯,traffic lights
+Day 26,아래쪽,명사,phía dưới,下面,bottom
+Day 26,안쪽,명사,phía trong,里面,inside
+Day 26,앞쪽,명사,phía trước,前面,front
+Day 26,열차,명사,tàu hỏa,列车,train
+Day 26,위쪽,명사,phía trên,上面,top
+Day 26,위치,명사,vị trí,位置,location
+Day 26,육교,명사,cầu vượt cho người đi bộ,天桥,pedestrian overpass
+Day 26,정거장,명사,trạm dừng,车站,station
+Day 26,지하도,명사,đường hầm,地下通道,underpass
+Day 26,항공권,명사,vé máy bay,机票,airline ticket
+Day 26,횡단보도,명사,vạch qua đường,人行横道,crosswalk
+Day 27,가방,명사,cái túi,包,bag
+Day 27,과학,명사,khoa học,科学,science
+Day 27,국어,명사,quốc ngữ,国语,official language
+Day 27,글자,명사,chữ,字,letter
+Day 27,대학,명사,cao đẳng/đại học,大学,college
+Day 27,대학교,명사,trường đại học,大学校,university
+Day 27,뜻,명사,ý nghĩa,意思,meaning
+Day 27,상,명사,giải thưởng,奖,award
+Day 27,선배,명사,tiền bối,前辈,senior
+Day 27,설명,명사,sự giải thích,说明,explanation
+Day 27,수첩,명사,sổ tay,手册,notebook
+Day 27,수학,명사,toán học,数学,mathematics
+Day 27,시작,명사,sự bắt đầu,开始,beginning
+Day 27,역사,명사,lịch sử,历史,history
+Day 27,영어,명사,tiếng Anh,英语,English
+Day 27,예습,명사,sự chuẩn bị bài,预习,preparation
+Day 27,일본어,명사,tiếng Nhật,日语,Japanese
+Day 27,전공,명사,chuyên ngành,专业,major
+Day 27,제목,명사,tiêu đề,题目,title
+Day 27,졸업,명사,sự tốt nghiệp,毕业,graduation
+Day 27,중국어,명사,tiếng Trung,中文,Chinese
+Day 27,후배,명사,hậu bối,后辈,junior
+Day 27,괜찮다,형용사,"ổn, không sao",没关系,nice/fine
+Day 27,필요하다,형용사,cần thiết,需要,necessary
+Day 27,가지다,동사,có,拥有,have
+Day 27,끝내다,동사,kết thúc,结束,end
+Day 27,늦다,형용사,"muộn, trễ",迟到,be late
+Day 27,들다,동사,"cầm, nhấc",拿,pick up
+Day 27,빌리다,동사,mượn,借,borrow
+Day 27,쓰다,동사,viết,写,write
+Day 28,결과,명사,kết quả,结果,result
+Day 28,대학원,명사,cao học/sau đại học,研究生院,graduate school
+Day 28,입학,명사,sự nhập học,入学,admission to a school
+Day 28,결심,명사,quyết tâm,决心,decision
+Day 28,방법,명사,phương pháp,方法,way
+Day 28,중요,명사,sự quan trọng,重要,importance
+Day 28,고등교육,명사,giáo dục cao đẳng,高等教育,higher education
+Day 28,성적표,명사,bảng điểm,成绩单,report card
+Day 28,중학교,명사,trường trung học cơ sở,初中,middle school
+Day 28,고등학교,명사,trường trung học phổ thông,高中,high school
+Day 28,순서,명사,thứ tự,顺序,order
+Day 28,중학생,명사,học sinh trung học cơ sở,初中生,middle school student
+Day 28,고등학생,명사,học sinh trung học phổ thông,高中生,high school student
+Day 28,습관,명사,thói quen,习惯,habit
+Day 28,초등학교,명사,trường tiểu học,小学,elementary school
+Day 28,교문,명사,cổng trường,校门,school gate
+Day 28,신청,명사,sự đăng ký,申请,application
+Day 28,초등학생,명사,học sinh tiểu học,小学生,elementary school student
+Day 28,교복,명사,đồng phục học sinh,校服,school uniform
+Day 28,유치원,명사,mẫu giáo,幼儿园,kindergarten
+Day 28,붙다,동사,"đậu, dính","贴, 考上","pass, stick"
+Day 28,교육,명사,giáo dục,教育,education
+Day 28,유학,명사,du học,留学,studying abroad
+Day 28,알아보다,동사,tìm hiểu,"了解, 打听",look into
+Day 28,규칙,명사,quy tắc,规则,rule
+Day 28,유학생,명사,du học sinh,留学生,international student
+Day 28,원하다,동사,muốn,"希望, 想要",want
+Day 28,노력,명사,sự nỗ lực,努力,effort
+Day 28,이해,명사,sự hiểu biết,理解,understanding
+Day 28,정하다,동사,quyết định,决定,decide
+Day 29,가수,명사,ca sĩ,歌手,singer
+Day 29,강사,명사,giảng viên,讲师,instructor
+Day 29,경찰관,명사,cảnh sát,警察,police officer
+Day 29,교사,명사,giáo viên,教师,teacher
+Day 29,교수,명사,giáo sư,教授,professor
+Day 29,군인,명사,quân nhân,军人,serviceperson
+Day 29,기자,명사,phóng viên,记者,journalist
+Day 29,변호사,명사,luật sư,律师,lawyer
+Day 29,부장,명사,trưởng phòng,部长,head of department
+Day 29,사업,명사,sự kinh doanh,"事业, 生意",business
+Day 29,사장,명사,giám đốc,社长,"president, boss"
+Day 29,서류,명사,"tài liệu, giấy tờ",文件,document
+Day 29,선생님,명사,giáo viên (kính ngữ),老师,teacher
+Day 29,선수,명사,vận động viên,选手,player
+Day 29,아나운서,명사,phát thanh viên,播音员,announcer
+Day 29,연예인,명사,"người nổi tiếng, nghệ sĩ",艺人,entertainer
+Day 29,영화배우,명사,diễn viên điện ảnh,电影演员,"actor, actress"
+Day 29,요리사,명사,đầu bếp,厨师,cook
+Day 29,운전사,명사,tài xế,司机,driver
+Day 29,음악가,명사,nhạc sĩ,音乐家,musician
+Day 29,일,명사,"việc, công việc",工作,work
+Day 29,청소부,명사,người dọn vệ sinh,清洁工,garbage man
+Day 29,출근,명사,sự đi làm,上班,going to work
+Day 29,출장,명사,chuyến công tác,出差,business trip
+Day 29,출퇴근,명사,sự đi làm về,上下班,commuting
+Day 29,퇴근,명사,sự tan làm,下班,leaving work
+Day 29,학생,명사,"học sinh, sinh viên",学生,student
+Day 29,화가,명사,họa sĩ,画家,painter
+Day 29,회사원,명사,nhân viên công ty,公司职员,employee
+Day 29,그만두다,동사,"bỏ, thôi việc","辞职, 停止",quit
+Day 30,가정주부,명사,nội trợ,家庭主妇,housewife
+Day 30,사무직,명사,công việc văn phòng,办公室工作,office job
+Day 30,운전기사,명사,tài xế,司机,driver
+Day 30,검사,명사,kiểm sát viên,检察官,prosecutor
+Day 30,상담원,명사,tư vấn viên,咨询员,counselor
+Day 30,작가,명사,nhà văn,作家,writer
+Day 30,교육자,명사,nhà giáo dục,教育者,educator
+Day 30,스님,명사,nhà sư,僧人,buddhist monk
+Day 30,작곡가,명사,nhạc sĩ sáng tác,作曲家,composer
+Day 30,교장,명사,hiệu trưởng,校长,principal
+Day 30,시인,명사,nhà thơ,诗人,poet
+Day 30,장관,명사,bộ trưởng,部长,minister
+Day 30,기업가,명사,doanh nhân,企业家,businessman
+Day 30,실장,명사,trưởng phòng,室长,section chief
+Day 30,전문직,명사,nghề chuyên môn,专业职业,professional
+Day 30,노동자,명사,người lao động,劳动者,worker
+Day 30,여행가,명사,người du lịch chuyên nghiệp,旅行家,professional traveler
+Day 30,정치인,명사,chính trị gia,政治人物,politician
+Day 30,농민,명사,nông dân,农民,farmer
+Day 30,연구자,명사,nhà nghiên cứu,研究者,researcher
+Day 30,지도자,명사,lãnh đạo,领导者,leader
+Day 30,대사관,명사,đại sứ quán,大使馆,embassy
+Day 30,연기자,명사,diễn viên,演员,"actor, actress"
+Day 30,총리,명사,thủ tướng,总理,prime minister
+Day 30,디자이너,명사,nhà thiết kế,设计师,designer
+Day 30,영화감독,명사,đạo diễn phim,电影导演,movie director
+Day 30,탤런트,명사,diễn viên truyền hình,电视演员,"TV actor, actress"
+Day 30,목사,명사,mục sư,牧师,minister
+Day 30,예술가,명사,nghệ sĩ,艺术家,artist
+Day 30,판사,명사,thẩm phán,法官,judge

@@ -176,6 +176,16 @@ async function loadWordDatabase(targetLevel) {
     return;
   }
 
+  // [Comment Policy: 깃허브 배포 정적 단어장 우선 로드 (네트워크 통신 0회, 0ms 즉시 반영)]
+  if (window.LOCAL_WORDBOOKS && window.LOCAL_WORDBOOKS[level] && window.LOCAL_WORDBOOKS[level].length > 0) {
+    wordDatabase = window.LOCAL_WORDBOOKS[level];
+    loadedWordbookLevel = level;
+    isWordsLoaded = true;
+    console.log(`[Database] 로컬 단어 데이터 즉시 로드 완료: ${wordDatabase.length}개 (${level})`);
+    if (typeof updateConnectionStatus === "function") updateConnectionStatus(true);
+    return;
+  }
+
   let isGoogleFetch = !!GOOGLE_SCRIPT_URL;
 
   try {
@@ -243,8 +253,19 @@ function startStudySessionForDay(dayLabel, session) {
   currentSelectedDay = dayLabel;
   currentSelectedSession = session;
 
-  // 전체 단어 중 해당 일차(Day Label)에 속하는 단어 추출
-  const dayWords = wordDatabase.filter(w => w.dayLabel === dayLabel);
+  // [Comment Policy: 단어장 원본(예: 'Day 1. 소개1')을 온전히 보존하며 유연하게 Day 번호 대조]
+  // 단어장의 원본 표기(Day 1. 소개1)와 플래너의 규격(Day 1) 간 형식 차이를 정규식으로 안전하게 매칭합니다.
+  const extractDayNum = (str) => {
+    const match = String(str || '').match(/Day\s*(\d+)/i);
+    return match ? parseInt(match[1], 10) : null;
+  };
+
+  const targetDayNum = extractDayNum(dayLabel);
+  const dayWords = wordDatabase.filter(w => {
+    if (w.dayLabel === dayLabel) return true;
+    const wordDayNum = extractDayNum(w.dayLabel);
+    return targetDayNum !== null && wordDayNum === targetDayNum;
+  });
 
   if (dayWords.length === 0) {
     alert("해당 일차의 배정 단어가 없습니다.");
@@ -1403,7 +1424,32 @@ async function recordSessionProgress(dayLabel, session, score, isPassed = true) 
     if (isGoogleFetch) showConnectionLoading();
     let success = false;
 
-    if (GOOGLE_SCRIPT_URL) {
+    // [Comment Policy: Supabase 고속 DB 우선 연동 (Upsert로 행 덮어쓰기 및 잘림 원천 차단)]
+    if (typeof submitSessionProgressToSupabase === "function") {
+      let finalScore = score;
+      let calculatedStatus = "학습 완료";
+
+      if (plannerState && plannerState.words) {
+        const targetRecord = plannerState.words.find(w => w.dayLabel === dayLabel && w.session === session);
+        if (targetRecord) {
+          if (targetRecord.scoreRecord && score !== undefined && score !== null) {
+            finalScore = `${targetRecord.scoreRecord},${score}`;
+          }
+          if (targetRecord.startDate) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const assignDate = parseLocalDate(targetRecord.startDate);
+            assignDate.setHours(0, 0, 0, 0);
+            calculatedStatus = today.getTime() > assignDate.getTime() ? "지각" : "학습 완료";
+          }
+        }
+      }
+      const sbSuccess = await submitSessionProgressToSupabase(activeUser.id, dayLabel, session, finalScore, isPassed, calculatedStatus);
+      if (sbSuccess) {
+        success = true;
+        if (typeof updateConnectionStatus === "function") updateConnectionStatus(true);
+      }
+    } else if (GOOGLE_SCRIPT_URL) {
       // 1. 구글 스프레드시트 세션 진도 및 점수기록 전송 API 요청
       let requestUrl = `${GOOGLE_SCRIPT_URL}?action=submitSessionProgress&id=${encodeURIComponent(activeUser.id)}&dayLabel=${encodeURIComponent(dayLabel)}&session=${session}&_=${Date.now()}`;
       if (score !== undefined && score !== null) {

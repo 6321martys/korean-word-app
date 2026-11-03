@@ -15,6 +15,25 @@ let pickerMonth = 8;
  * 학생 데이터 조회, 필터 조작 리스너 바인딩, 그리고 동적 표 출력을 총괄 제어합니다.
  */
 async function initTeacherDashboard() {
+  // [Comment Policy: Supabase 고속 DB 우선 연동]
+  if (typeof getAllStudentsFromSupabase === "function") {
+    try {
+      const sbResult = await getAllStudentsFromSupabase();
+      if (sbResult && sbResult.success && Array.isArray(sbResult.students)) {
+        allStudentsData = sbResult.students;
+        adminHeaders = ["ID", "Name", "Role", "LastLogin", "학습시작일", "진도율", "지각횟수", "레벨"];
+        if (typeof updateConnectionStatus === "function") updateConnectionStatus(true);
+        bindAdminFilters();
+        renderStudentTable(allStudentsData);
+        bindAdminEditEvents();
+        console.log("[Supabase] 관리자 학생 목록 로드 완료:", allStudentsData.length);
+        return;
+      }
+    } catch (sbErr) {
+      console.warn("[Admin] Supabase 학생 목록 조회 실패, 구글 시트 폴백 시도:", sbErr);
+    }
+  }
+
   let isGoogleFetch = !!GOOGLE_SCRIPT_URL;
   try {
     if (isGoogleFetch) showConnectionLoading();
@@ -488,7 +507,14 @@ function bindAdminEditEvents() {
         if (isGoogleFetch) showConnectionLoading();
         let success = false;
 
-        if (GOOGLE_SCRIPT_URL) {
+        // [Comment Policy: Supabase 고속 DB 우선 연동]
+        if (typeof updateStudentInfoInSupabase === "function") {
+          try {
+            success = await updateStudentInfoInSupabase(targetId, newStartDate, newLevel);
+          } catch (sbErr) {
+            console.warn("[Admin] Supabase 학생 정보 수정 실패, 구글 시트 폴백 시도:", sbErr);
+          }
+        } else if (GOOGLE_SCRIPT_URL) {
           const requestUrl = `${GOOGLE_SCRIPT_URL}?action=updateStudentInfo&id=${encodeURIComponent(targetId)}&newStartDate=${encodeURIComponent(newStartDate)}&newLevel=${encodeURIComponent(newLevel)}&_=${Date.now()}`;
           const fetchFn = typeof fetchWithRetry === "function" ? fetchWithRetry : fetch;
           const response = await fetchFn(requestUrl);

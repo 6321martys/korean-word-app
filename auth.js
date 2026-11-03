@@ -72,11 +72,25 @@ async function fetchWithRetry(url, options = {}, maxRetries = 10, delayMs = 400,
 }
 
 /**
- * 구글 스프레드시트에 식별자 검증 요청을 보내는 함수
+ * 구글 스프레드시트 또는 Supabase DB에 식별자 검증 요청을 보내는 함수
  * @param {string} studentId 
  * @returns {Promise<object|null>}
  */
 async function verifyUserWithGoogleSheet(studentId) {
+  // [Comment Policy: Supabase 고속 DB 우선 연동]
+  // Supabase 클라이언트 모듈이 활성화되어 있으면 0.1초 즉시 검증을 수행합니다.
+  if (typeof verifyUserWithSupabase === "function") {
+    try {
+      const sbResult = await verifyUserWithSupabase(studentId);
+      if (sbResult) {
+        console.log("[Auth] Supabase 검증 성공:", sbResult);
+        return sbResult;
+      }
+    } catch (sbErr) {
+      console.warn("[Auth] Supabase 검증 실패, 구글 시트 폴백 시도:", sbErr);
+    }
+  }
+
   // [Comment Policy: 클라이언트 현지 날짜 파라미터 전달]
   const today = new Date();
   const year = today.getFullYear();
@@ -123,6 +137,22 @@ async function verifyUserWithGoogleSheet(studentId) {
 async function populateWordbookOptions(defaultLevel) {
   const levelSelect = document.getElementById("onboarding-level-select");
   if (!levelSelect) return;
+
+  // [Comment Policy: 로컬 번들링 단어장 목록 0ms 즉시 연동]
+  if (window.LOCAL_WORDBOOKS && Object.keys(window.LOCAL_WORDBOOKS).length > 0) {
+    const books = Object.keys(window.LOCAL_WORDBOOKS);
+    levelSelect.innerHTML = "";
+    books.forEach(wb => {
+      const opt = document.createElement("option");
+      opt.value = wb;
+      opt.textContent = wb;
+      if (wb === defaultLevel) {
+        opt.selected = true;
+      }
+      levelSelect.appendChild(opt);
+    });
+    return;
+  }
 
   if (GOOGLE_SCRIPT_URL) {
     try {
@@ -299,6 +329,19 @@ function enterMainWelcomeScreen(user) {
  * @returns {Promise<boolean>}
  */
 async function registerPlannerWithGoogleSheet(studentId, level, selectedStartDate) {
+  // [Comment Policy: Supabase 고속 DB 우선 연동]
+  if (typeof registerPlannerWithSupabase === "function") {
+    try {
+      const sbSuccess = await registerPlannerWithSupabase(studentId, level, selectedStartDate);
+      if (sbSuccess) {
+        console.log("[Supabase] 90일 맞춤 학습 일정 일괄 생성 완료:", studentId, level);
+        return true;
+      }
+    } catch (sbErr) {
+      console.warn("[Auth] Supabase 플래너 등록 오류, 구글 시트 폴백 시도:", sbErr);
+    }
+  }
+
   const startDateStr = selectedStartDate || getLocalDateString(new Date());
   // [Comment Policy: 호출 주체(trigger=onboarding) 파라미터 전달하여 백엔드 감사 로그에 명확히 기록]
   const requestUrl = `${GOOGLE_SCRIPT_URL}?action=registerPlanner&id=${encodeURIComponent(studentId)}&level=${encodeURIComponent(level)}&startDate=${encodeURIComponent(startDateStr)}&trigger=onboarding&_=${Date.now()}`;
