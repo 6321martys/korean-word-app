@@ -389,11 +389,12 @@ async function getAllStudentsFromSupabase() {
   try {
     if (typeof showConnectionLoading === "function") showConnectionLoading();
 
-    // 5-1. 학생 목록 조회 (student 역할만)
+    // 5-1. 학생 목록 조회 (선생님 계정 teacher만 제외하고 분반/숫자 등 모든 학생 포함)
+    // [Comment Policy: role이 student 외에 1, 2, 0, 4(분반)로 기재된 실제 학생들을 모두 포함하기 위해 neq('role', 'teacher') 사용]
     const { data: students, error: sErr } = await client
       .from('students')
       .select('*')
-      .eq('role', 'student')
+      .neq('role', 'teacher')
       .order('id', { ascending: true });
 
     if (sErr || !students) {
@@ -449,6 +450,9 @@ async function getAllStudentsFromSupabase() {
         level: s.level || '단어장-초급',
         lastLogin: s.last_login || '-',
         startDate: startDateStr || '-',
+        completedDays: completedSessions,
+        completedSessions: completedSessions,
+        isLate: lateSessions > 0,
         progress: `${completedSessions} / ${totalSessions} 회차 (${progressPercent}%)`,
         lateCount: `${lateSessions}회`
       };

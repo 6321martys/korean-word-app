@@ -110,8 +110,8 @@ function renderStudentTable(students) {
       ? `<span class="badge-status-late" style="background: rgba(235, 77, 75, 0.15); color: #ff7675; padding: 4px 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 600;">지각 감지</span>`
       : `<span class="badge-status-normal" style="background: rgba(0, 184, 148, 0.15); color: #55efc4; padding: 4px 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 600;">정상</span>`;
 
-    // 진도 계산 (90회차 기준 프로그레스 바)
-    const completedNum = s.completedDays || 0;
+    // [Comment Policy: 90회차 기준 프로그레스 바 계산 - completedDays 및 completedSessions 모두 방어 지원]
+    const completedNum = s.completedDays ?? s.completedSessions ?? 0;
     const pct = Math.min(100, Math.round((completedNum / 90) * 100));
 
     tr.innerHTML = `
@@ -158,15 +158,15 @@ function renderStudentTable(students) {
 }
 
 /**
- * [Comment Policy: 학생별 90일 세부 출석 모달 오픈]
- * 특정 학생의 90일 전체 회차 상태를 모달에 렌더링합니다.
+ * [Comment Policy: 학생별 90일 세부 출석 모달 오픈 - Day 1~30 일자별 카드 그룹화 및 스크롤 격리]
+ * 특정 학생의 90일 전체 회차를 Day 단위(1~3회차)로 묶어 깔끔하게 렌더링하며 화면 잘림을 방지합니다.
  * @param {Object} student 
  */
 async function openStudentDetailModal(student) {
   const modal = document.getElementById("student-modal");
   const modalId = document.getElementById("modal-student-id");
   const modalLang = document.getElementById("modal-student-lang");
-  const logScroll = document.querySelector(".word-log-container") || document.getElementById("modal-session-logs");
+  const logScroll = document.getElementById("modal-session-logs") || document.querySelector(".word-log-container");
 
   if (!modal || !modalId) return;
 
@@ -174,7 +174,7 @@ async function openStudentDetailModal(student) {
   if (modalLang) modalLang.textContent = `레벨: ${student.level || "단어장-초급"} | 시작일: ${student.startDate || "-"}`;
 
   if (logScroll) {
-    logScroll.innerHTML = `<div style="text-align: center; color: var(--color-text-secondary); padding: 20px;">학습 세션 데이터를 불러오는 중...</div>`;
+    logScroll.innerHTML = `<div style="text-align: center; color: var(--color-text-secondary); padding: 30px;">학습 세션 데이터를 불러오는 중...</div>`;
   }
 
   modal.classList.remove("hidden");
@@ -195,44 +195,87 @@ async function openStudentDetailModal(student) {
       logScroll.innerHTML = "";
 
       if (records.length === 0) {
-        logScroll.innerHTML = `<div style="text-align: center; color: var(--color-text-secondary); padding: 20px;">생성된 학습 기록이 없습니다.</div>`;
+        logScroll.innerHTML = `<div style="text-align: center; color: var(--color-text-secondary); padding: 30px;">생성된 학습 기록이 없습니다.</div>`;
         return;
       }
 
+      // [Comment Policy: 90개 회차를 Day 1 ~ Day 30 단위로 그룹화]
+      const dayMap = new Map();
       records.forEach(w => {
-        const item = document.createElement("div");
-        item.className = "session-log-item";
-        item.style.padding = "10px 14px";
-        item.style.marginBottom = "8px";
-        item.style.background = "rgba(255, 255, 255, 0.02)";
-        item.style.borderRadius = "10px";
-        item.style.border = "1px solid var(--color-border)";
-
-        let statusClass = "status-ready";
-        let statusTxt = "학습 전";
-        if (w.status === "학습 완료") {
-          statusClass = "status-completed";
-          statusTxt = "학습 완료";
-        } else if (w.status === "지각") {
-          statusClass = "status-late";
-          statusTxt = "지각";
+        const dKey = w.dayLabel || 'Day 1';
+        if (!dayMap.has(dKey)) {
+          dayMap.set(dKey, {
+            dayLabel: dKey,
+            date: w.startDate || '',
+            sessions: []
+          });
         }
+        dayMap.get(dKey).sessions.push(w);
+      });
 
-        const scoreBadge = w.scoreRecord
-          ? `<span style="font-size: 0.75rem; background: rgba(108, 92, 231, 0.15); color: #a29bfe; padding: 2px 6px; border-radius: 4px; font-weight: 600; margin-left: 4px;">점수: ${w.scoreRecord}</span>`
-          : "";
+      // Day별 카드 렌더링
+      dayMap.forEach(dayGroup => {
+        const dayCard = document.createElement("div");
+        dayCard.className = "day-session-card";
+        dayCard.style.background = "rgba(255, 255, 255, 0.03)";
+        dayCard.style.border = "1px solid var(--color-border)";
+        dayCard.style.borderRadius = "12px";
+        dayCard.style.padding = "12px 16px";
+        dayCard.style.display = "flex";
+        dayCard.style.flexDirection = "column";
+        dayCard.style.gap = "8px";
 
-        item.innerHTML = `
-          <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 8px;">
-            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-              <span style="font-weight: 600; color: var(--color-text-primary); font-size: 0.9rem;">${w.dayLabel} (${w.session}회차)</span>
-              <span style="font-size: 0.75rem; color: var(--color-text-secondary);">(${w.startDate})</span>
-              ${scoreBadge}
-            </div>
-            <span class="log-status-badge ${statusClass}" style="font-size: 0.8rem; font-weight: 600; padding: 3px 8px; border-radius: 6px;">${statusTxt}</span>
-          </div>
+        // Day 헤더 (Day 번호 및 학습 날짜)
+        const headerDiv = document.createElement("div");
+        headerDiv.style.display = "flex";
+        headerDiv.style.justifyContent = "space-between";
+        headerDiv.style.alignItems = "center";
+        headerDiv.innerHTML = `
+          <span style="font-weight: 700; color: var(--color-text-primary); font-size: 0.95rem;">${dayGroup.dayLabel}</span>
+          <span style="font-size: 0.8rem; color: var(--color-text-secondary);">${dayGroup.date ? dayGroup.date : ''}</span>
         `;
-        logScroll.appendChild(item);
+        dayCard.appendChild(headerDiv);
+
+        // 3개 회차 그리드 (1회차, 2회차, 3회차)
+        const sessionsGrid = document.createElement("div");
+        sessionsGrid.style.display = "grid";
+        sessionsGrid.style.gridTemplateColumns = "repeat(auto-fit, minmax(160px, 1fr))";
+        sessionsGrid.style.gap = "8px";
+
+        dayGroup.sessions.forEach(w => {
+          const sBox = document.createElement("div");
+          sBox.style.padding = "8px 12px";
+          sBox.style.borderRadius = "8px";
+          sBox.style.display = "flex";
+          sBox.style.alignItems = "center";
+          sBox.style.justifyContent = "space-between";
+          sBox.style.fontSize = "0.82rem";
+
+          let statusBadge = '';
+          if (w.status === "학습 완료") {
+            sBox.style.background = "rgba(0, 184, 148, 0.1)";
+            sBox.style.border = "1px solid rgba(0, 184, 148, 0.25)";
+            const scoreText = w.scoreRecord ? `${w.scoreRecord}점` : '완료';
+            statusBadge = `<span style="font-weight: 700; color: #55efc4; background: rgba(0, 184, 148, 0.2); padding: 2px 7px; border-radius: 4px;">${scoreText}</span>`;
+          } else if (w.status === "지각") {
+            sBox.style.background = "rgba(235, 77, 75, 0.1)";
+            sBox.style.border = "1px solid rgba(235, 77, 75, 0.25)";
+            statusBadge = `<span style="font-weight: 600; color: #ff7675; background: rgba(235, 77, 75, 0.2); padding: 2px 7px; border-radius: 4px;">지각</span>`;
+          } else {
+            sBox.style.background = "rgba(255, 255, 255, 0.02)";
+            sBox.style.border = "1px solid rgba(255, 255, 255, 0.06)";
+            statusBadge = `<span style="color: var(--color-text-secondary); opacity: 0.7;">학습 전</span>`;
+          }
+
+          sBox.innerHTML = `
+            <span style="color: var(--color-text-primary); font-weight: 600;">${w.session}회차</span>
+            ${statusBadge}
+          `;
+          sessionsGrid.appendChild(sBox);
+        });
+
+        dayCard.appendChild(sessionsGrid);
+        logScroll.appendChild(dayCard);
       });
     }
 

@@ -2052,7 +2052,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!versionTextEl) return;
 
     try {
-      const baseVersion = versionTextEl.textContent.trim().split(" ")[0] || "v1.0.36";
+      // [Comment Policy: 배포 버전 태그 파싱 및 최신 버전 기본값 v1.0.38 동기화]
+      const baseVersion = versionTextEl.textContent.trim().split(" ")[0] || "v1.0.38";
       const modDate = new Date(document.lastModified);
       if (!isNaN(modDate.getTime())) {
         const month = String(modDate.getMonth() + 1).padStart(2, '0');
