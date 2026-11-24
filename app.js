@@ -1384,20 +1384,14 @@ async function recordSessionProgress(dayLabel, session, score, isPassed = true) 
     // [Comment Policy: Supabase 고속 DB 단독 연동 (Upsert로 행 덮어쓰기 및 잘림 원천 차단)]
     if (typeof submitSessionProgressToSupabase === "function") {
       let finalScore = score;
-      let calculatedStatus = "학습 완료";
+      // [Comment Policy: 날짜와 상관없이 미니게임 통과(isPassed) 시 언제나 '학습 완료'로 기록]
+      const calculatedStatus = isPassed ? "학습 완료" : "학습 전";
 
       if (plannerState && plannerState.words) {
         const targetRecord = plannerState.words.find(w => w.dayLabel === dayLabel && w.session === session);
         if (targetRecord) {
           if (targetRecord.scoreRecord && score !== undefined && score !== null) {
             finalScore = `${targetRecord.scoreRecord},${score}`;
-          }
-          if (targetRecord.startDate) {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const assignDate = parseLocalDate(targetRecord.startDate);
-            assignDate.setHours(0, 0, 0, 0);
-            calculatedStatus = today.getTime() > assignDate.getTime() ? "지각" : "학습 완료";
           }
         }
       }
@@ -1408,7 +1402,7 @@ async function recordSessionProgress(dayLabel, session, score, isPassed = true) 
       }
     }
 
-    // 2. 메모리 상의 plannerState 실시간 갱신 (점수 누적 및 할당일자 기준 지각/완료 판정)
+    // 2. 메모리 상의 plannerState 실시간 갱신 (미니게임 점수 누적 및 학습 완료 상태 확정)
     if (plannerState && plannerState.words) {
       const targetRecord = plannerState.words.find(w => w.dayLabel === dayLabel && w.session === session);
 
@@ -1419,20 +1413,9 @@ async function recordSessionProgress(dayLabel, session, score, isPassed = true) 
           targetRecord.scoreRecord = oldScore ? (oldScore + "," + score) : String(score);
         }
 
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const assignDate = parseLocalDate(targetRecord.startDate);
-        assignDate.setHours(0, 0, 0, 0);
-
-        const isLate = today.getTime() > assignDate.getTime();
-
-        // 80% 이상 통과 시에만 완료/지각 출석 상태 확정
-        if (isPassed && targetRecord.status !== "학습 완료") {
-          if (isLate) {
-            targetRecord.status = "지각";
-          } else {
-            targetRecord.status = "학습 완료";
-          }
+        // [Comment Policy: 80% 이상 통과 시 지각 구분 없이 무조건 '학습 완료' 확정]
+        if (isPassed) {
+          targetRecord.status = "학습 완료";
         }
       }
     }
@@ -2052,8 +2035,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!versionTextEl) return;
 
     try {
-      // [Comment Policy: 배포 버전 태그 파싱 및 최신 버전 기본값 v1.0.39 동기화]
-      const baseVersion = versionTextEl.textContent.trim().split(" ")[0] || "v1.0.39";
+      // [Comment Policy: 배포 버전 태그 파싱 및 최신 버전 기본값 v1.0.40 동기화]
+      const baseVersion = versionTextEl.textContent.trim().split(" ")[0] || "v1.0.40";
       const modDate = new Date(document.lastModified);
       if (!isNaN(modDate.getTime())) {
         const month = String(modDate.getMonth() + 1).padStart(2, '0');

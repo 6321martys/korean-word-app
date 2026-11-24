@@ -136,16 +136,8 @@ async function verifyUserWithSupabase(studentId) {
 
     if (records && records.length > 0) {
       records.forEach(r => {
-        let currentStatus = r.status || '학습 전';
-        if (currentStatus !== '학습 완료' && r.assigned_date) {
-          const assignDate = new Date(r.assigned_date);
-          assignDate.setHours(0, 0, 0, 0);
-          if (todayTime > assignDate.getTime()) {
-            currentStatus = '지각';
-          } else {
-            currentStatus = '학습 전';
-          }
-        }
+        // [Comment Policy: 날짜 경과로 인한 '지각' 강제 변환 제거 - 학습 완료 또는 학습 전 2가지로 단순화]
+        const currentStatus = (r.status === '학습 완료') ? '학습 완료' : '학습 전';
 
         studentRecords.push({
           studentId: r.student_id,
@@ -288,16 +280,8 @@ async function getPlannerStateFromSupabase(studentId) {
     const todayTime = today.getTime();
 
     const words = records.map(r => {
-      let currentStatus = r.status || '학습 전';
-      if (currentStatus !== '학습 완료' && r.assigned_date) {
-        const assignDate = new Date(r.assigned_date);
-        assignDate.setHours(0, 0, 0, 0);
-        if (todayTime > assignDate.getTime()) {
-          currentStatus = '지각';
-        } else {
-          currentStatus = '학습 전';
-        }
-      }
+      // [Comment Policy: 날짜 경과로 인한 '지각' 강제 변환 제거 - 학습 완료 또는 학습 전 2가지로 단순화]
+      const currentStatus = (r.status === '학습 완료') ? '학습 완료' : '학습 전';
 
       return {
         studentId: r.student_id,

@@ -128,14 +128,10 @@ function renderCalendarGrid() {
       // 요일구분(Day X)과 회차(Y회차) 정보를 뱃지 속성으로 바인딩
       dayCell.setAttribute("data-day-label", `${activeRecord.dayLabel} (${activeRecord.session}회차)`);
 
-      // [Comment Policy: 3가지 상태 클래스 부여]
-      // 1. 학습 완료: completed-day (초록색)
-      // 2. 지각: late-day (빨간색)
-      // 3. 학습 전: study-ready-day (보라색 - 상시 진입 가능)
+      // [Comment Policy: 2가지 상태 렌더링 - 학습 완료(초록색) / 학습 전(보라색)]
+      // 지각(빨간색) 분기를 완전히 배제하여 완료/미완료만 깔끔하게 시각화합니다.
       if (activeRecord.status === "학습 완료") {
         dayCell.classList.add("completed-day");
-      } else if (activeRecord.status === "지각") {
-        dayCell.classList.add("late-day");
       } else {
         dayCell.classList.add("study-ready-day");
       }
