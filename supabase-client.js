@@ -136,8 +136,11 @@ async function verifyUserWithSupabase(studentId) {
 
     if (records && records.length > 0) {
       records.forEach(r => {
-        // [Comment Policy: 날짜 경과로 인한 '지각' 강제 변환 제거 - 학습 완료 또는 학습 전 2가지로 단순화]
-        const currentStatus = (r.status === '학습 완료') ? '학습 완료' : '학습 전';
+        // [Comment Policy: 지각 상태 또는 점수 보유 시 무조건 '학습 완료'로 처리하여 초록색 표시]
+        const scoreStr = (r.score_record ? String(r.score_record) : "").trim();
+        const hasScore = scoreStr !== "" && scoreStr !== "-";
+        const isCompleted = (r.status === '학습 완료' || r.status === '지각' || hasScore);
+        const currentStatus = isCompleted ? '학습 완료' : '학습 전';
 
         studentRecords.push({
           studentId: r.student_id,
@@ -280,8 +283,11 @@ async function getPlannerStateFromSupabase(studentId) {
     const todayTime = today.getTime();
 
     const words = records.map(r => {
-      // [Comment Policy: 날짜 경과로 인한 '지각' 강제 변환 제거 - 학습 완료 또는 학습 전 2가지로 단순화]
-      const currentStatus = (r.status === '학습 완료') ? '학습 완료' : '학습 전';
+      // [Comment Policy: 지각 상태 또는 점수 보유 시 무조건 '학습 완료'로 처리하여 초록색 표시]
+      const scoreStr = (r.score_record ? String(r.score_record) : "").trim();
+      const hasScore = scoreStr !== "" && scoreStr !== "-";
+      const isCompleted = (r.status === '학습 완료' || r.status === '지각' || hasScore);
+      const currentStatus = isCompleted ? '학습 완료' : '학습 전';
 
       return {
         studentId: r.student_id,

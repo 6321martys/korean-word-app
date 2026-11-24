@@ -129,8 +129,12 @@ function renderCalendarGrid() {
       dayCell.setAttribute("data-day-label", `${activeRecord.dayLabel} (${activeRecord.session}회차)`);
 
       // [Comment Policy: 2가지 상태 렌더링 - 학습 완료(초록색) / 학습 전(보라색)]
-      // 지각(빨간색) 분기를 완전히 배제하여 완료/미완료만 깔끔하게 시각화합니다.
-      if (activeRecord.status === "학습 완료") {
+      // 점수가 있거나 '학습 완료' 또는 '지각' 기록인 경우 무조건 학습 완료(초록색)로 통일 렌더링합니다.
+      const scoreStr = (activeRecord.scoreRecord ? String(activeRecord.scoreRecord) : "").trim();
+      const hasScore = scoreStr !== "" && scoreStr !== "-";
+      const isCompleted = (activeRecord.status === "학습 완료" || activeRecord.status === "지각" || hasScore);
+
+      if (isCompleted) {
         dayCell.classList.add("completed-day");
       } else {
         dayCell.classList.add("study-ready-day");
@@ -159,7 +163,11 @@ function renderCalendarGrid() {
 function updateLearningStatus() {
   if (!plannerState || !plannerState.words) return;
 
-  const completedSessions = plannerState.words.filter(w => w.status === "학습 완료").length;
+  // [Comment Policy: 학습 완료, 지각, 또는 점수 보유 회차를 모두 완료 회차로 간주하여 단어 수 합산]
+  const completedSessions = plannerState.words.filter(w => {
+    const s = (w.scoreRecord ? String(w.scoreRecord) : "").trim();
+    return w.status === "학습 완료" || w.status === "지각" || (s !== "" && s !== "-");
+  }).length;
   const totalLearnedWords = completedSessions * 10;
   const wordCountText = document.getElementById("word-count-text");
   
