@@ -251,17 +251,28 @@ async function openStudentDetailModal(student) {
           sBox.style.justifyContent = "space-between";
           sBox.style.fontSize = "0.82rem";
 
+          // [Comment Policy: 지각 여부와 무관하게 점수가 존재하면 점수 표시, 실제 미응시인 경우 '학습하지 않음' 표시]
+          const scoreStr = (w.scoreRecord ? String(w.scoreRecord) : "").trim();
+          const hasScore = scoreStr !== "" && scoreStr !== "-";
+
           let statusBadge = '';
-          if (w.status === "학습 완료") {
+          if (hasScore) {
+            // 1) 점수가 있는 경우: 지각 여부와 관계없이 산뜻한 초록색 점수 뱃지 표시
             sBox.style.background = "rgba(0, 184, 148, 0.1)";
             sBox.style.border = "1px solid rgba(0, 184, 148, 0.25)";
-            const scoreText = w.scoreRecord ? `${w.scoreRecord}점` : '완료';
-            statusBadge = `<span style="font-weight: 700; color: #55efc4; background: rgba(0, 184, 148, 0.2); padding: 2px 7px; border-radius: 4px;">${scoreText}</span>`;
+            statusBadge = `<span style="font-weight: 700; color: #55efc4; background: rgba(0, 184, 148, 0.2); padding: 2px 7px; border-radius: 4px;">${scoreStr}점</span>`;
+          } else if (w.status === "학습 완료") {
+            // 2) 점수 기록은 없으나 완료 처리된 경우
+            sBox.style.background = "rgba(0, 184, 148, 0.1)";
+            sBox.style.border = "1px solid rgba(0, 184, 148, 0.25)";
+            statusBadge = `<span style="font-weight: 700; color: #55efc4; background: rgba(0, 184, 148, 0.2); padding: 2px 7px; border-radius: 4px;">완료</span>`;
           } else if (w.status === "지각") {
-            sBox.style.background = "rgba(235, 77, 75, 0.1)";
-            sBox.style.border = "1px solid rgba(235, 77, 75, 0.25)";
-            statusBadge = `<span style="font-weight: 600; color: #ff7675; background: rgba(235, 77, 75, 0.2); padding: 2px 7px; border-radius: 4px;">지각</span>`;
+            // 3) 점수가 없고 기한이 지난 미학습 회차: '지각' 대신 '학습하지 않음'으로 표시
+            sBox.style.background = "rgba(235, 77, 75, 0.08)";
+            sBox.style.border = "1px solid rgba(235, 77, 75, 0.2)";
+            statusBadge = `<span style="font-weight: 600; color: #ff7675; background: rgba(235, 77, 75, 0.15); padding: 2px 7px; border-radius: 4px;">학습하지 않음</span>`;
           } else {
+            // 4) 아직 기한이 도래하지 않은 미래 회차
             sBox.style.background = "rgba(255, 255, 255, 0.02)";
             sBox.style.border = "1px solid rgba(255, 255, 255, 0.06)";
             statusBadge = `<span style="color: var(--color-text-secondary); opacity: 0.7;">학습 전</span>`;
